@@ -32,6 +32,34 @@ Es un diagrama de comportamiento, dinámico y lógico. Sirve para explorar clase
 <MermaidDiagram caption="Elementos de una transición" code={`flowchart LR
   O[Estado origen] -->|"evento [guarda] / efecto"| D[Estado destino]`} />
 
+#### 10.3.1. Anatomía completa de un estado
+
+Un estado no es solo un nombre: UML permite adornarlo con acciones internas. Los resúmenes teóricos describen estas partes (aunque en los parciales de análisis casi no se usen).
+
+<TablaComparativa
+  caption="Partes internas de un estado (vocabulario UML)"
+  columnas={["Parte", "Qué significa", "Notación"]}
+  filas={[
+    ["<strong>Efecto de entrada</strong>", "Acción que se ejecuta siempre al <em>entrar</em> al estado.", "entry / accion()"],
+    ["<strong>Efecto de salida</strong>", "Acción que se ejecuta siempre al <em>salir</em> del estado.", "exit / accion()"],
+    ["<strong>Actividad <code>do</code></strong>", "Ejecución en curso, no atómica, mientras se está en el estado; se interrumpe si llega un evento que dispara una transición.", "do / actividad()"],
+    ["<strong>Transición interna</strong>", "Responde a un evento sin salir del estado (no dispara entry/exit).", "evento / accion()"],
+    ["<strong>Evento diferido</strong>", "Evento que no se atiende ahora: se encola y se maneja en otro estado.", "evento / defer"]
+  ]}
+/>
+
+<MermaidDiagram caption="Estado con efectos de entrada, salida y actividad do" code={`stateDiagram-v2
+  [*] --> Reproduciendo
+  Reproduciendo : entry / encenderLuz()
+  Reproduciendo : do / reproducirVideo()
+  Reproduciendo : exit / apagarLuz()
+  Reproduciendo --> Pausado : pausar()
+  Pausado --> Reproduciendo : reanudar()`} />
+
+<Callout tipo="atencion">
+En los parciales de análisis la cátedra rara vez usa <code>entry/exit/do</code>: modela las acciones como <strong>efectos de transición</strong> (`/ metodo()`). Conviene reconocer la notación, pero al resolver seguí el estilo `Nº CU. Nombre [guarda] / metodo()`.
+</Callout>
+
 ### 10.4. Sintaxis conceptual de una transición
 
 <EjemploClase titulo="Sintaxis">
@@ -74,6 +102,36 @@ El `Pedido` es un objeto reactivo clásico: lo que se le permite hacer depende d
   EnTransito --> Cancelada: cancelarPorIncidente() / registrarIncidente()
   Entregada --> [*]
   Cancelada --> [*]`} />
+
+#### 10.5.1. Patrones de transición que usa la cátedra
+
+En las soluciones de los prácticos aparecen tres patrones recurrentes que conviene tener listos para el parcial.
+
+<strong>Transición a sí mismo con contador (reintentos).</strong> Una transición sale y vuelve al mismo estado mientras una condición se cumple; al agotarse, va a otro estado. En el caso <em>Agua/Medición</em>, importar reintenta y a los dos intentos fallidos pasa a `Erronea`. En <em>Pastelería/Pedido</em>, autorizar el cobro se reintenta `[intentos <= 2]`.
+
+<MermaidDiagram caption="Self-transition con contador (Medición y Pedido)" code={`stateDiagram-v2
+  [*] --> ImportadaConError
+  ImportadaConError --> ImportadaConError: 17 Importar [1er intento fallido] / registrarMedicion()
+  ImportadaConError --> Erronea: 17 Importar [2do intento fallido] / registrarMedicion()
+  Confirmado --> Confirmado: 17 Autorizar cobro [quedan intentos] / autorizarCobro()
+  Confirmado --> CobroRealizado: 17 Autorizar cobro [aceptada] / autorizarCobro()
+  Confirmado --> CobroRechazado: 17 Autorizar cobro [rechazada o sin intentos] / autorizarCobro()`} />
+
+<strong>Más de una transición inicial según una guarda.</strong> El pseudoestado inicial `[*]` puede llevar a distintos estados según una regla del enunciado. En <em>FIA F1</em>, una Orden de Traslado nace `Creada` si la genera el Jefe de Mecánica, pero `Aprobada` si la genera el Jefe de Equipo. En <em>Pastelería</em>, el pedido nace `EsperandoAceptación` o `EnAnálisisDestino` según si el destino es frecuente.
+
+<MermaidDiagram caption="Transiciones iniciales con guarda (FIA F1)" code={`stateDiagram-v2
+  [*] --> Creada: Generar OT [crea Jefe Mecánica] / new()
+  [*] --> Aprobada: Generar OT [crea Jefe Equipo] / new()
+  Creada --> Aprobada: Registrar evaluación / aprobar()
+  Creada --> Rechazada: Registrar evaluación / rechazar()`} />
+
+<strong>Estado compuesto con submáquina propia.</strong> Cuando una fase tiene subetapas, se la modela como estado compuesto y se la expande en un diagrama aparte. En <em>Pastelería</em>, `EnDespacho` se abre en `EntregadoACorreo → EnDistribución → EnReparto`.
+
+<MermaidDiagram caption="Submáquina del estado EnDespacho (Pastelería)" code={`stateDiagram-v2
+  [*] --> EntregadoACorreo: 27 Registrar despacho / despachar()
+  EntregadoACorreo --> EnDistribucion: 25 Actualizar estado / enviarACentroDist()
+  EnDistribucion --> EnReparto: 25 Actualizar estado / iniciarReparto()
+  EnReparto --> [*]`} />
 
 ### 10.6. Buenas prácticas
 
@@ -143,6 +201,56 @@ Uno de los PDFs menciona el caso de un estado suspendido que debe recordar a qu�
 El pseudoestado de historia sirve cuando “reanudar” debe volver al subestado anterior, no a un inicio fijo.
 </Callout>
 
+#### 10.8.1. Subestados, concurrencia y submáquinas (vocabulario UML)
+
+Los resúmenes teóricos describen formas avanzadas de estructurar una máquina. Conviene reconocerlas aunque el parcial de análisis casi siempre use solo las dos primeras.
+
+<TablaComparativa
+  caption="Tipos de subestados y mecanismos de composición"
+  columnas={["Mecanismo", "Idea", "Cuándo aparece"]}
+  filas={[
+    ["<strong>Subestados no ortogonales</strong> (secuenciales/disjuntos)", "El objeto está en el compuesto y en <em>uno solo</em> de sus subestados a la vez.", "Lo habitual: una fase con etapas internas (EnDespacho)."],
+    ["<strong>Subestados ortogonales</strong> (concurrentes)", "El compuesto se divide en regiones que se ejecutan <em>en paralelo</em>.", "Dos comportamientos simultáneos del mismo objeto."],
+    ["<strong>Fork / Join</strong>", "Fork reparte el control a varias regiones; Join lo vuelve a unir cuando todas terminan.", "Entrada/salida de regiones ortogonales."],
+    ["<strong>Submáquina</strong>", "Una máquina referenciada desde otra para reusar comportamiento.", "Modelos grandes que se descomponen."],
+    ["<strong>Objetos activos</strong>", "Alternativa a las regiones: dos objetos, cada uno con su propia máquina.", "Cuando los flujos concurrentes se coordinan por mensajes, no por estado compartido."]
+  ]}
+/>
+
+<MermaidDiagram caption="Regiones ortogonales (concurrentes) con fork conceptual" code={`stateDiagram-v2
+  [*] --> Mantenimiento
+  state Mantenimiento {
+    [*] --> Probando
+    Probando --> Diagnosticado: autodiagnóstico()
+    --
+    [*] --> Esperando
+    Esperando --> Atendiendo: teclaPulsada()
+  }
+  Mantenimiento --> [*]`} />
+
+<Callout tipo="atencion">
+Convención de cátedra: el <strong>estado de historia (`H`)</strong> rara vez se dibuja en los parciales. La cátedra implementa la historia de forma <strong>estructural</strong> con una clase `CambioEstado...`: el <em>estado actual</em> es el cambio cuya `fechaHoraFin` está vacía (método `esEstadoActual()`), y para "volver al punto donde se interrumpió" se guarda un puntero `actual`/`anterior` (caso <em>Compras</em>, estado `EnCorrección`).
+</Callout>
+
+<MermaidDiagram caption="Historia estructural: clase CambioEstado en vez del símbolo H" code={`classDiagram
+  class OrdenMedica {
+    <<entity>>
+    +obtenerEstadoActual()
+    +cambiarEstado()
+  }
+  class CambioEstadoOM {
+    <<entity>>
+    -fechaHoraInicio
+    -fechaHoraFin
+    +esEstadoActual()
+  }
+  class Estado {
+    <<entity>>
+    -nombre
+  }
+  OrdenMedica "1" --> "1..*" CambioEstadoOM : actual / anterior
+  CambioEstadoOM "*" --> "1" Estado`} />
+
 ### 10.9. Diferencia con diagramas de interacción
 
 La máquina de estados se concentra en el ciclo de vida de un objeto o clase. Secuencia y comunicación muestran colaboración entre varios objetos durante un escenario.
@@ -153,4 +261,8 @@ Otro objeto reactivo: una `Reserva` de pasaje. `Pendiente` → (pagar [hay asien
 
 <Callout tipo="error">
 No uses máquina de estados para cualquier atributo llamado “estado”. Corresponde cuando ese estado cambia el comportamiento permitido del objeto.
+</Callout>
+
+<Callout tipo="info" titulo="¿Y si importa el tiempo?">
+Los resúmenes mencionan el <strong>diagrama de Timing</strong>, que "cubre una falencia de la máquina de estados": muestra cómo cambian los estados o condiciones de uno o más objetos <em>a lo largo del tiempo</em>, con sus restricciones de duración. La máquina de estados dice <em>qué</em> estados hay y <em>por qué</em> se transita; el Timing agrega <em>cuándo</em> y por <em>cuánto</em>.
 </Callout>

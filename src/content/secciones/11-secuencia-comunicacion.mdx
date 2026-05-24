@@ -48,6 +48,63 @@ Elementos importantes:
   ]}
 />
 
+#### 11.2.1. Notación de flechas y reutilización con `ref`
+
+Los resúmenes precisan cómo se dibuja cada tipo de mensaje y la línea de vida.
+
+<TablaComparativa
+  caption="Notación gráfica del mensaje y la línea de vida"
+  columnas={["Elemento", "Cómo se dibuja"]}
+  filas={[
+    ["<strong>Mensaje síncrono</strong>", "Flecha con punta de triángulo <em>relleno</em>; el emisor espera."],
+    ["<strong>Mensaje asíncrono</strong>", "Flecha con punta <em>abierta</em>; el emisor no se bloquea."],
+    ["<strong>Retorno</strong>", "Flecha <em>abierta y punteada</em> (suele omitirse si no aporta)."],
+    ["<strong>Creación</strong>", "Mensaje «create» a la cabecera del objeto, que nace en ese punto."],
+    ["<strong>Destrucción</strong>", "Mensaje «destroy»; la línea de vida termina con una X."],
+    ["<strong>Foco de control</strong>", "Rectángulo angosto sobre la línea de vida mientras el objeto ejecuta."],
+    ["<strong>Fragmento <code>ref</code></strong>", "Caja que referencia otra interacción ya definida, para no repetirla."]
+  ]}
+/>
+
+#### 11.2.2. Operadores de control estructurado (opt, alt, par, loop)
+
+Cuando un escenario tiene condicionales o bucles, UML los encierra en <strong>fragmentos combinados</strong> con una guarda. Los resúmenes los ilustran con un cajero automático.
+
+<TablaComparativa
+  caption="Fragmentos combinados de un diagrama de secuencia"
+  columnas={["Operador", "Significado", "Guarda"]}
+  filas={[
+    ["<strong>opt</strong>", "El bloque se ejecuta solo si la guarda es verdadera (un <em>if</em> sin <em>else</em>).", "[condición]"],
+    ["<strong>alt</strong>", "Varias subregiones excluyentes; se ejecuta la primera cuya guarda es verdadera (<em>if/else</em>).", "[c1] / [c2] / [else]"],
+    ["<strong>par</strong>", "Subregiones que se ejecutan en paralelo.", "—"],
+    ["<strong>loop</strong>", "El bloque se repite mientras la guarda sea verdadera (o n veces: loop(1,3)).", "[mientras...]"]
+  ]}
+/>
+
+<MermaidDiagram caption="opt, alt, par y loop en un cajero (Resumen DSI)" code={`sequenceDiagram
+  actor U as usuario:Persona
+  participant C as banco:Cajero
+  loop [clave inválida] (hasta 3)
+    U->>C: introducir(clave)
+    C-->>U: válida = verificar(clave)
+  end
+  opt [clave válida]
+    par
+      U->>C: introducir(cuenta)
+    and
+      U->>C: introducir(cantidad)
+    end
+    C-->>U: entregar dinero
+  end`} />
+
+<EjemploReal titulo="Retiro en el cajero automático" dominio="Cotidiano">
+El retiro se lee así: con `loop` el cajero te deja reintentar la clave hasta 3 veces <em>mientras sea inválida</em>; recién con `opt [clave válida]` continúa; dentro, `par` indica que cuenta y monto pueden ingresarse en cualquier orden, y al final entrega el dinero. Cada caja es una porción de flujo con su propia condición, sin tener que dibujar diagramas separados.
+</EjemploReal>
+
+<Callout tipo="atencion">
+Convención de cátedra: en los prácticos rara vez se dibujan `alt/opt/par`. Para las alternativas se hace <strong>un diagrama por flujo</strong> (curso normal, cancelación, etc.) y las condiciones se ponen como guarda `[...]` sobre el mensaje. `loop` sí aparece para recorrer colecciones.
+</Callout>
+
 ### 11.3. Diagrama de comunicación
 
 El <strong>diagrama de comunicación</strong> enfatiza la organización estructural de los objetos y enlaces. También muestra mensajes, pero el orden se expresa con numeración.
@@ -74,6 +131,31 @@ Sus elementos distintivos son:
     { from: "c", to: "p", numero: 1.2, etiqueta: "crear(datos)" }
   ]}
 />
+
+#### 11.3.1. Numeración, iteración y bifurcación
+
+El orden en comunicación se expresa con la <strong>numeración decimal de Dewey</strong>: `1` es el primer mensaje, `1.1` el primero anidado dentro de `1`, `1.2` el siguiente, y así a cualquier profundidad. Eso reemplaza al "de arriba hacia abajo" de la secuencia.
+
+- <strong>Iteración:</strong> un mensaje que se repite sobre una colección se marca con `*` (por ejemplo `1.1: *getNombre()`). Equivale al `loop` de la secuencia.
+- <strong>Bifurcación:</strong> los caminos alternativos llevan el <em>mismo</em> número de secuencia pero guardas disjuntas que no se solapan (`[ok]` vs `[else]`).
+
+<Callout tipo="tip">
+Secuencia y comunicación son <strong>semánticamente equivalentes</strong>: derivan del mismo modelo y se puede pasar de una a otra sin perder información. Elegí secuencia si te interesa el orden temporal; comunicación si te interesa ver qué objetos están enlazados.
+</Callout>
+
+#### 11.3.2. Convención de la cátedra
+
+En las soluciones de los prácticos (FIA F1, Líneas Aéreas) se repiten estos hábitos:
+
+- <strong>Objetos-instancia con rol nombrado:</strong> cuando se elige un elemento de una colección, se lo nombra por su rol: `elegido:Vuelo`, `actual:CambioEstadoVuelo`, `paisOrigenSel:Pais`, `logueado:Soldado`.
+- <strong>Iteración con `*`:</strong> `*getNombre()`, `*esFactibleCancelar()` para recorrer colecciones.
+- <strong>Self-message del gestor:</strong> el control se llama a sí mismo para validar o calcular: `verificarDatosRequeridos()`, `determinarHorarios()`, `notificar()`.
+- <strong>Cierre explícito:</strong> el caso de uso termina con `finCU()` o `finCasoDeUso()`.
+- <strong>Un diagrama por flujo:</strong> si el caso de uso tiene flujos distintos, se hace un diagrama de comunicación para cada uno.
+
+<Callout tipo="info" titulo="Ciclo de vida del objeto de control">
+Según los resúmenes, el objeto de <strong>control</strong> suele <em>crearse cuando empieza</em> el caso de uso y <em>destruirse cuando termina</em> (encapsula esa conversación). Las <strong>entidades</strong>, en cambio, viven más allá y participan en varias realizaciones; una <strong>boundary</strong> puede ser compartida si aparece en varias pantallas.
+</Callout>
 
 ### 11.4. Diferencia entre secuencia y comunicación
 

@@ -112,6 +112,10 @@ En análisis se habla más de responsabilidades que de métodos con firma comple
   </EjemploReal>
 </PatronGRASP>
 
+<Callout tipo="atencion" titulo="Creador → Factoría">
+Los resúmenes aclaran que cuando la creación es <strong>compleja</strong> (instancias recicladas por rendimiento, o elegir condicionalmente entre una familia de clases según una propiedad), conviene <strong>delegar la creación a una clase auxiliar Factoría</strong> en vez de cargar al contenedor. Es el puente del Creador (análisis) hacia el patrón de diseño <em>Factory</em> (Unidad 2).
+</Callout>
+
 ### 12.6. Patrón Controlador
 
 <PatronGRASP
@@ -137,8 +141,13 @@ En análisis se habla más de responsabilidades que de métodos con firma comple
   </EjemploReal>
 </PatronGRASP>
 
-<Callout tipo="error">
-Un controlador puede saturarse si absorbe responsabilidades que pertenecen a entidades. Controlar no significa hacer todo.
+<Callout tipo="error" titulo="Controlador saturado">
+Un controlador puede saturarse si absorbe responsabilidades que pertenecen a entidades. Controlar no significa hacer todo. Según los resúmenes, hay <strong>controlador saturado</strong> cuando: una única clase recibe <em>todos</em> los eventos del sistema; el control hace el trabajo en vez de delegarlo (viola Experto y Alta Cohesión); o acumula muchos atributos que deberían vivir en otros objetos.
+<br /><br /><strong>Dos remedios:</strong> (1) agregar más controladores —un controlador por caso de uso en vez de uno de fachada (p. ej. un sistema de reservas de vuelos)—; (2) rediseñar el controlador para que <em>delegue</em> cada responsabilidad a otros objetos.
+</Callout>
+
+<Callout tipo="tip">
+Un beneficio clave del Controlador: permite <strong>razonar sobre el estado del caso de uso</strong> (asegurar que las operaciones ocurren en una secuencia válida), porque concentra esa coordinación fuera de la interfaz.
 </Callout>
 
 <TablaComparativa
@@ -204,6 +213,19 @@ Un controlador puede saturarse si absorbe responsabilidades que pertenecen a ent
     Si `PantallaRegistrarPedido` calculara el total y conociera los precios de cada variedad, quedaría <strong>muy acoplada</strong> a `Pizza`, `VariedadPizza` y `TamañoPizza`, y mezclaría dos trabajos (mostrar + calcular), perdiendo <strong>cohesión</strong>. Dejándole el cálculo al `Pedido` y la coordinación al gestor, cada clase hace una sola cosa y un cambio en los precios no rompe la pantalla.
   </EjemploReal>
 </PatronGRASP>
+
+La cohesión no es "todo o nada": los resúmenes describen una escala de <strong>grados de cohesión funcional</strong>.
+
+<TablaComparativa
+  caption="Grados de cohesión funcional"
+  columnas={["Grado", "Descripción"]}
+  filas={[
+    ["<strong>Muy baja</strong>", "Una clase es responsable de muchas cosas en áreas funcionales muy distintas."],
+    ["<strong>Baja</strong>", "Una clase tiene la responsabilidad de una tarea compleja en un área funcional."],
+    ["<strong>Alta</strong> (deseable)", "Una clase tiene una responsabilidad moderada en un área y colabora con otras para el resto."],
+    ["<strong>Moderada</strong>", "Responsabilidades livianas en pocas áreas, relacionadas con el concepto de la clase pero no entre sí."]
+  ]}
+/>
 
 ### 12.9. GRASP aplicado a clases de análisis
 
@@ -272,6 +294,14 @@ Además de los cinco patrones más usados en análisis, los PDFs y la bibliograf
 Fabricación pura no significa inventar clases sin motivo. Se usa cuando poner la responsabilidad en una entidad, frontera o control existente dañaría la cohesión o aumentaría demasiado el acoplamiento.
 </Callout>
 
+<EjemploReal titulo="Boundary y control SON Fabricación Pura" dominio="Caso cátedra">
+Un dato que el resumen de cátedra remarca: las clases <strong>boundary</strong> y <strong>control</strong> son <em>clases de Fabricación Pura</em>. No salen del dominio del problema (a un cliente no le importa que exista una `PantallaRegistrarPedido` ni un `GestorRegistrarPedido`): se inventan para no cargar de lógica de interacción ni de coordinación a las entidades. Solo las <strong>entidades</strong> (`Pedido`, `Vuelo`) se derivan del dominio. Por eso BCE es, en el fondo, una aplicación sistemática de Fabricación Pura + Alta Cohesión.
+</EjemploReal>
+
+<EjemploReal titulo="Polimorfismo y Variaciones Protegidas en la Estrella de la Muerte" dominio="Caso cátedra">
+El informe de cumplimiento de Órdenes de Reubicación se puede calcular con <em>distintos métodos</em> (% ejecución satisfactoria, % ejecutadas, % no ejecutadas). En vez de un `if/switch` en el `GestorInformeCumplimientoOR`, cada método es una estrategia que implementa `calcularEjecucionesOR()` (<strong>Polimorfismo</strong>: el comportamiento vive en las variantes). La variación queda encapsulada tras la interfaz estable `IEstrategiaEjecucionOR` (<strong>Variaciones Protegidas</strong>): agregar un método nuevo no toca al gestor.
+</EjemploReal>
+
 ### 12.12. GRASP versus patrones de diseño
 
 GRASP son criterios para asignar responsabilidades. Los patrones de diseño, como Observer o State, son soluciones de diseño más específicas. En Unidad 1 puede aparecer la mención como puente, pero el foco es justificar responsabilidades en el modelo de análisis.
@@ -286,3 +316,17 @@ GRASP son criterios para asignar responsabilidades. Los patrones de diseño, com
     ["Ejemplos", "Experto, Creador, Controlador.", "Observer, State, Strategy, Adapter."]
   ]}
 />
+
+<TablaComparativa
+  caption="Del GRASP de análisis al patrón de diseño (caso Estrella de la Muerte)"
+  columnas={["Necesidad de diseño", "GRASP de base", "Patrón de diseño (Unidad 2)"]}
+  filas={[
+    ["El cálculo de cumplimiento de OR varía según el método elegido por el actor.", "Polimorfismo + Variaciones Protegidas", "<strong>Strategy</strong> (IEstrategiaEjecucionOR + estrategias concretas)."],
+    ["El informe debe construirse en varios formatos (PDF, Excel, impreso, holográfico).", "Alta Cohesión (separar la construcción)", "<strong>Builder</strong>."],
+    ["Notificar a varias pantallas/interesados cuando algo cambia.", "Indirección / Fabricación Pura", "<strong>Observer</strong>."]
+  ]}
+/>
+
+<Callout tipo="tip">
+La idea del puente: en <strong>análisis</strong> detectás <em>qué</em> responsabilidad varía y la aislás (Polimorfismo, Variaciones Protegidas); en <strong>diseño</strong> elegís la <em>estructura</em> concreta que lo resuelve (Strategy, Builder, Observer). El GRASP justifica el porqué; el patrón de diseño da el cómo.
+</Callout>
