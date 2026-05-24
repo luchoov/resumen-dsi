@@ -1,0 +1,448 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Topbar from "@/components/layout/Topbar.astro";
+import { crearIndiceBusqueda, ordenarSecciones } from "@/lib/secciones";
+
+const secciones = ordenarSecciones(await getCollection("secciones"));
+const indiceBusqueda = crearIndiceBusqueda(secciones);
+
+type QA = { c: string; q: string; a: string };
+
+// Banco de preguntas y respuestas. Las respuestas admiten <strong> y <code>.
+const preguntas: QA[] = [
+  // ── PUD ───────────────────────────────────────────────────────────────
+  {
+    c: "PUD",
+    q: "¿Qué es el Proceso Unificado de Desarrollo (PUD)?",
+    a: "Es un marco de trabajo para construir software de forma <strong>iterativa, incremental, dirigida por casos de uso y centrada en la arquitectura</strong>. Organiza el desarrollo en fases y workflows, y produce el sistema mediante incrementos evaluables en lugar de una sola entrega final."
+  },
+  {
+    c: "PUD",
+    q: "¿Cuáles son las cuatro fases del PUD y su propósito?",
+    a: "<strong>Inicio</strong>: definir alcance, entender el negocio e identificar actores y casos de uso principales. <strong>Elaboración</strong>: planificar con más precisión y estabilizar la arquitectura. <strong>Construcción</strong>: desarrollar el producto mediante incrementos. <strong>Transición</strong>: entregar el producto al ambiente real (validación, correcciones, despliegue)."
+  },
+  {
+    c: "PUD",
+    q: "¿Qué diferencia hay entre iteración, incremento y release?",
+    a: "Una <strong>iteración</strong> es una secuencia planificada de actividades con criterio de evaluación. Un <strong>incremento</strong> es la porción nueva de funcionalidad o calidad agregada. Un <strong>release</strong> es una versión ejecutable o entregable que permite validar el avance."
+  },
+  {
+    c: "PUD",
+    q: "¿Qué es un workflow o disciplina en el PUD?",
+    a: "Es una agrupación de actividades relacionadas que producen modelos o artefactos (por ejemplo: modelado de negocio, requerimientos, análisis, diseño, implementación, prueba, despliegue). La intensidad de cada workflow varía según la fase."
+  },
+  {
+    c: "PUD",
+    q: "¿Por qué se dice que el PUD está 'dirigido por casos de uso'?",
+    a: "Porque los casos de uso guían todo el proceso: capturan los requisitos funcionales, sirven para planificar iteraciones, se realizan en análisis y diseño, y se usan como base para las pruebas. El sistema se construye para satisfacer sus casos de uso."
+  },
+
+  // ── UML ───────────────────────────────────────────────────────────────
+  {
+    c: "UML",
+    q: "¿Qué es UML y para qué se usa?",
+    a: "UML (Unified Modeling Language) es un <strong>lenguaje de modelado</strong> estándar para especificar, visualizar y documentar sistemas de software. No es una metodología: es una notación que distintos procesos (como el PUD) pueden usar."
+  },
+  {
+    c: "UML",
+    q: "¿Cómo se clasifican los diagramas UML?",
+    a: "En <strong>estructurales</strong> (clases, objetos, paquetes, componentes, despliegue) que muestran la estructura estática, y de <strong>comportamiento</strong> (casos de uso, secuencia, comunicación, máquina de estados, actividad) que muestran la dinámica del sistema."
+  },
+  {
+    c: "UML",
+    q: "¿Qué es un estereotipo en UML?",
+    a: "Es un mecanismo de extensión que clasifica un elemento con una semántica específica, escrito entre guillemets: <code>«boundary»</code>, <code>«control»</code>, <code>«entity»</code>, <code>«actor»</code>. Permite adaptar UML a un dominio sin cambiar el metamodelo."
+  },
+
+  // ── Orientación a objetos ──────────────────────────────────────────────
+  {
+    c: "Orientación a objetos",
+    q: "¿Qué diferencia hay entre clase y objeto?",
+    a: "Una <strong>clase</strong> describe un conjunto de objetos que comparten estructura, comportamiento, relaciones y semántica. Un <strong>objeto</strong> es una instancia concreta de una clase. Crear un objeto a partir de una clase se llama <strong>instanciación</strong>."
+  },
+  {
+    c: "Orientación a objetos",
+    q: "¿Qué es el estado de un objeto?",
+    a: "Es el conjunto de valores de sus atributos en un momento determinado: <code>Estado = atributo + valor en un momento dado</code>. Si una <code>Solicitud</code> pasa de 'Pendiente' a 'Aprobada', sigue siendo el mismo objeto pero su estado interno cambió."
+  },
+  {
+    c: "Orientación a objetos",
+    q: "¿Qué es una responsabilidad y cómo se relaciona con el comportamiento?",
+    a: "El comportamiento es qué puede hacer un objeto. En análisis se expresa como <strong>responsabilidades</strong> de alto nivel (qué debe conocer y qué debe hacer), no como métodos con signatura completa. Asignar bien las responsabilidades es el objetivo de los patrones GRASP."
+  },
+  {
+    c: "Orientación a objetos",
+    q: "¿Qué es encapsulamiento y por qué importa en análisis?",
+    a: "Es ocultar los datos internos de un objeto y exponer solo su comportamiento. En análisis se traduce en que una entidad experta responde por su propia información en lugar de que el gestor manipule sus datos directamente."
+  },
+
+  // ── Análisis ───────────────────────────────────────────────────────────
+  {
+    c: "Análisis",
+    q: "¿Qué es el modelo de análisis y qué artefactos produce?",
+    a: "Es un modelo conceptual que refina los requisitos en términos de objetos, sin comprometerse con tecnología. Produce <strong>clases de análisis</strong> (boundary, control, entity), <strong>realizaciones de casos de uso</strong> (vista dinámica y de clases) y <strong>paquetes de análisis</strong>."
+  },
+  {
+    c: "Análisis",
+    q: "¿En qué se diferencia el análisis del diseño?",
+    a: "El análisis se enfoca en <strong>qué</strong> hace el sistema en términos del dominio, ignorando detalles técnicos. El diseño decide <strong>cómo</strong> se implementa: persistencia, frameworks, concurrencia, distribución, patrones de diseño. En análisis no se modela base de datos ni controladores técnicos."
+  },
+  {
+    c: "Análisis",
+    q: "¿Qué son los requisitos especiales?",
+    a: "Son requisitos no funcionales o restricciones que aparecen durante el análisis y se conservan para diseño: persistencia, concurrencia, seguridad, distribución, tolerancia a fallos, tiempos de respuesta o transacciones."
+  },
+
+  // ── Clases BCE ─────────────────────────────────────────────────────────
+  {
+    c: "Clases BCE",
+    q: "¿Qué representan las clases boundary, control y entity?",
+    a: "<strong>Boundary</strong> (frontera): comunica el sistema con actores e interfaces externas. <strong>Control</strong>: coordina el caso de uso, valida y delega. <strong>Entity</strong>: representa información del dominio con datos y comportamiento que persiste más allá de un caso de uso."
+  },
+  {
+    c: "Clases BCE",
+    q: "¿Qué responsabilidades NO debe tener una boundary?",
+    a: "No debe contener lógica de negocio ni hablar directamente con todas las entidades. Su rol es recibir eventos, mostrar/listar datos, solicitar y tomar selecciones y confirmaciones. La coordinación corresponde al control."
+  },
+  {
+    c: "Clases BCE",
+    q: "¿Cuándo conviene tener más de una clase control?",
+    a: "Suele haber un control por caso de uso o por responsabilidad principal (por ejemplo <code>GestorCancelacionVuelo</code>, <code>GestorRegistrarOrdenTraslado</code>). Si un control acumula responsabilidades de varias entidades, conviene revisar el reparto (Alta Cohesión / Experto)."
+  },
+  {
+    c: "Clases BCE",
+    q: "¿Una entity es solo una tabla de datos?",
+    a: "No. Además de conocer datos persistentes puede tener comportamiento experto: una <code>Vuelo</code> puede <code>calcularDisponibilidad()</code> o <code>esFactibleCancelar()</code>, y un <code>Estado</code> puede <code>permiteCancelacion()</code>. La entidad responde por su propia información y reglas."
+  },
+
+  // ── Casos de uso ───────────────────────────────────────────────────────
+  {
+    c: "Casos de uso",
+    q: "¿Qué es la realización de un caso de uso de análisis?",
+    a: "Es la explicación de cómo colaboran las clases de análisis para ejecutar un caso de uso. Tiene una <strong>vista dinámica</strong> (secuencia o comunicación) y una <strong>vista de clases</strong> (estructura que soporta esa colaboración)."
+  },
+  {
+    c: "Casos de uso",
+    q: "¿Qué es el flujo de sucesos de análisis?",
+    a: "Es la narración del escenario en lenguaje de objetos: la frontera recibe el evento, el control coordina, y las entidades aportan información, comportamiento y cambios de estado. Es el puente entre el texto del caso de uso y los diagramas."
+  },
+
+  // ── Arquitectura ───────────────────────────────────────────────────────
+  {
+    c: "Arquitectura",
+    q: "¿Para qué sirven los paquetes de análisis?",
+    a: "Agrupan clases relacionadas para organizar el modelo, reducir el acoplamiento entre grupos y permitir trabajar por partes. Reflejan una primera aproximación a la arquitectura lógica del sistema."
+  },
+  {
+    c: "Arquitectura",
+    q: "¿Qué criterios se usan para agrupar clases en paquetes?",
+    a: "Cohesión funcional (clases que colaboran para un mismo fin), estabilidad y minimización de dependencias entre paquetes. Se busca alta cohesión dentro del paquete y bajo acoplamiento entre paquetes."
+  },
+
+  // ── Máquina de estados ─────────────────────────────────────────────────
+  {
+    c: "Máquina de estados",
+    q: "¿Cuándo corresponde hacer una máquina de estados?",
+    a: "Cuando una clase tiene comportamiento <strong>dependiente de su situación actual</strong>: el estado modifica qué eventos son válidos, qué reglas aplican o qué caminos quedan prohibidos. No alcanza con tener un atributo <code>estado</code>."
+  },
+  {
+    c: "Máquina de estados",
+    q: "¿Cuál es la sintaxis de una transición?",
+    a: "<code>estado origen — evento [condición] / efecto → estado destino</code>. La cátedra suele pedir que la transición indique el <strong>caso de uso</strong> (evento), el <strong>método</strong> de la clase que cambia y, cuando aplica, la <strong>guarda</strong>."
+  },
+  {
+    c: "Máquina de estados",
+    q: "¿Cómo distingo un estado de un evento o un método?",
+    a: "El estado es una situación estable (sustantivo/adjetivo): <code>Cancelado</code>, <code>Aprobada</code>. El evento o caso de uso dispara la transición: 'Cancelar Vuelo'. El método es la responsabilidad de la entidad para cambiar: <code>cancelar()</code>. La postcondición ('vuelo cancelado') describe el resultado."
+  },
+  {
+    c: "Máquina de estados",
+    q: "¿Cuándo uso una condición de guarda?",
+    a: "Cuando una transición depende de una regla del enunciado, o cuando un mismo caso de uso puede llevar a más de un estado. Si la transición es directa y la regla no se bifurca, la guarda puede omitirse."
+  },
+  {
+    c: "Máquina de estados",
+    q: "¿Para qué sirve un estado compuesto?",
+    a: "Para encapsular subetapas internas de una fase. Por ejemplo, <code>EnEjecucion</code> de un vuelo agrupa despegue, vuelo en aire, zona y aterrizaje; o <code>EnUso</code> de una cuenta agrupa su operación interna."
+  },
+  {
+    c: "Máquina de estados",
+    q: "¿Qué es el pseudoestado de historia [H]?",
+    a: "Sirve cuando 'reanudar' debe volver al <strong>subestado anterior</strong> y no a un inicio fijo. Si una clase se suspende estando en cierto subestado, al reanudar la historia la devuelve exactamente a ese subestado."
+  },
+  {
+    c: "Máquina de estados",
+    q: "¿Es lo mismo un estado final de negocio que el estado final UML?",
+    a: "No. <code>Cancelada</code>, <code>Rechazada</code> o <code>Finalizado</code> son estados del negocio. El pseudoelemento final UML (<code>[*]</code>) solo indica que termina el ciclo de vida modelado. Un estado de negocio puede luego ir al final UML."
+  },
+
+  // ── Interacción ────────────────────────────────────────────────────────
+  {
+    c: "Interacción",
+    q: "¿Qué diferencia hay entre diagrama de secuencia y de comunicación?",
+    a: "Ambos muestran cómo colaboran objetos en un escenario. El de <strong>secuencia</strong> enfatiza el orden temporal de los mensajes (líneas de vida); el de <strong>comunicación</strong> enfatiza los enlaces estructurales con mensajes numerados. El contenido es equivalente."
+  },
+  {
+    c: "Interacción",
+    q: "¿Cuál es la estructura canónica de una realización de análisis?",
+    a: "<code>Actor → Boundary (Pantalla…) → Control (Gestor…) → Entidades</code>. El actor inicia, la pantalla recibe/muestra, el gestor coordina y valida, y las entidades responden por su información o comportamiento."
+  },
+  {
+    c: "Interacción",
+    q: "¿Qué diferencia hay entre máquina de estados y diagramas de interacción?",
+    a: "La máquina de estados se concentra en el <strong>ciclo de vida de un solo objeto</strong>. Secuencia y comunicación muestran la <strong>colaboración entre varios objetos</strong> durante un escenario concreto."
+  },
+  {
+    c: "Interacción",
+    q: "¿Cómo se representa la repetición sobre una colección?",
+    a: "Con un fragmento <code>loop</code> (en las soluciones de cátedra aparece como un <code>*</code> en el mensaje). Se usa al recorrer listas de países, contenedores, elementos, etc., para obtener o validar cada ítem."
+  },
+
+  // ── GRASP ──────────────────────────────────────────────────────────────
+  {
+    c: "GRASP",
+    q: "¿Qué es GRASP?",
+    a: "Son patrones generales para asignar responsabilidades a objetos: <strong>Experto</strong>, <strong>Creador</strong>, <strong>Controlador</strong>, <strong>Bajo Acoplamiento</strong>, <strong>Alta Cohesión</strong>, y los avanzados Polimorfismo, Indirección, Fabricación Pura y Variaciones Protegidas."
+  },
+  {
+    c: "GRASP",
+    q: "¿Qué dice el patrón Experto en Información?",
+    a: "Asigna una responsabilidad a la clase que tiene la <strong>información necesaria</strong> para cumplirla. Si la <code>Vuelo</code> conoce sus reservas y capacidad, es ella quien debe <code>calcularDisponibilidad()</code>."
+  },
+  {
+    c: "GRASP",
+    q: "¿Qué dice el patrón Creador?",
+    a: "Una clase B debería crear instancias de A si B las contiene/agrega, las registra, las usa estrechamente o tiene los datos de inicialización. Por eso una <code>OrdenTraslado</code> crea sus <code>DetalleOT</code>."
+  },
+  {
+    c: "GRASP",
+    q: "¿Qué dice el patrón Controlador?",
+    a: "Asigna la responsabilidad de coordinar un caso de uso a una clase control (un gestor) que no es ni la interfaz ni una entidad de dominio. Evita que la pantalla maneje la lógica del flujo."
+  },
+  {
+    c: "GRASP",
+    q: "¿Qué buscan Bajo Acoplamiento y Alta Cohesión?",
+    a: "<strong>Bajo Acoplamiento</strong>: minimizar las dependencias entre clases para que un cambio no se propague. <strong>Alta Cohesión</strong>: que cada clase tenga responsabilidades enfocadas y relacionadas. Suelen ir juntos y se evalúan al repartir responsabilidades."
+  },
+
+  // ── Relaciones ─────────────────────────────────────────────────────────
+  {
+    c: "Relaciones",
+    q: "¿Qué diferencia hay entre asociación, agregación y composición?",
+    a: "<strong>Asociación</strong>: relación estructural genérica. <strong>Agregación</strong> (rombo vacío): todo-parte donde la parte puede existir sin el todo. <strong>Composición</strong> (rombo lleno): todo-parte con dependencia de vida; si se destruye el todo, se destruyen las partes."
+  },
+  {
+    c: "Relaciones",
+    q: "¿Qué es la navegabilidad y cómo se justifica?",
+    a: "Indica qué objeto puede acceder a cuál para enviarle mensajes. Se justifica por la dinámica: si el gestor consulta <code>Vuelo</code>, <code>Pais</code> y <code>Ciudad</code>, esas dependencias aparecen en la vista de clases."
+  },
+  {
+    c: "Relaciones",
+    q: "¿Cómo se razona la multiplicidad?",
+    a: "Desde el dominio y desde los mensajes. Por ejemplo <code>Vuelo \"1\" → \"1..*\" CambioEstadoVuelo</code> (un vuelo tiene al menos un cambio de estado) o <code>OrdenTraslado \"1\" → \"1..*\" DetalleOT</code>."
+  },
+  {
+    c: "Relaciones",
+    q: "¿Qué diferencia hay entre asociación y dependencia?",
+    a: "La <strong>asociación</strong> es un vínculo estructural duradero (la clase conoce a la otra como atributo). La <strong>dependencia</strong> (flecha punteada) es un uso puntual: el control usa una entidad para enviarle un mensaje, sin guardarla como parte de su estructura."
+  },
+
+  // ── Práctica / Parcial ─────────────────────────────────────────────────
+  {
+    c: "Práctica / Parcial",
+    q: "¿Cuál es el método general para encarar un ejercicio?",
+    a: "Leer dominio y caso de uso; marcar sustantivos (clases) y verbos (casos de uso); detectar si hay clase con ciclo de vida (máquina de estados); elegir el escenario pedido; identificar actor, pantalla, gestor, sesión y entidades; armar la secuencia/comunicación; derivar la vista de clases; y revisar multiplicidad, navegabilidad e historial."
+  },
+  {
+    c: "Práctica / Parcial",
+    q: "¿Cómo se obtienen los métodos de una máquina de estados?",
+    a: "El método de transición pertenece a la clase que cambia de estado (no a la pantalla ni al caso de uso completo). Ejemplos: <code>aprobar()</code>, <code>cancelar()</code>, <code>comenzarPreparacion()</code>, <code>revisarContenido()</code>. Esos métodos deben reaparecer luego en la secuencia y en las clases."
+  },
+  {
+    c: "Práctica / Parcial",
+    q: "¿Cuál es el patrón de cambio de estado con historial?",
+    a: "El gestor valida que la transición sea posible; la entidad ejecuta el método; se cierra el cambio actual (<code>setFechaHoraFin()</code>); se crea un nuevo <code>CambioEstado…</code>; se asocia el nuevo <code>Estado</code>; se registran fecha/hora, motivo y responsable si se piden; y se notifica si corresponde."
+  },
+  {
+    c: "Práctica / Parcial",
+    q: "¿Cómo modelo el patrón de creación con detalles?",
+    a: "El gestor reúne datos y coordina; la entidad principal se crea con <code>new()</code> y, como es el todo que los contiene, crea su cambio de estado inicial y sus detalles. Si hay contenedores o elementos, los detalles se crean dentro de un <code>loop</code>."
+  },
+  {
+    c: "Práctica / Parcial",
+    q: "¿Por qué una consulta con filtros no es un CRUD?",
+    a: "Porque hay selección incremental, validación de datos requeridos, cálculo (por ejemplo de disponibilidad o tarifa) y consulta sobre varias entidades relacionadas. El caso típico es 'Consultar Disponibilidad de Vuelos'."
+  },
+  {
+    c: "Práctica / Parcial",
+    q: "¿Cómo se derivan las clases de análisis desde la secuencia?",
+    a: "Cada objeto significativo de la dinámica se vuelve una clase; cada mensaje entrante relevante se vuelve un método de la clase receptora; y cada enlace usado para enviar mensajes justifica una asociación, dependencia o navegabilidad."
+  },
+  {
+    c: "Práctica / Parcial",
+    q: "¿Cuándo necesito una clase Estado / CambioEstado?",
+    a: "Cuando el enunciado pide historial, fecha/hora, motivo, responsable o permanencia en estados. <code>Estado</code> es el catálogo de estados posibles; <code>CambioEstado…</code> o <code>HistorialEstado…</code> representa el paso de la entidad por un estado. Si no hay historial, puede bastar una relación directa con <code>Estado</code>."
+  },
+  {
+    c: "Práctica / Parcial",
+    q: "¿Cómo se conectan los tres diagramas (estados, interacción, clases)?",
+    a: "Los métodos de transición de la máquina aparecen como mensajes en la secuencia cuando el caso de uso cambia el estado; los objetos y mensajes de la secuencia se vuelven clases y métodos; y la clase con estados debe contener métodos coherentes con su máquina. Los tres deben leerse como una sola solución."
+  },
+  {
+    c: "Práctica / Parcial",
+    q: "¿Cuáles son los errores típicos de parcial?",
+    a: "Confundir acciones con estados; poner casos de uso como estados; no poner métodos en las transiciones; olvidar guardas cuando una regla bifurca; que la pantalla hable con todas las entidades; que el gestor absorba responsabilidades de entidades expertas; olvidar <code>Sesion</code>/<code>Usuario</code> o <code>CambioEstado</code>; y meter detalles de base de datos o frameworks en análisis."
+  },
+  {
+    c: "Práctica / Parcial",
+    q: "¿Cuándo aparece Sesion/Usuario en la dinámica?",
+    a: "Cuando el flujo necesita usuario logueado, validar un rol o permisos, o registrar un responsable. El gestor pide el usuario logueado a la <code>Sesion</code> y valida su rol antes de continuar el caso de uso."
+  }
+];
+
+const categorias = Array.from(new Set(preguntas.map((p) => p.c)));
+const stripHtml = (s: string) => s.replace(/<[^>]+>/g, " ");
+const normalize = (s: string) =>
+  s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const items = preguntas.map((p) => ({
+  ...p,
+  texto: normalize(`${p.q} ${stripHtml(p.a)} ${p.c}`)
+}));
+---
+
+<BaseLayout
+  titulo="Banco de preguntas · Resumen DSI"
+  descripcion="Banco de preguntas y respuestas de teoría y práctica de Diseño de Sistemas para repaso activo."
+>
+  <Topbar indiceBusqueda={indiceBusqueda} />
+  <main class="mx-auto max-w-4xl px-4 pb-20 pt-24 lg:px-6">
+    <header class="border-b border-[hsl(var(--border))] pb-7">
+      <p class="mb-3 font-mono text-sm font-semibold uppercase tracking-[0.18em] text-[hsl(var(--primary))]">Repaso activo</p>
+      <h1 class="max-w-3xl text-[length:var(--text-fluid-3xl)] font-bold leading-[1.05] tracking-[-0.02em]">Banco de preguntas</h1>
+      <p class="mt-5 max-w-2xl text-[length:var(--text-fluid-lg)] text-[hsl(var(--muted-foreground))]">
+        {preguntas.length} preguntas de teoría y práctica para autoevaluarte. Filtrá por tema o buscá, intentá responder y después abrí la respuesta.
+      </p>
+    </header>
+
+    <div class="sticky top-14 z-30 -mx-4 mb-6 border-b border-[hsl(var(--border))] bg-[hsl(var(--background)/0.9)] px-4 py-4 backdrop-blur-xl lg:-mx-6 lg:px-6 no-print">
+      <input
+        id="qa-search"
+        type="search"
+        placeholder="Buscar pregunta, término o concepto…"
+        aria-label="Buscar preguntas"
+        class="h-11 w-full rounded-lg border border-[hsl(var(--input))] bg-[hsl(var(--card))] px-4 text-base outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+      />
+      <div class="mt-3 flex flex-wrap items-center gap-2">
+        <button type="button" data-cat="*" class="qa-chip rounded-full border border-[hsl(var(--primary)/0.6)] bg-[hsl(var(--primary)/0.12)] px-3 py-1 text-sm font-medium text-[hsl(var(--foreground))]">Todas</button>
+        {categorias.map((cat) => (
+          <button type="button" data-cat={cat} class="qa-chip rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-3 py-1 text-sm text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--muted))]">{cat}</button>
+        ))}
+        <span class="ml-auto flex items-center gap-3">
+          <button type="button" id="qa-toggle-all" class="text-sm text-[hsl(var(--primary))] hover:underline">Expandir todo</button>
+          <span id="qa-count" class="font-mono text-xs text-[hsl(var(--muted-foreground))]"></span>
+        </span>
+      </div>
+    </div>
+
+    <ol id="qa-list" class="space-y-3">
+      {items.map((item, index) => (
+        <li class="qa-item" data-cat={item.c} data-texto={item.texto}>
+          <details class="group rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] transition-colors open:border-[hsl(var(--primary)/0.5)]">
+            <summary class="flex cursor-pointer items-start gap-3 px-4 py-3.5 [&::-webkit-details-marker]:hidden">
+              <span class="mt-0.5 font-mono text-xs text-[hsl(var(--muted-foreground))]">{String(index + 1).padStart(2, "0")}</span>
+              <span class="min-w-0 flex-1">
+                <span class="block font-semibold leading-snug">{item.q}</span>
+                <span class="mt-1 inline-block rounded-md border border-[hsl(var(--border))] px-2 py-0.5 font-mono text-[0.7rem] text-[hsl(var(--muted-foreground))]">{item.c}</span>
+              </span>
+              <svg class="mt-1 h-5 w-5 shrink-0 text-[hsl(var(--muted-foreground))] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+            </summary>
+            <div class="border-t border-[hsl(var(--border))] px-4 py-3.5 pl-11 text-[hsl(var(--foreground))]" set:html={item.a} />
+          </details>
+        </li>
+      ))}
+    </ol>
+
+    <p id="qa-empty" class="hidden py-12 text-center text-[hsl(var(--muted-foreground))]">No hay preguntas que coincidan con el filtro.</p>
+  </main>
+</BaseLayout>
+
+<style>
+  #qa-list :global(code) {
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.375rem;
+    background: hsl(var(--muted));
+    padding: 0.05rem 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+  }
+
+  #qa-list :global(strong) {
+    color: hsl(var(--foreground));
+    font-weight: 680;
+  }
+</style>
+
+<script>
+  const initBancoPreguntas = () => {
+    const list = document.getElementById("qa-list");
+    if (!list) return; // only on this page
+    const search = document.getElementById("qa-search") as HTMLInputElement | null;
+    const chips = Array.from(document.querySelectorAll<HTMLButtonElement>(".qa-chip"));
+    const items = Array.from(document.querySelectorAll<HTMLElement>(".qa-item"));
+    const count = document.getElementById("qa-count");
+    const empty = document.getElementById("qa-empty");
+    const toggleAll = document.getElementById("qa-toggle-all");
+
+    let activeCat = "*";
+
+    const normalize = (s: string) =>
+      s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+    const apply = () => {
+      const query = normalize(search?.value ?? "");
+      let visible = 0;
+      items.forEach((item) => {
+        const matchCat = activeCat === "*" || item.dataset.cat === activeCat;
+        const matchText = !query || (item.dataset.texto ?? "").includes(query);
+        const show = matchCat && matchText;
+        item.hidden = !show;
+        if (show) visible++;
+      });
+      if (count) count.textContent = `${visible} de ${items.length}`;
+      if (empty) empty.classList.toggle("hidden", visible !== 0);
+    };
+
+    chips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        activeCat = chip.dataset.cat ?? "*";
+        chips.forEach((c) => {
+          const on = c === chip;
+          c.classList.toggle("border-[hsl(var(--primary)/0.6)]", on);
+          c.classList.toggle("bg-[hsl(var(--primary)/0.12)]", on);
+          c.classList.toggle("text-[hsl(var(--foreground))]", on);
+          c.classList.toggle("border-[hsl(var(--border))]", !on);
+          c.classList.toggle("bg-[hsl(var(--card))]", !on);
+          c.classList.toggle("text-[hsl(var(--muted-foreground))]", !on);
+        });
+        apply();
+      });
+    });
+
+    search?.addEventListener("input", apply);
+
+    toggleAll?.addEventListener("click", () => {
+      const details = items
+        .filter((i) => !i.hidden)
+        .map((i) => i.querySelector("details"))
+        .filter(Boolean) as HTMLDetailsElement[];
+      const anyClosed = details.some((d) => !d.open);
+      details.forEach((d) => (d.open = anyClosed));
+      toggleAll.textContent = anyClosed ? "Contraer todo" : "Expandir todo";
+    });
+
+    apply();
+  };
+
+  document.addEventListener("astro:page-load", initBancoPreguntas);
+</script>
