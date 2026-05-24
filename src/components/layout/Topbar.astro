@@ -49,6 +49,11 @@ const { indiceBusqueda } = Astro.props;
 <script>
   import Fuse from "fuse.js";
 
+  type Entrada = { titulo: string; resumen: string; keywords: string; url: string; numero: number };
+
+  let fuse: Fuse<Entrada> | null = null;
+  let indice: Entrada[] = [];
+
   const applyTheme = (theme: string) => {
     document.documentElement.classList.toggle("dark", theme === "dark");
     document.documentElement.dataset.theme = theme;
@@ -56,24 +61,9 @@ const { indiceBusqueda } = Astro.props;
     window.dispatchEvent(new CustomEvent("themechange", { detail: { theme } }));
   };
 
-  document.getElementById("theme-toggle")?.addEventListener("click", () => {
-    const isDark = document.documentElement.classList.contains("dark");
-    applyTheme(isDark ? "light" : "dark");
-  });
-
-  const dialog = document.getElementById("dialog-busqueda") as HTMLDialogElement | null;
-  const input = document.getElementById("input-busqueda") as HTMLInputElement | null;
-  const resultados = document.getElementById("resultados-busqueda");
-  const rawIndex = document.getElementById("search-index")?.textContent ?? "[]";
-  const indice = JSON.parse(rawIndex) as Array<{ titulo: string; resumen: string; keywords: string; url: string; numero: number }>;
-  const fuse = new Fuse(indice, {
-    keys: ["titulo", "resumen", "keywords"],
-    threshold: 0.35,
-    ignoreLocation: true
-  });
-
   const renderResults = (query = "") => {
-    if (!resultados) return;
+    const resultados = document.getElementById("resultados-busqueda");
+    if (!resultados || !fuse) return;
     const items = query.trim() ? fuse.search(query).map((r) => r.item).slice(0, 8) : indice.slice(0, 8);
     resultados.innerHTML = items
       .map(
@@ -87,19 +77,44 @@ const { indiceBusqueda } = Astro.props;
   };
 
   const openSearch = () => {
+    const dialog = document.getElementById("dialog-busqueda") as HTMLDialogElement | null;
+    const input = document.getElementById("input-busqueda") as HTMLInputElement | null;
     if (!dialog) return;
     renderResults();
     dialog.showModal();
     setTimeout(() => input?.focus(), 0);
   };
 
-  document.getElementById("abrir-busqueda")?.addEventListener("click", openSearch);
-  document.getElementById("abrir-busqueda-mobile")?.addEventListener("click", openSearch);
-  input?.addEventListener("input", () => renderResults(input.value));
-  resultados?.addEventListener("click", (event) => {
-    const target = event.target as HTMLElement;
-    if (target.closest("a")) dialog?.close();
-  });
+  // ClientRouter swaps the <body> on navigation without re-running module scripts,
+  // so re-bind every listener on each astro:page-load (also fires on first load).
+  const initTopbar = () => {
+    const rawIndex = document.getElementById("search-index")?.textContent ?? "[]";
+    indice = JSON.parse(rawIndex) as Entrada[];
+    fuse = new Fuse(indice, { keys: ["titulo", "resumen", "keywords"], threshold: 0.35, ignoreLocation: true });
+
+    document.getElementById("theme-toggle")?.addEventListener("click", () => {
+      applyTheme(document.documentElement.classList.contains("dark") ? "light" : "dark");
+    });
+    document.getElementById("toggle-indices")?.addEventListener("click", () => {
+      const hidden = document.documentElement.classList.toggle("indices-hidden");
+      localStorage.setItem("indices", hidden ? "hidden" : "shown");
+    });
+    document.getElementById("abrir-busqueda")?.addEventListener("click", openSearch);
+    document.getElementById("abrir-busqueda-mobile")?.addEventListener("click", openSearch);
+    document.getElementById("input-busqueda")?.addEventListener("input", (event) => {
+      renderResults((event.target as HTMLInputElement).value);
+    });
+    document.getElementById("resultados-busqueda")?.addEventListener("click", (event) => {
+      if ((event.target as HTMLElement).closest("a")) {
+        (document.getElementById("dialog-busqueda") as HTMLDialogElement | null)?.close();
+      }
+    });
+    document.getElementById("abrir-sidebar")?.addEventListener("click", () => {
+      document.documentElement.classList.add("sidebar-open");
+    });
+  };
+
+  // window persists across view transitions, so bind the shortcut only once.
   window.addEventListener("keydown", (event) => {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
       event.preventDefault();
@@ -107,12 +122,5 @@ const { indiceBusqueda } = Astro.props;
     }
   });
 
-  document.getElementById("abrir-sidebar")?.addEventListener("click", () => {
-    document.documentElement.classList.add("sidebar-open");
-  });
-
-  document.getElementById("toggle-indices")?.addEventListener("click", () => {
-    const hidden = document.documentElement.classList.toggle("indices-hidden");
-    localStorage.setItem("indices", hidden ? "hidden" : "shown");
-  });
+  document.addEventListener("astro:page-load", initTopbar);
 </script>

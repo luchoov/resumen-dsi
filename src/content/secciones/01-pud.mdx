@@ -64,12 +64,14 @@ Funciona como un <strong>framework de proceso</strong>: no impone una única for
 
 Una <strong>iteración</strong> es una secuencia planificada de actividades con criterio de evaluación. Un <strong>incremento</strong> es la porción nueva de funcionalidad o calidad agregada. Un <strong>release</strong> es una versión ejecutable o entregable que permite validar avance.
 
-<MermaidDiagram caption="Iteraciones que producen incrementos y releases" code={`timeline
-  title Ciclo iterativo e incremental
-  Iteración 1 : requisitos críticos : análisis inicial : incremento evaluable
-  Iteración 2 : arquitectura : diseño lógico : release interno
-  Iteración 3 : construcción : pruebas : release parcial
-  Iteración 4 : transición : ajustes : entrega`} />
+<MermaidDiagram caption="Iteraciones que producen incrementos y releases" code={`flowchart LR
+  I1["Iteración 1: requisitos críticos + análisis inicial"] --> INC1[Incremento evaluable]
+  INC1 --> I2["Iteración 2: arquitectura + diseño lógico"]
+  I2 --> R1[Release interno]
+  R1 --> I3["Iteración 3: construcción + pruebas"]
+  I3 --> R2[Release parcial]
+  R2 --> I4["Iteración 4: transición + ajustes"]
+  I4 --> ENT[Entrega]`} />
 
 ### 1.6. Fases del PUD
 
@@ -84,20 +86,18 @@ Una <strong>iteración</strong> es una secuencia planificada de actividades con 
   ]}
 />
 
-<MermaidDiagram caption="Fases × workflows: intensidad relativa" code={`quadrantChart
-  title Intensidad conceptual de workflows por fase
-  x-axis Inicio --> Transición
-  y-axis Baja --> Alta
-  quadrant-1 Construcción intensa
-  quadrant-2 Elaboración crítica
-  quadrant-3 Exploración inicial
-  quadrant-4 Cierre y entrega
-  Requerimientos: [0.22, 0.82]
-  Análisis: [0.42, 0.78]
-  Diseño: [0.58, 0.68]
-  Implementación: [0.70, 0.76]
-  Prueba: [0.82, 0.66]
-  Despliegue: [0.92, 0.72]`} />
+<TablaComparativa
+  caption="Fases × workflows: intensidad relativa de cada workflow"
+  columnas={["Workflow", "Inicio", "Elaboración", "Construcción", "Transición"]}
+  filas={[
+    ["<strong>Requerimientos</strong>", "Alta", "Media", "Baja", "Muy baja"],
+    ["<strong>Análisis</strong>", "Media", "Alta", "Baja", "Muy baja"],
+    ["<strong>Diseño</strong>", "Baja", "Alta", "Media", "Baja"],
+    ["<strong>Implementación</strong>", "Muy baja", "Media", "Alta", "Baja"],
+    ["<strong>Prueba</strong>", "Muy baja", "Media", "Alta", "Media"],
+    ["<strong>Despliegue</strong>", "Muy baja", "Baja", "Media", "Alta"]
+  ]}
+/>
 
 ### 1.7. Workflows principales
 
