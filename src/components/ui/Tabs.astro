@@ -1,0 +1,41 @@
+---
+interface Tab {
+  id: string;
+  label: string;
+}
+
+interface Props {
+  tabs: Tab[];
+  active?: string;
+}
+
+const { tabs, active = tabs[0]?.id } = Astro.props;
+---
+
+<div class="tabs" data-active={active}>
+  <div class="mb-4 inline-flex rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--muted))] p-1" role="tablist">
+    {tabs.map((tab) => (
+      <button class="tab-trigger rounded-md px-3 py-1.5 text-sm data-[active=true]:bg-[hsl(var(--background))]" data-tab={tab.id} data-active={tab.id === active ? "true" : "false"} type="button" role="tab">
+        {tab.label}
+      </button>
+    ))}
+  </div>
+  <slot />
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>(".tabs").forEach((tabs) => {
+    tabs.addEventListener("click", (event) => {
+      const trigger = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-tab]");
+      if (!trigger) return;
+      const id = trigger.dataset.tab;
+      tabs.querySelectorAll<HTMLButtonElement>("[data-tab]").forEach((button) => {
+        button.dataset.active = String(button.dataset.tab === id);
+      });
+      tabs.querySelectorAll<HTMLElement>("[data-tab-panel]").forEach((panel) => {
+        panel.hidden = panel.dataset.tabPanel !== id;
+      });
+    });
+  });
+</script>
+

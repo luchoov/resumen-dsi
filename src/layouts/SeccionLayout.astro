@@ -1,0 +1,42 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseLayout from "./BaseLayout.astro";
+import Topbar from "@/components/layout/Topbar.astro";
+import SidebarIndice from "@/components/layout/SidebarIndice.astro";
+import TocDerecha from "@/components/layout/TocDerecha.astro";
+import Breadcrumb from "@/components/layout/Breadcrumb.astro";
+import PrevNext from "@/components/layout/PrevNext.astro";
+import type { Seccion } from "@/lib/secciones";
+
+interface Props {
+  seccion: Seccion;
+  secciones: Seccion[];
+  encabezados: Array<{ nivel: number; texto: string; id: string }>;
+  previa?: CollectionEntry<"secciones">;
+  siguiente?: CollectionEntry<"secciones">;
+  indiceBusqueda: Array<Record<string, string | number>>;
+}
+
+const { seccion, secciones, encabezados, previa, siguiente, indiceBusqueda } = Astro.props;
+---
+
+<BaseLayout titulo={`${seccion.data.numero}. ${seccion.data.titulo} · Resumen DSI`} descripcion={seccion.data.resumen}>
+  <Topbar indiceBusqueda={indiceBusqueda} />
+  <div class="mx-auto grid w-full max-w-[96rem] grid-cols-1 gap-8 px-4 pb-14 pt-20 lg:grid-cols-[17rem_minmax(0,1fr)_15rem] lg:px-6">
+    <SidebarIndice secciones={secciones} activa={seccion.data.slug} />
+    <main id="contenido" class="min-w-0">
+      <Breadcrumb items={[{ label: "Inicio", href: "/" }, { label: `Sección ${seccion.data.numero}` }, { label: seccion.data.titulo }]} />
+      <article class="prose-dsi min-w-0">
+        <header class="mb-10 border-b border-[hsl(var(--border))] pb-8">
+          <p class="mb-3 font-mono text-sm uppercase tracking-[0.18em] text-[hsl(var(--primary))]">Sección {seccion.data.numero}</p>
+          <h1 class="max-w-4xl text-[var(--text-fluid-3xl)] font-semibold leading-[1.05] tracking-normal">{seccion.data.titulo}</h1>
+          <p class="mt-5 max-w-3xl text-[var(--text-fluid-lg)] text-[hsl(var(--muted-foreground))]">{seccion.data.resumen}</p>
+        </header>
+        <slot />
+      </article>
+      <PrevNext previa={previa} siguiente={siguiente} />
+    </main>
+    <TocDerecha encabezados={encabezados} />
+  </div>
+</BaseLayout>
+

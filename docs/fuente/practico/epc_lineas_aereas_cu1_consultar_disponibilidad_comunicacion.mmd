@@ -1,0 +1,154 @@
+%% Documento origen: EPC_LineasAreas.V1-35 (1).pdf
+%% Página: 13
+%% Diagrama: Realización de Análisis para el caso de uso Consultar Disponibilidad de Vuelos – Curso Normal
+%% Tipo UML original: Diagrama de Comunicación
+%% Representación Mermaid: flowchart LR, porque Mermaid no posee sintaxis nativa específica para diagramas UML de comunicación.
+%% Criterio: se conservan participantes, objetos y mensajes numerados visibles en el diagrama original.
+
+flowchart LR
+    Pasajero([":Pasajero"])
+    Pantalla(["PantallaConsultarDisponibilidad"])
+    Gestor(["GestorDeConsultaDisponibilidad"])
+
+    TipoVuelo([":TipoVuelo"])
+    Pais([":Pais"])
+    TipoClase([":TipoClase"])
+
+    PaisOrigen(["paisOrigenSel:<br/>Pais"])
+    ProvinciaOrigen(["pciaOrigenSel:<br/>Provincia"])
+    PaisDestino(["paisDestinoSel:<br/>Pais"])
+    ProvinciaDestino(["pciaDestinoSel:<br/>Provincia"])
+    Provincia([":Provincia"])
+    Ciudad([":Ciudad"])
+
+    Vuelo([":Vuelo"])
+    Definicion(["DefinicionDeVuelo"])
+    OrigenAeropuerto(["origen:<br/>Aeropuerto"])
+    DestinoAeropuerto(["destino:<br/>Aeropuerto"])
+    Tarifa([":Tarifa"])
+    Reserva([":Reserva"])
+    TipoAeronave(["TipoAeronave"])
+    CapTipoClase(["capDeTipoClase:<br/>Capacidad"])
+    Capacidad([":Capacidad"])
+
+    %% Inicio y carga de pantalla
+    Pasajero -- "1: opcionConsultaDispVuelos()" --> Pantalla
+    Pantalla -- "2: habilitarPantalla()" --> Pantalla
+    Pantalla -- "3: consultarDispVuelos()" --> Gestor
+
+    %% Selección de tipo de vuelo
+    Gestor -- "4: obtenerTiposDeVuelo()" --> TipoVuelo
+    TipoVuelo -- "5: *getNombre()" --> Gestor
+    Gestor -- "6: solicitarSeleccionTipoVuelo()" --> Pantalla
+    Pasajero -- "7: seleccionTipoVuelo()" --> Pantalla
+    Pantalla -- "8: tipoVueloSeleccionado()" --> Gestor
+
+    %% Selección de países
+    Gestor -- "9: obtenerPaises()" --> Pais
+    Pais -- "10: *getNombre()" --> Gestor
+    Gestor -- "11: listarPaisesOrigen()" --> Pantalla
+    Gestor -- "12: listarPaisesDestino()" --> Pantalla
+    Pasajero -- "13: seleccionPaisOrigen()" --> Pantalla
+    Pantalla -- "14: paisOrigenSeleccionado()" --> Gestor
+
+    %% Provincias de origen
+    Gestor -- "15: obtenerProvinciasPaisOrigen()" --> PaisOrigen
+    PaisOrigen -- "16: getProvincia()" --> ProvinciaOrigen
+    ProvinciaOrigen -- "17: *getNombre()" --> Provincia
+    Gestor -- "18: listarProvinciasOrigen()" --> Pantalla
+
+    %% País y provincias de destino
+    Pasajero -- "19: seleccionPaisDestino()" --> Pantalla
+    Pantalla -- "20: paisDestinoSeleccionado()" --> Gestor
+    Gestor -- "21: obtenerProvinciasPaisDestino()" --> PaisDestino
+    PaisDestino -- "22: getProvincia()" --> ProvinciaDestino
+    ProvinciaDestino -- "23: *getNombre()" --> Provincia
+    Gestor -- "24: listarProvinciasDestino()" --> Pantalla
+
+    %% Ciudades de origen
+    Pasajero -- "25: seleccionProvinciaOrigen()" --> Pantalla
+    Pantalla -- "26: pciaOrigenSeleccionada()" --> Gestor
+    Gestor -- "27: obtenerCiudadesPciaOrigen()" --> ProvinciaOrigen
+    ProvinciaOrigen -- "28: obtenerCiudadesDePcia()" --> Ciudad
+    ProvinciaOrigen -- "29: getCiudad()" --> Ciudad
+    Ciudad -- "30: *getNombre()" --> ProvinciaOrigen
+    Gestor -- "31: listarCiudadesOrigen()" --> Pantalla
+
+    %% Ciudades de destino
+    Pasajero -- "32: seleccionProvinciaDestino()" --> Pantalla
+    Pantalla -- "33: pciaDestinoSeleccionada()" --> Gestor
+    Gestor -- "34: obtenerCiudadesPciaDestino()" --> ProvinciaDestino
+    ProvinciaDestino -- "35: obtenerCiudadesDePcia()" --> Ciudad
+    ProvinciaDestino -- "36: getCiudad()" --> Ciudad
+    Ciudad -- "37: *getNombre()" --> ProvinciaDestino
+    Gestor -- "38: listarCiudadesDestino()" --> Pantalla
+
+    %% Selección de ciudades, fecha, flexibilidad y cantidad por clase
+    Pasajero -- "39: seleccionCiudadOrigen()" --> Pantalla
+    Pantalla -- "40: ciudadOrigenSeleccionada()" --> Gestor
+    Pasajero -- "41: seleccionCiudadDestino()" --> Pantalla
+    Pantalla -- "42: ciudadDestinoSeleccionada()" --> Gestor
+    Gestor -- "43: habilitarFlexibilidadHorarios()" --> Pantalla
+    Pasajero -- "44: seleccionFechaYFlexibilidad()" --> Pantalla
+    Pantalla -- "45: seleccionFechaYFlexibilidad()" --> Gestor
+    Gestor -- "46: obtenerTiposDeClase()" --> TipoClase
+    TipoClase -- "47: *getNombre()" --> Gestor
+    Gestor -- "48: solicitarCantidadPasajerosPorClase()" --> Pantalla
+    Pasajero -- "49: ingresoCantidadPorClase()" --> Pantalla
+    Pantalla -- "50: cantidadPasajerosPorTipoIndicado()" --> Gestor
+    Gestor -- "51: solicitarConfirmacion()" --> Pantalla
+    Pasajero -- "52: confirmar()" --> Pantalla
+    Pantalla -- "53: tomarConfirmacion()" --> Gestor
+
+    %% Validaciones y preparación de búsqueda
+    Gestor -- "54: verificarDatosRequeridos()" --> Gestor
+    Gestor -- "55: determinarHorariosDesdeYHasta()" --> Gestor
+    Gestor -- "56: verificarTipoVuelo()" --> Gestor
+    Gestor -- "57: buscarVuelosParaFechaYDestino()" --> Vuelo
+    Vuelo -- "58: *esDeFechaYHoraYDestino()" --> Gestor
+
+    %% Datos del vuelo encontrado
+    Gestor -- "59: getFecha()" --> Vuelo
+    Gestor -- "60: getHoraPartidaProgramada()" --> Vuelo
+    Gestor -- "61: obtenerCiudadOrigen()" --> Vuelo
+    Vuelo -- "62: mostrarCiudadOrigen()" --> Definicion
+    Definicion -- "63: getCiudad()" --> OrigenAeropuerto
+    OrigenAeropuerto -- "64: getNombre()" --> Ciudad
+    Gestor -- "65: obtenerCiudadDestino()" --> Vuelo
+    Vuelo -- "66: mostrarCiudadDestino()" --> Definicion
+    Definicion -- "67: getCiudad()" --> DestinoAeropuerto
+    DestinoAeropuerto -- "68: getNombre()" --> Ciudad
+
+    %% Disponibilidad y capacidad
+    Gestor -- "69: verificarDisponibilidadParaVuelo()" --> Vuelo
+    Vuelo -- "70: *calcularDisponibilidad()" --> Vuelo
+    Vuelo -- "71: obtenerDisponibilidadPorClase()" --> Reserva
+    Vuelo -- "72: obtenerCapacidadSegunClase()" --> Definicion
+    Definicion -- "73: obtenerCapacidadSegunClase()" --> TipoAeronave
+    TipoAeronave -- "74: *esDeTipoClase()" --> Capacidad
+    CapTipoClase -- "75: getCantidad()" --> Capacidad
+    Vuelo -- "76: obtenerReservasSegunClase()" --> Reserva
+    Tarifa -- "77: *esDeTipoClaseYFecha()" --> Reserva
+    Gestor -- "78: determinarDisponibilidadSegunCantidad()" --> Gestor
+
+    %% Duración, tarifa e importe
+    Gestor -- "79: *obtenerDuracion()" --> Vuelo
+    Vuelo -- "80: getDuracion()" --> Definicion
+    Gestor -- "81: calcularImporteTotal()" --> Gestor
+    Gestor -- "82: *obtenerTarifaSegunClase()" --> Tarifa
+    Definicion -- "83: obtenerTarifaSegunClase()" --> Tarifa
+    Tarifa -- "84: *getImporte()" --> Gestor
+
+    %% Resultado y cierre
+    Gestor -- "85: mostrarVuelosDisponibles()" --> Pantalla
+    Gestor -- "86: finCasoDeUso()" --> Gestor
+
+    classDef actor fill:#fff7df,stroke:#555,stroke-width:1px;
+    classDef boundary fill:#e8f7ff,stroke:#3b82f6,stroke-width:1px;
+    classDef control fill:#eef2ff,stroke:#6366f1,stroke-width:1px;
+    classDef entity fill:#eefaf0,stroke:#22c55e,stroke-width:1px;
+
+    class Pasajero actor;
+    class Pantalla boundary;
+    class Gestor control;
+    class TipoVuelo,Pais,TipoClase,PaisOrigen,ProvinciaOrigen,PaisDestino,ProvinciaDestino,Provincia,Ciudad,Vuelo,Definicion,OrigenAeropuerto,DestinoAeropuerto,Tarifa,Reserva,TipoAeronave,CapTipoClase,Capacidad entity;

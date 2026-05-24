@@ -1,0 +1,65 @@
+---
+import { getCollection } from "astro:content";
+import { ArrowRight, BookOpen, Layers, Network } from "@lucide/astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Topbar from "@/components/layout/Topbar.astro";
+import { crearIndiceBusqueda, ordenarSecciones, seccionUrl } from "@/lib/secciones";
+
+const secciones = ordenarSecciones(await getCollection("secciones"));
+const indiceBusqueda = crearIndiceBusqueda(secciones);
+---
+
+<BaseLayout titulo="Resumen DSI · Microsite de estudio" descripcion="Resumen visual de Diseño de Sistemas para repasar PUD, UML, análisis, diagramas y GRASP.">
+  <Topbar indiceBusqueda={indiceBusqueda} />
+  <main class="mx-auto max-w-[96rem] px-4 pb-16 pt-24 lg:px-6">
+    <section class="grid gap-10 border-b border-[hsl(var(--border))] pb-12 lg:grid-cols-[1.05fr_0.95fr]">
+      <div>
+        <p class="mb-4 font-mono text-sm uppercase tracking-[0.18em] text-[hsl(var(--primary))]">UTN FRC · Diseño de Sistemas</p>
+        <h1 class="max-w-4xl text-[var(--text-fluid-3xl)] font-semibold leading-[1.03] tracking-normal">Resumen visual para abrir la caja negra del análisis OO.</h1>
+        <p class="mt-6 max-w-3xl text-[var(--text-fluid-lg)] text-[hsl(var(--muted-foreground))]">
+          Una microsite estática para repasar teoría con rutas por tema, diagramas UML, tablas comparativas, patrones GRASP y una cheatsheet imprimible.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href={seccionUrl(secciones[0])} class="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[hsl(var(--primary))] px-4 py-2 font-medium text-[hsl(var(--primary-foreground))] hover:no-underline">
+            Empezar por PUD <ArrowRight size={17} />
+          </a>
+          <a href="/cheatsheet" class="inline-flex min-h-11 items-center rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 font-medium text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] hover:no-underline">
+            Cheatsheet
+          </a>
+        </div>
+      </div>
+      <div class="grid gap-3 self-end">
+        <div class="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5">
+          <BookOpen class="mb-4 text-[hsl(var(--primary))]" size={26} />
+          <strong class="block">{secciones.length} secciones navegables</strong>
+          <p class="mt-1 text-sm text-[hsl(var(--muted-foreground))]">Cada tema se lee separado, con prev/next y subíndice local.</p>
+        </div>
+        <div class="grid gap-3 sm:grid-cols-2">
+          <div class="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5">
+            <Network class="mb-4 text-[hsl(var(--success))]" size={24} />
+            <strong class="block">Diagramas primero</strong>
+            <p class="mt-1 text-sm text-[hsl(var(--muted-foreground))]">Mermaid y SVG para UML, flujos y responsabilidades.</p>
+          </div>
+          <div class="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5">
+            <Layers class="mb-4 text-[hsl(var(--warning))]" size={24} />
+            <strong class="block">Listo para práctica</strong>
+            <p class="mt-1 text-sm text-[hsl(var(--muted-foreground))]">Content collections dejan crecer rutas `/practica` sin rehacer la base.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pt-10">
+      <h2 class="mb-5 text-[var(--text-fluid-2xl)] font-semibold">Índice del resumen</h2>
+      <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {secciones.map((seccion) => (
+          <a href={seccionUrl(seccion)} class="group rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 hover:border-[hsl(var(--primary)/0.55)] hover:no-underline">
+            <span class="font-mono text-xs text-[hsl(var(--primary))]">Sección {String(seccion.data.numero).padStart(2, "0")}</span>
+            <strong class="mt-2 block text-[hsl(var(--foreground))]">{seccion.data.titulo}</strong>
+            <p class="mt-2 text-sm text-[hsl(var(--muted-foreground))]">{seccion.data.resumen}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+</BaseLayout>

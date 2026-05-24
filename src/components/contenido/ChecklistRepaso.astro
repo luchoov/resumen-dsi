@@ -1,0 +1,35 @@
+---
+interface Props {
+  id: string;
+  preguntas: string[];
+}
+
+const { id, preguntas } = Astro.props;
+---
+
+<section class="my-8 max-w-3xl rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4" data-checklist={id}>
+  <h3 class="!mt-0">Preguntas que deberías poder responder</h3>
+  <ol class="space-y-2">
+    {preguntas.map((pregunta, index) => (
+      <li class="flex gap-3">
+        <input class="mt-1 h-5 w-5 rounded border-[hsl(var(--border))]" type="checkbox" id={`${id}-${index}`} data-check={index} />
+        <label for={`${id}-${index}`} class="max-w-none cursor-pointer">{pregunta}</label>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-checklist]").forEach((checklist) => {
+    const key = `checklist:${checklist.dataset.checklist}`;
+    const saved = JSON.parse(localStorage.getItem(key) || "{}") as Record<string, boolean>;
+    checklist.querySelectorAll<HTMLInputElement>("[data-check]").forEach((input) => {
+      input.checked = Boolean(saved[input.dataset.check ?? ""]);
+      input.addEventListener("change", () => {
+        saved[input.dataset.check ?? ""] = input.checked;
+        localStorage.setItem(key, JSON.stringify(saved));
+      });
+    });
+  });
+</script>
+

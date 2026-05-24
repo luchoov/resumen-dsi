@@ -1,0 +1,146 @@
+---
+id: "sec-02"
+numero: 2
+titulo: "UML 2.0 como lenguaje de modelado"
+slug: "02-uml"
+resumen: "UML aporta notación, semántica y reglas para visualizar, especificar, construir y documentar modelos."
+keywords: ["UML", "modelo", "diagrama", "relaciones", "paquete", "clase", "secuencia"]
+relacionadas: ["03-orientacion-objetos", "11-secuencia-comunicacion"]
+---
+
+### 2.1. Qué es un modelo
+
+<Definicion termino="modelo">
+Un <strong>modelo</strong> es una simplificación de la realidad construida para comprender, comunicar, especificar y guiar la construcción de un sistema.
+</Definicion>
+
+Modelar no es dibujar por dibujar: cada modelo debe reducir complejidad y permitir razonar sobre estructura, comportamiento, relaciones, restricciones o decisiones.
+
+<MermaidDiagram caption="Objetivos de modelar" code={`flowchart LR
+  Modelo((Modelo))
+  Modelo --> Visualizar
+  Modelo --> Especificar
+  Modelo --> Construir
+  Modelo --> Documentar
+  Visualizar --> Actual[Sistema actual]
+  Visualizar --> Deseado[Sistema deseado]
+  Especificar --> Estructura
+  Especificar --> Comportamiento
+  Especificar --> Restricciones
+  Construir --> Guia[Guia de implementacion]
+  Documentar --> Decisiones[Decisiones importantes]`} />
+
+### 2.2. Qué es UML
+
+<Definicion termino="UML">
+<strong>UML</strong>, Lenguaje Unificado de Modelado, es un lenguaje de modelado visual de propósito general usado para visualizar, especificar, construir y documentar sistemas orientados a objetos.
+</Definicion>
+
+UML no es una metodología. No dice por sí solo qué modelos crear, en qué orden ni con qué propósito de proceso. Esa decisión corresponde al proceso de desarrollo, por ejemplo el PUD.
+
+<Callout tipo="atencion">
+La diferencia típica de parcial: PUD define el proceso; UML define la notación y semántica de los modelos.
+</Callout>
+
+### 2.3. Por qué UML es “unificado”
+
+UML unifica notaciones previas, ofrece un vocabulario común y permite representar distintos puntos de vista del sistema con reglas compartidas.
+
+### 2.4. Modelo conceptual de UML
+
+<MermaidDiagram caption="Modelo conceptual de UML" code={`graph LR
+  UML[UML]
+  UML --> BC[Bloques de construcción]
+  UML --> MC[Mecanismos comunes]
+  UML --> RG[Reglas]
+  BC --> EL[Elementos]
+  BC --> RE[Relaciones]
+  BC --> DG[Diagramas]
+  MC --> AD[Adornos]
+  MC --> EX[Extensibilidad]
+  RG --> NO[Nombres]
+  RG --> IN[Integridad]
+  RG --> EJ[Ejecución]`} />
+
+### 2.5. Elementos de UML
+
+<TablaComparativa
+  caption="Elementos principales de UML"
+  columnas={["Grupo", "Elementos", "Para qué sirven"]}
+  filas={[
+    ["Estructurales", "Clase, interfaz, caso de uso, colaboración, clase activa, componente, nodo.", "Representan piezas relativamente estables."],
+    ["Comportamiento", "Interacción, actividad, máquina de estados.", "Representan dinámica del sistema."],
+    ["Agrupación", "Paquete.", "Organiza modelos, clases, diagramas o subsistemas."],
+    ["Anotación", "Nota.", "Agrega aclaraciones, restricciones o comentarios."]
+  ]}
+/>
+
+### 2.6. Relaciones en UML
+
+<TablaComparativa
+  caption="Relaciones básicas de UML"
+  columnas={["Relación", "Idea", "Lectura rápida"]}
+  filas={[
+    ["Dependencia", "Un elemento usa o necesita a otro.", "Si cambia el proveedor, puede afectar al cliente."],
+    ["Asociación", "Vínculo estructural entre clases.", "Los objetos se conocen o colaboran."],
+    ["Agregación", "Relación todo-parte débil.", "La parte puede vivir sin el todo."],
+    ["Composición", "Relación todo-parte fuerte.", "La parte depende del ciclo de vida del todo."],
+    ["Generalización", "Herencia o especialización.", "Es-un."],
+    ["Realización", "Una clase cumple una interfaz o contrato.", "Implementa."]
+  ]}
+/>
+
+<MermaidDiagram caption="Relaciones UML con ejemplo mínimo" code={`classDiagram
+  class Pedido
+  class Cliente
+  class DetallePedido
+  class Producto
+  class MedioPago
+  class PagoTarjeta
+  Pedido --> Cliente : asociación
+  Pedido *-- DetallePedido : composición
+  DetallePedido o-- Producto : agregación conceptual
+  Pedido ..> MedioPago : dependencia
+  PagoTarjeta --|> MedioPago : generalización`} />
+
+### 2.7. Mecanismos de extensibilidad
+
+Los PDFs remarcan que UML no es solo dibujo: cada notación tiene semántica y mecanismos comunes. Para análisis, los más visibles son los mecanismos de extensibilidad.
+
+<TablaComparativa
+  caption="Mecanismos de extensibilidad de UML"
+  columnas={["Mecanismo", "Qué agrega", "Ejemplo en análisis"]}
+  filas={[
+    ["<strong>Estereotipo</strong>", "Extiende el vocabulario de UML con una semántica específica.", "«boundary», «control», «entity»."],
+    ["<strong>Valor etiquetado</strong>", "Agrega propiedades o metadatos al elemento modelado.", "{persistente=true}, {prioridad=alta}."],
+    ["<strong>Restricción</strong>", "Expresa una condición que debe cumplirse.", "{stock &gt;= cantidad}, {solo si datos completos}."]
+  ]}
+/>
+
+<MermaidDiagram caption="Extensibilidad UML aplicada al análisis" code={`flowchart LR
+  Clase[Clase UML] --> Est[Estereotipo]
+  Clase --> Val[Valor etiquetado]
+  Clase --> Res[Restriccion]
+  Est --> BCE[boundary / control / entity]
+  Val --> Meta[metadatos del modelo]
+  Res --> Regla[reglas o guardas]`} />
+
+### 2.8. Diagramas UML relevantes
+
+<MermaidDiagram caption="Vistas estructurales vs dinámicas de UML" code={`flowchart TB
+  UML[Diagramas UML usados en análisis]
+  UML --> EST[Estructurales]
+  UML --> DIN[Dinámicos]
+  UML --> AGR[Agrupación]
+  EST --> DC[Clases]
+  EST --> DUC[Casos de uso]
+  EST --> COMP[Componentes]
+  DIN --> SEC[Secuencia]
+  DIN --> COM[Comunicación]
+  DIN --> ESTADOS[Máquina de estados]
+  DIN --> ACT[Actividad]
+  AGR --> PAQ[Paquetes]`} />
+
+<Callout tipo="tip" titulo="Tip de examen">
+Para el primer parcial, priorizá clases, paquetes, secuencia, comunicación y máquina de estados. Son los diagramas que conectan directamente con el modelo de análisis.
+</Callout>

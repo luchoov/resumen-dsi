@@ -1,0 +1,15 @@
+---
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+---
+
+<span class="group relative inline-flex">
+  <slot />
+  <span role="tooltip" class="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--popover))] px-2 py-1 text-xs text-[hsl(var(--popover-foreground))] shadow-lg group-hover:block group-focus-within:block">
+    {text}
+  </span>
+</span>
+

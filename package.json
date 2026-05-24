@@ -1,0 +1,34 @@
+{
+  "name": "resumen-dsi",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "glosario": "tsx scripts/extraer-glosario.ts"
+  },
+  "dependencies": {
+    "@astrojs/check": "latest",
+    "@astrojs/mdx": "latest",
+    "@fontsource-variable/geist": "latest",
+    "@fontsource-variable/jetbrains-mono": "latest",
+    "@lucide/astro": "^1.16.0",
+    "@tailwindcss/vite": "latest",
+    "astro": "latest",
+    "astro-expressive-code": "latest",
+    "clsx": "latest",
+    "fuse.js": "latest",
+    "mermaid": "latest",
+    "tailwind-merge": "latest",
+    "tailwindcss": "latest",
+    "typescript": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "tsx": "latest"
+  }
+}

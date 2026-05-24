@@ -1,0 +1,81 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Topbar from "@/components/layout/Topbar.astro";
+import MermaidDiagram from "@/components/diagramas/MermaidDiagram.astro";
+import { crearIndiceBusqueda, ordenarSecciones } from "@/lib/secciones";
+
+const secciones = ordenarSecciones(await getCollection("secciones"));
+const indiceBusqueda = crearIndiceBusqueda(secciones);
+---
+
+<BaseLayout titulo="Cheatsheet DSI · Resumen DSI" descripcion="Hoja imprimible para repasar Diseño de Sistemas antes del parcial.">
+  <Topbar indiceBusqueda={indiceBusqueda} />
+  <main class="cheatsheet mx-auto max-w-[72rem] px-4 pb-16 pt-24 lg:px-6">
+    <header class="mb-6 border-b border-[hsl(var(--border))] pb-4">
+      <p class="font-mono text-sm uppercase tracking-[0.18em] text-[hsl(var(--primary))]">Repaso 5 minutos</p>
+      <h1 class="text-[var(--text-fluid-2xl)] font-semibold">Cheatsheet de Diseño de Sistemas</h1>
+    </header>
+    <section class="grid gap-4 lg:grid-cols-3">
+      <article class="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
+        <h2 class="font-semibold">4 fases PUD</h2>
+        <ol class="mt-2 text-sm">
+          <li><strong>Inicio:</strong> alcance y visión.</li>
+          <li><strong>Elaboración:</strong> requisitos y arquitectura.</li>
+          <li><strong>Construcción:</strong> producto incremental.</li>
+          <li><strong>Transición:</strong> entrega y ajuste.</li>
+        </ol>
+      </article>
+      <article class="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
+        <h2 class="font-semibold">BCE</h2>
+        <p class="mt-2 text-sm"><strong>Boundary</strong> comunica, <strong>Control</strong> coordina, <strong>Entity</strong> conoce datos duraderos.</p>
+      </article>
+      <article class="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
+        <h2 class="font-semibold">GRASP</h2>
+        <p class="mt-2 text-sm">Experto, Creador, Controlador, Bajo Acoplamiento, Alta Cohesión.</p>
+      </article>
+    </section>
+    <MermaidDiagram caption="Secuencia canónica de análisis" code={`sequenceDiagram
+actor A as Actor
+participant B as Boundary
+participant C as Control
+participant E as Entity
+A->>B: evento
+B->>C: delega
+C->>E: solicita comportamiento
+E-->>C: respuesta
+C-->>B: resultado
+B-->>A: muestra respuesta`} />
+    <section class="mt-6 rounded-xl border border-[hsl(var(--destructive)/0.35)] bg-[hsl(var(--destructive)/0.08)] p-4">
+      <h2 class="font-semibold text-[hsl(var(--destructive))]">Errores frecuentes</h2>
+      <ul class="mt-2 columns-1 gap-6 text-sm md:columns-2">
+        <li>Confundir caso de uso con diagrama de secuencia.</li>
+        <li>Poner lógica de negocio en boundary.</li>
+        <li>Saturar controladores con responsabilidades de entidades.</li>
+        <li>Usar máquina de estados para clases sin ciclo de vida significativo.</li>
+        <li>Confundir atributo estado con estado de máquina.</li>
+      </ul>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  @media print {
+    .cheatsheet {
+      max-width: none;
+      padding: 0;
+      font-size: 10pt;
+    }
+
+    .cheatsheet :global(.mermaid-figure) {
+      break-inside: avoid;
+      margin: 0.35rem 0;
+    }
+
+    @page {
+      size: A4;
+      margin: 10mm;
+    }
+  }
+</style>
+

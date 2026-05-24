@@ -1,0 +1,22 @@
+---
+import { cn } from "@/lib/utils";
+
+interface Props {
+  variant?: "default" | "outline" | "warning" | "success" | "error";
+  class?: string;
+}
+
+const { variant = "default", class: className } = Astro.props;
+const classes = cn(
+  "inline-flex items-center rounded-md border px-2 py-0.5 font-mono text-xs font-medium",
+  variant === "default" && "border-[hsl(var(--primary)/0.35)] bg-[hsl(var(--primary)/0.12)] text-[hsl(var(--primary))]",
+  variant === "outline" && "border-[hsl(var(--border))] text-[hsl(var(--muted-foreground))]",
+  variant === "warning" && "border-[hsl(var(--warning)/0.35)] bg-[hsl(var(--warning)/0.12)] text-[hsl(var(--warning))]",
+  variant === "success" && "border-[hsl(var(--success)/0.35)] bg-[hsl(var(--success)/0.12)] text-[hsl(var(--success))]",
+  variant === "error" && "border-[hsl(var(--destructive)/0.35)] bg-[hsl(var(--destructive)/0.12)] text-[hsl(var(--destructive))]",
+  className
+);
+---
+
+<span class={classes}><slot /></span>
+

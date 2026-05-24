@@ -1,0 +1,59 @@
+---
+import type { Seccion } from "@/lib/secciones";
+import { seccionUrl } from "@/lib/secciones";
+import { X } from "@lucide/astro";
+
+interface Props {
+  secciones: Seccion[];
+  activa?: string;
+}
+
+const { secciones, activa } = Astro.props;
+---
+
+<aside id="sidebar-indice" class="fixed inset-y-0 left-0 z-50 w-[19rem] -translate-x-full border-r border-[hsl(var(--border))] bg-[hsl(var(--background))] px-4 pb-6 pt-20 transition-transform lg:sticky lg:top-16 lg:z-auto lg:h-[calc(100vh-5rem)] lg:w-auto lg:translate-x-0 lg:overflow-y-auto lg:border-r-0 lg:bg-transparent lg:px-0 lg:pt-0 no-print">
+  <div class="mb-4 flex items-center justify-between lg:hidden">
+    <p class="font-semibold">Índice</p>
+    <button id="cerrar-sidebar" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[hsl(var(--border))]" aria-label="Cerrar índice">
+      <X size={16} aria-hidden="true" />
+    </button>
+  </div>
+  <nav aria-label="Índice de secciones" class="space-y-1 text-sm">
+    {secciones.map((seccion) => (
+      <a
+        href={seccionUrl(seccion)}
+        data-section-link={seccion.data.slug}
+        aria-current={activa === seccion.data.slug ? "page" : undefined}
+        class:list={[
+          "group flex gap-3 rounded-lg border px-3 py-2 transition-colors hover:no-underline",
+          activa === seccion.data.slug
+            ? "border-[hsl(var(--primary)/0.6)] bg-[hsl(var(--primary)/0.12)] text-[hsl(var(--foreground))]"
+            : "border-transparent text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--muted))] hover:text-[hsl(var(--foreground))]"
+        ]}
+      >
+        <span class="mt-0.5 font-mono text-xs text-[hsl(var(--primary))]">{String(seccion.data.numero).padStart(2, "0")}</span>
+        <span class="leading-snug">{seccion.data.titulo}</span>
+      </a>
+    ))}
+  </nav>
+</aside>
+<div id="sidebar-backdrop" class="fixed inset-0 z-40 hidden bg-black/60 no-print lg:hidden"></div>
+
+<script>
+  const closeSidebar = () => document.documentElement.classList.remove("sidebar-open");
+  document.getElementById("cerrar-sidebar")?.addEventListener("click", closeSidebar);
+  document.getElementById("sidebar-backdrop")?.addEventListener("click", closeSidebar);
+  document.getElementById("sidebar-indice")?.addEventListener("click", (event) => {
+    if ((event.target as HTMLElement).closest("a")) closeSidebar();
+  });
+</script>
+
+<style>
+  :global(.sidebar-open #sidebar-indice) {
+    transform: translateX(0);
+  }
+
+  :global(.sidebar-open #sidebar-backdrop) {
+    display: block;
+  }
+</style>

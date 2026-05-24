@@ -1,0 +1,12 @@
+---
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+---
+
+<aside id={id} class="fixed inset-y-0 right-0 z-50 w-[min(24rem,100vw)] translate-x-full border-l border-[hsl(var(--border))] bg-[hsl(var(--background))] p-5 transition-transform">
+  <slot />
+</aside>
+

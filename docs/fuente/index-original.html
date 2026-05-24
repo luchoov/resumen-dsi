@@ -1,0 +1,1097 @@
+<nav>
+  <h2>Índice del resumen</h2>
+  <ol>
+    <li>Proceso Unificado de Desarrollo como marco de trabajo</li>
+    <li>UML 2.0 como lenguaje de modelado</li>
+    <li>Paradigma de orientación a objetos</li>
+    <li>Workflow de análisis dentro del PUD</li>
+    <li>Modelo de análisis y sus artefactos</li>
+    <li>Clases de análisis: entidad, frontera y control</li>
+    <li>Realizaciones de casos de uso de análisis</li>
+    <li>Paquetes de análisis y descripción de arquitectura</li>
+    <li>Actividades y roles del workflow de análisis</li>
+    <li>Modelado de comportamiento con máquina de estados</li>
+    <li>Diagramas de secuencia y comunicación</li>
+    <li>Patrones GRASP para análisis</li>
+    <li>Relaciones clave entre todos los temas</li>
+  </ol>
+</nav>
+
+<section>
+  <h2>1. Proceso Unificado de Desarrollo como marco de trabajo</h2>
+
+  <section>
+    <h3>1.1. Concepto general de proceso</h3>
+    <p>Un <strong>proceso</strong> es una secuencia organizada de actividades que transforma entradas en salidas con valor para un cliente u organización. En desarrollo de software, las entradas pueden ser necesidades, ideas, restricciones, requisitos y recursos; las salidas son productos de software, modelos, documentación, versiones ejecutables y otros artefactos.</p>
+    <p>Un proceso de desarrollo no debe entenderse como una receta rígida. Debe poder adaptarse al proyecto, a las personas, a las herramientas disponibles, a la tecnología, a la organización y al tipo de producto que se va a construir.</p>
+  </section>
+
+  <section>
+    <h3>1.2. Las cuatro P del desarrollo de software</h3>
+    <ul>
+      <li><strong>Proceso:</strong> guía las actividades del desarrollo. Define qué se hace, cuándo, con qué roles y qué artefactos se producen.</li>
+      <li><strong>Proyecto:</strong> instancia concreta donde se aplica el proceso. Tiene alcance, planificación, presupuesto, riesgos, recursos y restricciones.</li>
+      <li><strong>Personas:</strong> roles humanos que ejecutan actividades, toman decisiones, producen modelos y construyen el producto.</li>
+      <li><strong>Producto:</strong> resultado del proyecto. Incluye software ejecutable, modelos, documentación, pruebas, configuraciones y entregables asociados.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>1.3. Qué es el Proceso Unificado de Desarrollo</h3>
+    <p>El <strong>Proceso Unificado de Desarrollo</strong>, o <strong>PUD</strong>, es un proceso definido y genérico para desarrollar software. Funciona como un <strong>framework de proceso</strong>, porque no impone una única forma universal de trabajo, sino que puede especializarse para distintos dominios, tamaños de proyecto, niveles de complejidad, organizaciones y tecnologías.</p>
+    <p>El PUD permite seleccionar qué artefactos producir, qué actividades realizar, qué trabajadores participan y qué modelos conviene construir. Por eso, se lo considera un proceso flexible y extensible.</p>
+  </section>
+
+  <section>
+    <h3>1.4. Características centrales del PUD</h3>
+    <ul>
+      <li><strong>Iterativo e incremental:</strong> el sistema se construye mediante iteraciones. Cada iteración repite actividades del proceso y produce una versión parcial, ejecutable o evaluable del producto.</li>
+      <li><strong>Dirigido por casos de uso:</strong> los casos de uso capturan valor funcional para los actores, conducen las actividades del desarrollo y ayudan a descubrir la arquitectura.</li>
+      <li><strong>Centrado en la arquitectura:</strong> las decisiones arquitectónicas se estabilizan progresivamente. La arquitectura debe soportar los casos de uso significativos y los requisitos de calidad.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>1.5. Iteración, incremento y release</h3>
+    <p>Una <strong>iteración</strong> es una secuencia planificada de actividades con un criterio de evaluación. Su resultado debería ser un avance verificable del producto. Un <strong>incremento</strong> es la porción nueva de funcionalidad o calidad agregada al sistema. Un <strong>release</strong> es una versión ejecutable o entregable que permite validar el avance.</p>
+    <p>En un ciclo iterativo e incremental, no se espera terminar primero todo el análisis, luego todo el diseño, luego toda la implementación y finalmente todas las pruebas. En cada iteración se pueden realizar varias disciplinas, aunque con distinta intensidad según la fase.</p>
+  </section>
+
+  <section>
+    <h3>1.6. Fases del PUD</h3>
+    <table>
+      <caption>Fases del Proceso Unificado de Desarrollo</caption>
+      <thead>
+        <tr>
+          <th>Fase</th>
+          <th>Propósito principal</th>
+          <th>Énfasis típico</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Inicio</strong></td>
+          <td>Definir el alcance del proyecto, entender el negocio, identificar actores y casos de uso principales.</td>
+          <td>Visión del producto, alcance, riesgos iniciales y casos de uso críticos.</td>
+        </tr>
+        <tr>
+          <td><strong>Elaboración</strong></td>
+          <td>Planificar el proyecto con mayor precisión, capturar requisitos relevantes y estabilizar la arquitectura.</td>
+          <td>Análisis, arquitectura, riesgos técnicos y requisitos significativos.</td>
+        </tr>
+        <tr>
+          <td><strong>Construcción</strong></td>
+          <td>Construir el producto mediante incrementos sucesivos.</td>
+          <td>Diseño detallado, implementación, pruebas e integración.</td>
+        </tr>
+        <tr>
+          <td><strong>Transición</strong></td>
+          <td>Transferir el producto a los usuarios finales.</td>
+          <td>Correcciones, capacitación, instalación, despliegue y ajustes finales.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h3>1.7. Workflows principales</h3>
+    <p>Un <strong>workflow</strong> o disciplina agrupa actividades relacionadas que producen modelos o artefactos. En el contexto de la materia, se combinan conceptos de PUD y RUP.</p>
+    <ul>
+      <li><strong>Modelado de negocio:</strong> permite comprender procesos, actores, reglas y contexto organizacional.</li>
+      <li><strong>Requerimientos:</strong> produce el modelo de requerimientos, especialmente el modelo de casos de uso, modelo de dominio, glosario y descripciones de actores.</li>
+      <li><strong>Análisis:</strong> produce el modelo de análisis. Refina y estructura requisitos desde la mirada del desarrollador.</li>
+      <li><strong>Diseño:</strong> produce el modelo de diseño y el modelo de despliegue. Incorpora decisiones tecnológicas y requisitos no funcionales.</li>
+      <li><strong>Implementación:</strong> produce el modelo de implementación y el código ejecutable.</li>
+      <li><strong>Prueba:</strong> produce el modelo de prueba y permite verificar que el sistema cumpla lo requerido.</li>
+      <li><strong>Despliegue:</strong> organiza la entrega del producto de software a su ambiente real.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>1.8. Trabajador, actividad y artefacto</h3>
+    <ul>
+      <li><strong>Trabajador:</strong> rol que realiza actividades. No necesariamente equivale a una persona física; una persona puede cumplir varios roles y un rol puede ser compartido por varias personas.</li>
+      <li><strong>Actividad:</strong> unidad de trabajo ejecutada por un trabajador.</li>
+      <li><strong>Artefacto:</strong> pieza de información producida, modificada o usada por el proceso. Puede ser un modelo, un documento, un diagrama, código, prueba o configuración.</li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <h2>2. UML 2.0 como lenguaje de modelado</h2>
+
+  <section>
+    <h3>2.1. Qué es un modelo</h3>
+    <p>Un <strong>modelo</strong> es una simplificación de la realidad. Se construyen modelos para comprender mejor un sistema, comunicar decisiones, especificar estructura y comportamiento, y guiar la construcción del software.</p>
+    <p>Un modelo no es la realidad completa. Selecciona ciertos aspectos relevantes y omite otros. La selección depende del objetivo del modelo y de quién lo va a usar.</p>
+  </section>
+
+  <section>
+    <h3>2.2. Objetivos de modelar</h3>
+    <ul>
+      <li><strong>Visualizar</strong> el sistema como es o como se desea que sea.</li>
+      <li><strong>Especificar</strong> estructura, comportamiento, relaciones, restricciones y decisiones.</li>
+      <li><strong>Construir</strong> el sistema usando los modelos como guía.</li>
+      <li><strong>Documentar</strong> decisiones importantes del análisis, diseño, arquitectura e implementación.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>2.3. Qué es UML</h3>
+    <p><strong>UML</strong>, Lenguaje Unificado de Modelado, es un lenguaje de modelado visual, de propósito general, utilizado para visualizar, especificar, construir y documentar sistemas orientados a objetos.</p>
+    <p>UML no es una metodología. No dice por sí solo qué modelos crear, en qué orden ni con qué propósito de proceso. Esa decisión corresponde al proceso de desarrollo, por ejemplo el PUD. UML aporta la notación, la semántica y las reglas para representar modelos bien formados.</p>
+  </section>
+
+  <section>
+    <h3>2.4. Por qué UML es “unificado”</h3>
+    <ul>
+      <li>Unifica aportes de métodos históricos de modelado orientado a objetos.</li>
+      <li>Puede usarse a lo largo del ciclo de vida del software, desde requisitos hasta implementación.</li>
+      <li>Es independiente de lenguajes y plataformas de programación.</li>
+      <li>Puede aplicarse en diversos dominios de desarrollo.</li>
+      <li>Puede ser utilizado por distintos procesos de desarrollo, no solo por el PUD.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>2.5. Modelo conceptual de UML</h3>
+    <p>El modelo conceptual de UML se organiza en tres grandes grupos:</p>
+    <ul>
+      <li><strong>Bloques de construcción:</strong> elementos, relaciones y diagramas.</li>
+      <li><strong>Mecanismos comunes:</strong> especificaciones, adornos, divisiones comunes y mecanismos de extensibilidad.</li>
+      <li><strong>Reglas:</strong> nombres, alcance, visibilidad, integridad y ejecución.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>2.6. Elementos de UML</h3>
+    <section>
+      <h4>Elementos estructurales</h4>
+      <p>Representan las partes estáticas del modelo. Incluyen:</p>
+      <ul>
+        <li><strong>Clase:</strong> descripción de objetos que comparten atributos, operaciones, relaciones y semántica.</li>
+        <li><strong>Interfaz:</strong> conjunto de operaciones que especifican un servicio visible externamente.</li>
+        <li><strong>Caso de uso:</strong> secuencia de acciones del sistema que produce un resultado observable para un actor.</li>
+        <li><strong>Colaboración:</strong> sociedad de roles y elementos que cooperan para producir comportamiento.</li>
+        <li><strong>Clase activa:</strong> clase cuyos objetos poseen un hilo de control propio.</li>
+        <li><strong>Componente:</strong> parte modular del sistema con interfaces provistas y requeridas.</li>
+        <li><strong>Nodo:</strong> recurso físico o computacional donde se ejecutan artefactos.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h4>Elementos de comportamiento</h4>
+      <p>Representan partes dinámicas del modelo:</p>
+      <ul>
+        <li><strong>Interacción:</strong> conjunto de mensajes entre objetos para cumplir un objetivo.</li>
+        <li><strong>Actividad:</strong> flujo de acciones de un proceso, operación o caso de uso.</li>
+        <li><strong>Máquina de estados:</strong> secuencia de estados por los que pasa un objeto en respuesta a eventos.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h4>Elementos de agrupación</h4>
+      <p>El principal elemento de agrupación es el <strong>paquete</strong>, usado para organizar modelos, clases, diagramas o subsistemas conceptuales.</p>
+    </section>
+
+    <section>
+      <h4>Elementos de anotación</h4>
+      <p>La <strong>nota</strong> permite agregar comentarios, restricciones o aclaraciones sobre otros elementos del modelo.</p>
+    </section>
+  </section>
+
+  <section>
+    <h3>2.7. Relaciones en UML</h3>
+    <table>
+      <caption>Relaciones básicas de UML</caption>
+      <thead>
+        <tr>
+          <th>Relación</th>
+          <th>Significado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Dependencia</strong></td>
+          <td>Un elemento depende de otro. Si cambia el elemento independiente, puede verse afectado el dependiente.</td>
+        </tr>
+        <tr>
+          <td><strong>Asociación</strong></td>
+          <td>Relación estructural entre clases que describe enlaces entre objetos.</td>
+        </tr>
+        <tr>
+          <td><strong>Agregación</strong></td>
+          <td>Tipo especial de asociación que representa relación todo-parte débil.</td>
+        </tr>
+        <tr>
+          <td><strong>Composición</strong></td>
+          <td>Relación todo-parte fuerte, donde las partes dependen fuertemente del ciclo de vida del todo.</td>
+        </tr>
+        <tr>
+          <td><strong>Generalización</strong></td>
+          <td>Relación padre-hijo. El elemento especializado hereda o se basa en la especificación del general.</td>
+        </tr>
+        <tr>
+          <td><strong>Realización</strong></td>
+          <td>Un clasificador especifica un contrato y otro garantiza cumplirlo.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h3>2.8. Reglas de UML</h3>
+    <ul>
+      <li><strong>Nombres:</strong> cómo nombrar elementos, relaciones y diagramas.</li>
+      <li><strong>Alcance:</strong> contexto en el que un nombre tiene significado.</li>
+      <li><strong>Visibilidad:</strong> cómo un elemento puede ser visto o utilizado por otros.</li>
+      <li><strong>Integridad:</strong> cómo deben relacionarse los elementos de forma consistente.</li>
+      <li><strong>Ejecución:</strong> qué significa ejecutar o simular un modelo dinámico.</li>
+    </ul>
+    <p>Un modelo bien formado es semánticamente autoconsistente y está en armonía con sus modelos relacionados. Sin embargo, UML permite modelos incompletos, abreviados o incluso inconsistentes durante etapas tempranas, porque el software evoluciona y no siempre se modela todo al mismo nivel de detalle desde el inicio.</p>
+  </section>
+
+  <section>
+    <h3>2.9. Diagramas UML relevantes para el primer parcial</h3>
+    <table>
+      <caption>Diagramas principales usados en análisis</caption>
+      <thead>
+        <tr>
+          <th>Diagrama</th>
+          <th>Tipo</th>
+          <th>Uso principal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Diagrama de clases</strong></td>
+          <td>Estructural, estático, lógico</td>
+          <td>Modelar clases, atributos, responsabilidades, relaciones y colaboraciones.</td>
+        </tr>
+        <tr>
+          <td><strong>Diagrama de paquetes</strong></td>
+          <td>Estructural, estático, lógico</td>
+          <td>Organizar el modelo en partes manejables y mostrar dependencias.</td>
+        </tr>
+        <tr>
+          <td><strong>Diagrama de comunicación</strong></td>
+          <td>Comportamiento, interacción, dinámico</td>
+          <td>Mostrar colaboración entre objetos enfatizando enlaces y organización estructural.</td>
+        </tr>
+        <tr>
+          <td><strong>Diagrama de secuencia</strong></td>
+          <td>Comportamiento, interacción, dinámico</td>
+          <td>Mostrar mensajes entre objetos enfatizando el orden temporal.</td>
+        </tr>
+        <tr>
+          <td><strong>Diagrama de máquina de estados</strong></td>
+          <td>Comportamiento, dinámico, lógico</td>
+          <td>Modelar estados, eventos y transiciones de un objeto cuyo comportamiento depende de su estado.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</section>
+
+<section>
+  <h2>3. Paradigma de orientación a objetos</h2>
+
+  <section>
+    <h3>3.1. Qué es un objeto</h3>
+    <p>Un <strong>objeto</strong> representa una entidad individual e identificable, real o abstracta, con un rol definido en el dominio del problema.</p>
+    <p>Todo objeto puede analizarse mediante tres dimensiones:</p>
+    <ul>
+      <li><strong>Identidad:</strong> qué lo distingue de otros objetos. No debe confundirse necesariamente con un atributo como “id”; conceptualmente es aquello que permite reconocerlo como una instancia única.</li>
+      <li><strong>Estado:</strong> conjunto de valores que poseen sus atributos en un momento dado.</li>
+      <li><strong>Comportamiento:</strong> conjunto de operaciones, responsabilidades o acciones que el objeto puede realizar.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>3.2. Qué es una clase</h3>
+    <p>Una <strong>clase</strong> describe un conjunto de objetos que comparten estructura y comportamiento. La estructura se expresa mediante atributos y relaciones. El comportamiento se expresa mediante operaciones, métodos o responsabilidades.</p>
+    <p>Un objeto se crea a partir de una clase. A este acto se lo denomina <strong>instanciación</strong>.</p>
+  </section>
+
+  <section>
+    <h3>3.3. Estado, atributos y valores</h3>
+    <p>El <strong>estado</strong> de un objeto puede entenderse como:</p>
+    <p><strong>Estado = atributo + valor en un momento determinado.</strong></p>
+    <p>Por ejemplo, si la clase es <strong>SolicitudDeRequerimiento</strong>, algunos atributos podrían ser número, fecha de creación, descripción y estado actual. Si el estado cambia de “Pendiente” a “Aprobada”, el objeto sigue siendo el mismo, pero su estado interno cambió.</p>
+  </section>
+
+  <section>
+    <h3>3.4. Comportamiento y responsabilidades</h3>
+    <p>El comportamiento indica qué puede hacer un objeto. En análisis, suele expresarse como <strong>responsabilidades</strong> de alto nivel, no como métodos con signatura completa.</p>
+    <p>Una responsabilidad no es exactamente lo mismo que un método. La responsabilidad expresa una obligación conceptual del objeto; el método es una posible implementación de esa responsabilidad.</p>
+  </section>
+
+  <section>
+    <h3>3.5. Abstracción</h3>
+    <p>La <strong>abstracción</strong> consiste en concentrarse en las características esenciales de un objeto según la perspectiva del observador y el problema que se está resolviendo.</p>
+    <p>La misma realidad puede abstraerse de distintas formas. Un auto puede ser visto por una concesionaria como producto vendible, por un mecánico como conjunto de piezas, por una aseguradora como bien asegurable y por un sistema de tránsito como vehículo habilitado.</p>
+  </section>
+
+  <section>
+    <h3>3.6. Sistema orientado a objetos</h3>
+    <p>Un sistema orientado a objetos está formado por objetos que colaboran entre sí. Cada objeto tiene responsabilidades propias y se comunica con otros mediante mensajes.</p>
+    <p>Un diseño orientado a objetos de calidad intenta distribuir responsabilidades de forma coherente, manteniendo alta cohesión, bajo acoplamiento y una correspondencia razonable entre objetos de software y conceptos del dominio.</p>
+  </section>
+
+  <section>
+    <h3>3.7. Clases en el dominio del problema</h3>
+    <p>Durante el modelado del dominio, pueden aparecer clases que representan:</p>
+    <ul>
+      <li><strong>Roles desempeñados por personas:</strong> cliente, profesor, responsable, mecánico, jefe de equipo.</li>
+      <li><strong>Lugares:</strong> sede, ciudad, circuito, fábrica, depósito.</li>
+      <li><strong>Cosas:</strong> vehículo, contenedor, producto, sensor, monoplaza.</li>
+      <li><strong>Organizaciones:</strong> banco, empresa, federación, escudería.</li>
+      <li><strong>Conceptos:</strong> carrera, materia, tratamiento, campeonato, calendario.</li>
+      <li><strong>Eventos o transacciones:</strong> venta, inscripción, reserva, orden de traslado, solicitud.</li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <h2>4. Workflow de análisis dentro del PUD</h2>
+
+  <section>
+    <h3>4.1. Propósito del análisis</h3>
+    <p>El <strong>análisis</strong> toma los requisitos capturados en el workflow de requerimientos y los refina, estructura y formaliza. Su objetivo es lograr una comprensión más precisa del sistema y producir una descripción mantenible, útil para dar forma al diseño y a la arquitectura.</p>
+    <p>En requerimientos se trabaja principalmente con el lenguaje del cliente. En análisis se puede usar el lenguaje del desarrollador, por lo tanto se puede introducir mayor formalismo, razonar sobre la estructura interna del sistema y resolver conflictos o ambigüedades que no quedaron tratados en los casos de uso.</p>
+  </section>
+
+  <section>
+    <h3>4.2. Problemas que el análisis ayuda a resolver</h3>
+    <ul>
+      <li><strong>Interferencia entre casos de uso:</strong> casos de uso que compiten por recursos internos compartidos.</li>
+      <li><strong>Ambigüedad del lenguaje del cliente:</strong> expresiones entendibles para el usuario pero insuficientes para construir software.</li>
+      <li><strong>Redundancias o inconsistencias:</strong> requisitos repetidos o parcialmente contradictorios.</li>
+      <li><strong>Falta de estructura interna:</strong> los casos de uso describen qué debe hacer el sistema, pero no cómo se organizarán los objetos para cumplirlo.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>4.3. Modelo de casos de uso versus modelo de análisis</h3>
+    <table>
+      <caption>Comparación entre modelo de casos de uso y modelo de análisis</caption>
+      <thead>
+        <tr>
+          <th>Modelo de casos de uso</th>
+          <th>Modelo de análisis</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Se describe con lenguaje del cliente.</td>
+          <td>Se describe con lenguaje del desarrollador.</td>
+        </tr>
+        <tr>
+          <td>Presenta una vista externa del sistema.</td>
+          <td>Presenta una vista interna del sistema.</td>
+        </tr>
+        <tr>
+          <td>Está estructurado por casos de uso.</td>
+          <td>Está estructurado por clases y paquetes estereotipados.</td>
+        </tr>
+        <tr>
+          <td>Funciona como contrato sobre qué debe y qué no debe hacer el sistema.</td>
+          <td>Ayuda a entender cómo debería darse forma al sistema.</td>
+        </tr>
+        <tr>
+          <td>Puede contener redundancias o inconsistencias entre requisitos.</td>
+          <td>No debería contener redundancias ni inconsistencias.</td>
+        </tr>
+        <tr>
+          <td>Captura funcionalidad visible para actores.</td>
+          <td>Esboza cómo llevar a cabo esa funcionalidad dentro del sistema.</td>
+        </tr>
+        <tr>
+          <td>Define casos de uso que serán analizados con mayor profundidad.</td>
+          <td>Define realizaciones de casos de uso de análisis.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h3>4.4. Vista externa y vista interna</h3>
+    <p>El modelo de casos de uso es una <strong>vista externa</strong>: trata al sistema como caja negra. Dice qué servicios ofrece a sus actores, sin mostrar su estructura interna.</p>
+    <p>El modelo de análisis es una <strong>vista interna</strong>: abre esa caja negra y muestra qué clases de análisis colaboran para realizar los casos de uso.</p>
+  </section>
+
+  <section>
+    <h3>4.5. Análisis, diseño e implementación</h3>
+    <p>El análisis no es lo mismo que diseño ni implementación.</p>
+    <ul>
+      <li><strong>Análisis:</strong> estructura y refina requisitos, concentrándose en requisitos funcionales y en una solución lógica o conceptual.</li>
+      <li><strong>Diseño:</strong> transforma el modelo lógico en una solución física, incorporando tecnología, arquitectura, persistencia, distribución, interfaces y requisitos no funcionales.</li>
+      <li><strong>Implementación:</strong> convierte el diseño en componentes de código ejecutables, integrables y probables.</li>
+    </ul>
+    <p>Separar análisis y diseño permite no mezclar prematuramente la comprensión del problema con decisiones tecnológicas. Esto reduce complejidad y mejora la mantenibilidad del sistema.</p>
+  </section>
+
+  <section>
+    <h3>4.6. Importancia del análisis</h3>
+    <ul>
+      <li>Ofrece una especificación más precisa que la captura inicial de requisitos.</li>
+      <li>Permite usar formalismo y lenguaje técnico para razonar sobre el sistema.</li>
+      <li>Estructura los requisitos para facilitar comprensión, preparación, modificación y mantenimiento.</li>
+      <li>Sirve como primera aproximación al modelo de diseño.</li>
+      <li>Ayuda a construir una arquitectura más robusta y estable.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>4.7. Cuándo conviene hacer análisis</h3>
+    <ul>
+      <li><strong>Cuando se necesitan planificar incrementos:</strong> el análisis permite identificar partes del sistema que pueden diseñarse e implementarse de manera progresiva.</li>
+      <li><strong>Cuando se incorporan nuevos miembros:</strong> el modelo de análisis da una visión conceptual más simple que el código o el diseño detallado.</li>
+      <li><strong>Cuando existen implementaciones alternativas:</strong> permite conservar una visión conceptual común aunque haya distintas tecnologías.</li>
+      <li><strong>Cuando se integra un sistema heredado:</strong> ayuda a entenderlo y reutilizarlo sin depender directamente de sus detalles técnicos.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>4.8. Papel del análisis en el ciclo de vida</h3>
+    <p>El análisis tiene mayor peso durante las iteraciones iniciales de la fase de elaboración, porque allí se busca comprender requisitos, estabilizar la arquitectura y reducir riesgos. Más adelante, cuando la arquitectura está más estable, el énfasis se desplaza hacia diseño, implementación y pruebas.</p>
+    <p>Existen tres variantes de uso del análisis:</p>
+    <ol>
+      <li><strong>Modelo de análisis mantenido durante todo el ciclo de vida:</strong> se conserva y actualiza como vista conceptual del sistema.</li>
+      <li><strong>Modelo de análisis transitorio:</strong> se usa durante elaboración y luego deja de actualizarse cuando el diseño toma protagonismo.</li>
+      <li><strong>Sin modelo de análisis explícito:</strong> el análisis se fusiona con requerimientos o diseño. Esta opción solo conviene en sistemas extremadamente simples.</li>
+    </ol>
+  </section>
+</section>
+
+<section>
+  <h2>5. Modelo de análisis y sus artefactos</h2>
+
+  <section>
+    <h3>5.1. Entrada del workflow de análisis</h3>
+    <p>El workflow de análisis toma como base el modelo de requerimientos. Sus principales entradas son:</p>
+    <ul>
+      <li>Modelo de casos de uso.</li>
+      <li>Vistas de casos de uso.</li>
+      <li>Descripciones de casos de uso.</li>
+      <li>Descripciones de actores.</li>
+      <li>Modelo de dominio.</li>
+      <li>Vista de clases del dominio del problema.</li>
+      <li>Glosario.</li>
+      <li>Descripción de interfaces de usuario.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>5.2. Salida del workflow de análisis</h3>
+    <p>La salida central es el <strong>modelo de análisis</strong>. Este modelo contiene:</p>
+    <ol>
+      <li><strong>Clases de análisis.</strong></li>
+      <li><strong>Realizaciones de casos de uso de análisis.</strong></li>
+      <li><strong>Paquetes de análisis.</strong></li>
+      <li><strong>Descripción de la arquitectura desde la vista del modelo de análisis.</strong></li>
+    </ol>
+  </section>
+
+  <section>
+    <h3>5.3. Qué es el modelo de análisis</h3>
+    <p>El modelo de análisis es una jerarquía de paquetes que contiene clases de análisis y realizaciones de casos de uso. Describe cómo los objetos conceptuales del sistema colaboran para satisfacer los requisitos funcionales.</p>
+    <p>Es una primera aproximación al modelo de diseño, pero no debe confundirse con él. El modelo de análisis evita comprometerse demasiado pronto con lenguaje de programación, frameworks, bases de datos, protocolos o decisiones físicas.</p>
+  </section>
+
+  <section>
+    <h3>5.4. Cómo se construye el modelo de análisis</h3>
+    <p>El modelo de análisis se construye combinando vistas estructurales y dinámicas:</p>
+    <ul>
+      <li><strong>Clases de análisis:</strong> se modelan principalmente con diagrama de clases y, si su comportamiento depende del estado, con diagrama de máquina de estados.</li>
+      <li><strong>Realizaciones de casos de uso:</strong> tienen una vista estática mediante diagrama de clases y una vista dinámica mediante diagrama de secuencia o comunicación.</li>
+      <li><strong>Paquetes de análisis:</strong> se modelan con diagrama de paquetes.</li>
+      <li><strong>Descripción de arquitectura:</strong> destaca paquetes, clases y realizaciones significativas para la arquitectura.</li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <h2>6. Clases de análisis: entidad, frontera y control</h2>
+
+  <section>
+    <h3>6.1. Qué es una clase de análisis</h3>
+    <p>Una <strong>clase de análisis</strong> representa una abstracción de una o varias clases o subsistemas del futuro diseño. Es más conceptual que una clase de diseño y se centra principalmente en requisitos funcionales.</p>
+    <p>Características principales:</p>
+    <ul>
+      <li>Trata requisitos funcionales y posterga requisitos no funcionales.</li>
+      <li>Sus atributos se describen en un nivel alto, sin especificar necesariamente tipos de datos de programación.</li>
+      <li>Sus responsabilidades se expresan en lenguaje conceptual, no como métodos con signatura completa.</li>
+      <li>Sus relaciones son conceptuales; por ejemplo, la navegabilidad no es tan relevante como en diseño.</li>
+      <li>Siempre suele clasificarse con uno de tres estereotipos: entidad, frontera o control.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>6.2. Clase de entidad</h3>
+    <p>Una <strong>clase de entidad</strong> modela información de larga vida, usualmente persistente. Representa conceptos relevantes del dominio que el sistema necesita recordar, consultar o modificar.</p>
+    <p>Ejemplos típicos: Cliente, Pedido, Factura, OrdenDeTraslado, Escudería, Circuito, Festival, SolicitudDeRequerimiento.</p>
+    <p>Las clases de entidad suelen derivarse del modelo de dominio. Sin embargo, no son exactamente lo mismo: la clase de dominio representa conceptos del problema; la clase de entidad del análisis representa información manejada por el sistema.</p>
+  </section>
+
+  <section>
+    <h3>6.3. Clase límite, frontera o boundary</h3>
+    <p>Una <strong>clase de frontera</strong> modela la interacción entre el sistema y sus actores. Representa lo que está en el límite del sistema: pantallas, formularios, paneles, interfaces de comunicación, sensores, impresoras, servicios externos o puntos de contacto con usuarios.</p>
+    <p>Su responsabilidad es recibir y presentar información, no contener la lógica central del negocio. Una clase boundary no debería coordinar todo el caso de uso ni manipular directamente la persistencia si esa responsabilidad corresponde a clases de control o entidad.</p>
+  </section>
+
+  <section>
+    <h3>6.4. Clase de control</h3>
+    <p>Una <strong>clase de control</strong> representa coordinación, secuencia, transacciones y control de otros objetos. Suele encapsular la lógica de un caso de uso o de un flujo específico.</p>
+    <p>Actúa como nexo entre las clases de frontera y las clases de entidad. Esto evita que las pantallas queden acopladas directamente al dominio y permite mantener separada la lógica de negocio de la interfaz.</p>
+    <p>Las clases de control son especialmente importantes en las realizaciones de casos de uso, porque modelan el flujo principal, las validaciones, las delegaciones y las decisiones de coordinación.</p>
+  </section>
+
+  <section>
+    <h3>6.5. Diferencias entre los tres estereotipos</h3>
+    <table>
+      <caption>Estereotipos de clases de análisis</caption>
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Responsabilidad central</th>
+          <th>Ejemplo conceptual</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Entidad</strong></td>
+          <td>Guardar información duradera y comportamiento asociado al dominio.</td>
+          <td>OrdenDeTraslado, Cliente, Factura, Festival.</td>
+        </tr>
+        <tr>
+          <td><strong>Frontera</strong></td>
+          <td>Comunicar actores externos con el sistema.</td>
+          <td>PantallaGenerarOrden, FormularioRegistrarFestival, InterfazServidorCorreo.</td>
+        </tr>
+        <tr>
+          <td><strong>Control</strong></td>
+          <td>Coordinar el flujo del caso de uso y delegar responsabilidades.</td>
+          <td>GestorOrdenDeTraslado, ControladorRegistrarFestival, GestorSolicitud.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h3>6.6. Trazabilidad</h3>
+    <p>La trazabilidad permite relacionar elementos de distintos modelos. Por ejemplo:</p>
+    <ul>
+      <li>Un caso de uso del modelo de requerimientos se relaciona con una realización de caso de uso de análisis.</li>
+      <li>Una clase de dominio puede dar origen a una clase de entidad.</li>
+      <li>Una clase de análisis puede luego transformarse o refinarse en una o varias clases de diseño.</li>
+    </ul>
+    <p>La trazabilidad ayuda a mantener consistencia cuando cambian requisitos o decisiones de diseño.</p>
+  </section>
+</section>
+
+<section>
+  <h2>7. Realizaciones de casos de uso de análisis</h2>
+
+  <section>
+    <h3>7.1. Definición</h3>
+    <p>Una <strong>realización de caso de uso de análisis</strong> es una colaboración dentro del modelo de análisis que describe cómo se lleva a cabo un caso de uso en términos de clases de análisis y objetos que interactúan.</p>
+    <p>Proporciona una traza directa hacia un caso de uso del modelo de requerimientos. Es decir, por cada caso de uso relevante puede existir una realización que muestra cómo se cumple internamente.</p>
+  </section>
+
+  <section>
+    <h3>7.2. Partes de una realización de caso de uso</h3>
+    <ul>
+      <li><strong>Vista estática:</strong> muestra las clases de análisis participantes y sus relaciones. Se modela con diagrama de clases.</li>
+      <li><strong>Vista dinámica:</strong> muestra cómo interactúan los objetos para realizar un escenario. Se modela con diagrama de secuencia o diagrama de comunicación.</li>
+      <li><strong>Flujo de sucesos de análisis:</strong> texto explicativo escrito en términos de objetos y colaboraciones.</li>
+      <li><strong>Requisitos especiales:</strong> requisitos no funcionales detectados durante el análisis que deberán tratarse en diseño e implementación.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>7.3. Vista estática</h3>
+    <p>La vista estática de una realización muestra qué clases participan en el caso de uso y cómo se relacionan.</p>
+    <p>Sirve para coordinar responsabilidades, atributos y asociaciones que pueden aparecer en varias realizaciones. Una misma clase de entidad puede participar en muchos casos de uso, por eso el modelo debe evitar duplicación, inconsistencias o responsabilidades mal ubicadas.</p>
+  </section>
+
+  <section>
+    <h3>7.4. Vista dinámica</h3>
+    <p>La vista dinámica muestra el comportamiento en ejecución. En un escenario típico:</p>
+    <ol>
+      <li>Un actor inicia el caso de uso enviando un evento al sistema.</li>
+      <li>Una clase de frontera recibe el evento.</li>
+      <li>La frontera delega en una clase de control.</li>
+      <li>La clase de control coordina validaciones, búsquedas, cálculos y creación de objetos.</li>
+      <li>Las clases de entidad aportan información, comportamiento y cambios de estado.</li>
+      <li>El resultado vuelve hacia la frontera para ser mostrado al actor.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h3>7.5. Flujo de sucesos de análisis</h3>
+    <p>El flujo de sucesos de análisis complementa los diagramas. Debe escribirse en términos de objetos, especialmente objetos de control, sin detallar excesivamente atributos o signaturas que podrían cambiar.</p>
+    <p>Su objetivo es mejorar la lectura de los diagramas y explicar cómo colaboran los objetos para cumplir el caso de uso.</p>
+  </section>
+
+  <section>
+    <h3>7.6. Requisitos especiales</h3>
+    <p>Los <strong>requisitos especiales</strong> son requisitos no funcionales o restricciones que aparecen durante el análisis y que deben conservarse para ser resueltos en diseño.</p>
+    <p>Ejemplos: persistencia, concurrencia, seguridad, distribución, tolerancia a fallos, tiempos de respuesta, gestión de transacciones o restricciones de comunicación.</p>
+  </section>
+</section>
+
+<section>
+  <h2>8. Paquetes de análisis y descripción de arquitectura</h2>
+
+  <section>
+    <h3>8.1. Paquetes de análisis</h3>
+    <p>Los <strong>paquetes de análisis</strong> organizan el modelo en piezas manejables. Pueden contener clases de análisis, realizaciones de casos de uso y otros paquetes.</p>
+    <p>Un buen paquete de análisis debe tener:</p>
+    <ul>
+      <li><strong>Alta cohesión:</strong> sus elementos están fuertemente relacionados entre sí.</li>
+      <li><strong>Bajo acoplamiento:</strong> depende lo menos posible de otros paquetes.</li>
+      <li><strong>Reconocimiento en el dominio:</strong> su agrupación debe tener sentido desde los requisitos funcionales o desde el dominio del problema.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>8.2. Criterios para identificar paquetes</h3>
+    <ul>
+      <li>Casos de uso que dan soporte a un mismo proceso de negocio.</li>
+      <li>Casos de uso asociados a un mismo actor.</li>
+      <li>Casos de uso relacionados por inclusión, extensión o generalización.</li>
+      <li>Clases de dominio fuertemente relacionadas.</li>
+      <li>Servicios funcionales claramente diferenciables.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>8.3. Descripción de arquitectura en análisis</h3>
+    <p>La descripción de arquitectura del modelo de análisis muestra los artefactos significativos para la arquitectura. No es todavía arquitectura de diseño física, pero permite identificar estructuras relevantes.</p>
+    <p>Elementos significativos:</p>
+    <ul>
+      <li>Paquetes de análisis principales y sus dependencias.</li>
+      <li>Clases de análisis fundamentales.</li>
+      <li>Realizaciones de casos de uso significativas para la arquitectura.</li>
+      <li>Requisitos especiales comunes que influirán en el diseño.</li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <h2>9. Actividades y roles del workflow de análisis</h2>
+
+  <section>
+    <h3>9.1. Roles principales</h3>
+    <ul>
+      <li><strong>Arquitecto:</strong> inicia el modelo de análisis, identifica paquetes principales, clases de entidad evidentes y requisitos especiales comunes.</li>
+      <li><strong>Ingeniero de casos de uso:</strong> realiza cada caso de uso en términos de clases de análisis participantes.</li>
+      <li><strong>Ingeniero de componentes:</strong> define y mantiene responsabilidades, atributos, relaciones y requisitos especiales de clases y paquetes de análisis.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>9.2. Flujo general de trabajo</h3>
+    <ol>
+      <li>El arquitecto esboza el modelo de análisis y la arquitectura inicial.</li>
+      <li>Se identifican paquetes de análisis principales.</li>
+      <li>Se identifican clases de entidad evidentes a partir del dominio.</li>
+      <li>Se detectan requisitos especiales comunes.</li>
+      <li>Se realiza cada caso de uso mediante clases de análisis.</li>
+      <li>Se analizan clases individuales, consolidando responsabilidades, atributos y asociaciones.</li>
+      <li>Se analizan paquetes, reduciendo dependencias y mejorando cohesión.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h3>9.3. Analizar la arquitectura</h3>
+    <p>Analizar la arquitectura en esta etapa significa esbozar el modelo de análisis para identificar:</p>
+    <ul>
+      <li>Paquetes relevantes.</li>
+      <li>Clases de entidad importantes.</li>
+      <li>Requisitos especiales comunes.</li>
+      <li>Realizaciones de casos de uso significativas para la arquitectura.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>9.4. Analizar un caso de uso</h3>
+    <p>Analizar un caso de uso consiste en construir su realización de análisis. Para ello se identifican las clases participantes, se distribuyen responsabilidades y se modela la interacción entre objetos.</p>
+    <p>El resultado esperado incluye una vista estática y una vista dinámica del escenario analizado.</p>
+  </section>
+
+  <section>
+    <h3>9.5. Analizar una clase</h3>
+    <p>Analizar una clase implica:</p>
+    <ul>
+      <li>Identificar responsabilidades.</li>
+      <li>Identificar atributos necesarios.</li>
+      <li>Identificar asociaciones y agregaciones.</li>
+      <li>Identificar generalizaciones si aportan claridad conceptual.</li>
+      <li>Capturar requisitos especiales asociados.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>9.6. Analizar un paquete</h3>
+    <p>Analizar un paquete implica verificar que:</p>
+    <ul>
+      <li>Su contenido sea cohesivo.</li>
+      <li>Sus dependencias con otros paquetes sean mínimas.</li>
+      <li>Cumpla un objetivo funcional claro.</li>
+      <li>Sea útil como unidad conceptual para diseño e implementación posteriores.</li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <h2>10. Modelado de comportamiento con máquina de estados</h2>
+
+  <section>
+    <h3>10.1. Qué es un diagrama de máquina de estados</h3>
+    <p>Un <strong>diagrama de máquina de estados</strong> muestra la secuencia de estados por los que puede pasar un objeto, los eventos que provocan transiciones, las condiciones que habilitan esas transiciones y las acciones que ocurren cuando se producen.</p>
+    <p>Se usa para modelar comportamiento dinámico de elementos cuyos objetos cambian su comportamiento según el estado en el que se encuentran.</p>
+  </section>
+
+  <section>
+    <h3>10.2. Clasificación y uso</h3>
+    <ul>
+      <li><strong>Clasificación:</strong> diagrama de comportamiento, dinámico y lógico.</li>
+      <li><strong>Uso:</strong> explorar comportamiento complejo de una clase, actor, subsistema o componente.</li>
+      <li><strong>Uso adicional:</strong> modelar sistemas de tiempo real o entidades con ciclos de vida claramente definidos.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>10.3. Elementos principales</h3>
+    <ul>
+      <li><strong>Estado inicial:</strong> punto de inicio de la máquina.</li>
+      <li><strong>Estado final:</strong> punto de terminación.</li>
+      <li><strong>Estado:</strong> condición estable durante un período identificable.</li>
+      <li><strong>Transición:</strong> cambio desde un estado origen hacia un estado destino.</li>
+      <li><strong>Evento disparador:</strong> hecho que activa una transición.</li>
+      <li><strong>Condición de guarda:</strong> expresión booleana que debe cumplirse para que la transición ocurra.</li>
+      <li><strong>Efecto:</strong> acción ejecutada cuando se dispara la transición.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>10.4. Sintaxis conceptual de una transición</h3>
+    <p>Una transición puede leerse conceptualmente así:</p>
+    <p><strong>estado origen -- evento [condición] / efecto -- estado destino</strong></p>
+    <p>Ejemplo conceptual:</p>
+    <p><strong>Creada -- confirmarOrden() [hayContenedoresDisponibles] / asignarContenedores() -- Confirmada</strong></p>
+  </section>
+
+  <section>
+    <h3>10.5. Objeto reactivo</h3>
+    <p>Un objeto reactivo es aquel cuyo comportamiento depende de los eventos que recibe y del estado en que se encuentra. Para modelarlo se deben identificar:</p>
+    <ul>
+      <li>Estados estables.</li>
+      <li>Eventos que disparan cambios.</li>
+      <li>Condiciones de control.</li>
+      <li>Acciones asociadas a transiciones o estados.</li>
+      <li>Estado inicial y estados finales.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>10.6. Buenas prácticas para construir una máquina de estados</h3>
+    <ul>
+      <li>Elegir una clase cuyo comportamiento realmente dependa del estado.</li>
+      <li>No modelar como estado algo que solo es un dato sin impacto en el comportamiento.</li>
+      <li>Nombrar estados como condiciones estables: Creada, Pendiente, Aprobada, Cancelada.</li>
+      <li>Nombrar transiciones con eventos o métodos: confirmar(), cancelar(), aprobar(), rechazar().</li>
+      <li>Agregar guardas solo cuando exista una condición de negocio relevante.</li>
+      <li>Verificar que todos los estados sean alcanzables.</li>
+      <li>Verificar que no existan estados muertos no deseados.</li>
+      <li>Recorrer manualmente escenarios normales y alternativos para validar la máquina.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>10.7. Diferencia con diagramas de interacción</h3>
+    <p>El diagrama de máquina de estados se concentra en el ciclo de vida de un objeto o clase. En cambio, el diagrama de secuencia y el de comunicación muestran la colaboración entre varios objetos durante un escenario.</p>
+    <p>Por ejemplo, para una OrdenDeTraslado, la máquina de estados explica cómo cambia entre Creada, Confirmada, EnPreparación, EnTraslado, Entregada o Cancelada. El diagrama de secuencia explica cómo colaboran PantallaGenerarOT, GestorOT, OrdenDeTraslado, Contenedor y otros objetos para generar una orden.</p>
+  </section>
+</section>
+
+<section>
+  <h2>11. Diagramas de secuencia y comunicación</h2>
+
+  <section>
+    <h3>11.1. Diagramas de interacción</h3>
+    <p>Los diagramas de secuencia y comunicación son diagramas de interacción. Ambos modelan objetos que colaboran mediante mensajes para realizar un comportamiento.</p>
+  </section>
+
+  <section>
+    <h3>11.2. Diagrama de secuencia</h3>
+    <p>El <strong>diagrama de secuencia</strong> enfatiza el orden temporal de los mensajes. Es útil para validar un escenario, describir la lógica de un caso de uso, analizar responsabilidades y detectar clases complejas.</p>
+    <p>Elementos frecuentes:</p>
+    <ul>
+      <li><strong>Actor:</strong> usuario o sistema externo que inicia la interacción.</li>
+      <li><strong>Línea de vida:</strong> existencia de un objeto durante la interacción.</li>
+      <li><strong>Mensaje:</strong> invocación enviada de un objeto a otro.</li>
+      <li><strong>Activación:</strong> período en el que un objeto ejecuta una responsabilidad.</li>
+      <li><strong>Creación y destrucción de objetos:</strong> nacimiento y finalización de instancias durante el escenario.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>11.3. Diagrama de comunicación</h3>
+    <p>El <strong>diagrama de comunicación</strong> enfatiza la organización estructural de los objetos y los enlaces entre ellos. También muestra mensajes, pero su foco principal no es el eje temporal sino la colaboración entre objetos conectados.</p>
+    <p>Es útil para razonar sobre visibilidad, enlaces, asociaciones y distribución de responsabilidades.</p>
+  </section>
+
+  <section>
+    <h3>11.4. Diferencia entre secuencia y comunicación</h3>
+    <table>
+      <caption>Comparación entre diagramas de secuencia y comunicación</caption>
+      <thead>
+        <tr>
+          <th>Diagrama de secuencia</th>
+          <th>Diagrama de comunicación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Enfatiza el tiempo y el orden cronológico.</td>
+          <td>Enfatiza la estructura de objetos y enlaces.</td>
+        </tr>
+        <tr>
+          <td>Es más claro para seguir paso a paso un escenario.</td>
+          <td>Es más claro para ver quién conoce a quién.</td>
+        </tr>
+        <tr>
+          <td>Conviene para flujos extensos o con orden estricto.</td>
+          <td>Conviene para razonar sobre responsabilidades y acoplamiento.</td>
+        </tr>
+        <tr>
+          <td>Muestra líneas de vida verticales.</td>
+          <td>Muestra objetos conectados por enlaces.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h3>11.5. Secuencia típica en análisis</h3>
+    <ol>
+      <li>El actor envía un evento al sistema.</li>
+      <li>Una frontera recibe el evento.</li>
+      <li>La frontera delega en un controlador.</li>
+      <li>El controlador solicita datos o comportamiento a entidades.</li>
+      <li>Las entidades responden o modifican su estado.</li>
+      <li>El controlador coordina el resultado.</li>
+      <li>La frontera muestra la respuesta al actor.</li>
+    </ol>
+  </section>
+</section>
+
+<section>
+  <h2>12. Patrones GRASP para análisis</h2>
+
+  <section>
+    <h3>12.1. Qué son los patrones GRASP</h3>
+    <p><strong>GRASP</strong> significa Patrones Generales de Asignación de Responsabilidades en Software. Son patrones que ayudan a decidir qué objeto debe asumir cada responsabilidad en un diseño orientado a objetos.</p>
+    <p>En el primer parcial se usan principalmente para construir realizaciones de casos de uso de análisis, distribuyendo responsabilidades entre objetos boundary, control y entity.</p>
+  </section>
+
+  <section>
+    <h3>12.2. Responsabilidades de hacer y conocer</h3>
+    <section>
+      <h4>Responsabilidades de hacer</h4>
+      <ul>
+        <li>Hacer algo en uno mismo, como crear un objeto, modificar su estado o calcular un valor.</li>
+        <li>Iniciar una acción en otros objetos mediante mensajes.</li>
+        <li>Controlar y coordinar actividades en otros objetos.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h4>Responsabilidades de conocer</h4>
+      <ul>
+        <li>Conocer datos privados encapsulados.</li>
+        <li>Conocer objetos relacionados.</li>
+        <li>Conocer información que puede derivar o calcular.</li>
+      </ul>
+    </section>
+  </section>
+
+  <section>
+    <h3>12.3. Responsabilidad versus método</h3>
+    <p>Una <strong>responsabilidad</strong> es una obligación conceptual del objeto. Un <strong>método</strong> es una operación concreta que implementa una responsabilidad.</p>
+    <p>Por ejemplo, la responsabilidad “conocer el total de la factura” puede implementarse con un método calcularTotal(), pero también puede requerir colaboración con objetos DetalleFactura para sumar subtotales.</p>
+  </section>
+
+  <section>
+    <h3>12.4. Patrón Experto en Información</h3>
+    <p><strong>Problema:</strong> ¿a qué clase se le debe asignar una responsabilidad?</p>
+    <p><strong>Solución:</strong> asignar la responsabilidad a la clase que tiene la información necesaria para cumplirla.</p>
+    <p><strong>Idea central:</strong> “lo hace quien conoce”.</p>
+    <p><strong>Beneficios:</strong></p>
+    <ul>
+      <li>Distribuye el comportamiento entre clases que poseen la información requerida.</li>
+      <li>Favorece bajo acoplamiento.</li>
+      <li>Evita concentrar lógica en controladores o fronteras innecesariamente.</li>
+    </ul>
+    <p><strong>Ejemplo conceptual:</strong> si se debe validar si existe un Festival con ciertos datos, la responsabilidad debería ubicarse en una clase que conozca los festivales existentes o pueda consultar esa información, no en la pantalla.</p>
+  </section>
+
+  <section>
+    <h3>12.5. Patrón Creador</h3>
+    <p><strong>Problema:</strong> ¿quién debe ser responsable de crear una instancia de una clase?</p>
+    <p><strong>Solución:</strong> asignar a una clase B la responsabilidad de crear objetos de clase A cuando se cumple alguna de estas condiciones:</p>
+    <ul>
+      <li>B contiene o agrega objetos de A.</li>
+      <li>B registra objetos de A.</li>
+      <li>B usa intensivamente objetos de A.</li>
+      <li>B tiene los datos de inicialización necesarios para crear A.</li>
+    </ul>
+    <p><strong>Beneficios:</strong> reduce dependencias innecesarias y mantiene la creación cerca de quien ya conoce o contiene al objeto creado.</p>
+  </section>
+
+  <section>
+    <h3>12.6. Patrón Controlador</h3>
+    <p><strong>Problema:</strong> ¿quién debe recibir o manejar un evento del sistema generado por un actor externo?</p>
+    <p><strong>Solución:</strong> asignar la responsabilidad a una clase controladora que no sea la interfaz de usuario.</p>
+    <p>Opciones comunes:</p>
+    <ul>
+      <li><strong>Controlador de fachada:</strong> representa el sistema global, un subsistema o dispositivo.</li>
+      <li><strong>Controlador de caso de uso:</strong> representa un escenario o sesión de caso de uso, por ejemplo GestorRegistrarFestival o GestorOrdenDeTraslado.</li>
+    </ul>
+    <p><strong>Beneficios:</strong></p>
+    <ul>
+      <li>Evita poner lógica de negocio en la interfaz.</li>
+      <li>Permite razonar sobre el estado del caso de uso.</li>
+      <li>Favorece reutilización de la lógica de aplicación.</li>
+      <li>Organiza la secuencia de operaciones del escenario.</li>
+    </ul>
+    <p><strong>Riesgo:</strong> un controlador puede saturarse si se le asignan demasiadas responsabilidades. Un controlador saturado tiene baja cohesión y se vuelve difícil de mantener.</p>
+  </section>
+
+  <section>
+    <h3>12.7. Patrón Bajo Acoplamiento</h3>
+    <p><strong>Problema:</strong> ¿cómo reducir el impacto de los cambios y aumentar la reutilización?</p>
+    <p><strong>Solución:</strong> asignar responsabilidades de forma que las clases dependan lo menos posible unas de otras.</p>
+    <p><strong>Beneficios:</strong></p>
+    <ul>
+      <li>Los cambios en una clase afectan menos a otras.</li>
+      <li>Las clases son más fáciles de comprender aisladamente.</li>
+      <li>Aumenta la reutilización.</li>
+      <li>Reduce fragilidad del diseño.</li>
+    </ul>
+    <p>Un sistema orientado a objetos necesita colaboración entre objetos, por lo tanto no se busca acoplamiento cero. Se busca un nivel moderado y justificado de dependencia.</p>
+  </section>
+
+  <section>
+    <h3>12.8. Patrón Alta Cohesión</h3>
+    <p><strong>Problema:</strong> las clases con baja cohesión acumulan responsabilidades no relacionadas, se vuelven confusas y difíciles de mantener.</p>
+    <p><strong>Solución:</strong> asignar responsabilidades de manera que cada clase conserve un conjunto pequeño y relacionado de operaciones.</p>
+    <p><strong>Beneficios:</strong></p>
+    <ul>
+      <li>Mejora claridad y comprensión.</li>
+      <li>Simplifica evolución y mantenimiento.</li>
+      <li>Favorece bajo acoplamiento.</li>
+      <li>Aumenta reutilización específica.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>12.9. GRASP aplicado a clases de análisis</h3>
+    <ul>
+      <li><strong>Boundary:</strong> recibe eventos del actor y muestra respuestas. No debería concentrar lógica de negocio.</li>
+      <li><strong>Control:</strong> coordina el caso de uso, recibe eventos delegados desde la frontera y administra la secuencia.</li>
+      <li><strong>Entity:</strong> conoce datos duraderos y ejecuta responsabilidades relacionadas con esa información.</li>
+    </ul>
+    <p>Una asignación típica en análisis es:</p>
+    <ol>
+      <li>El actor interactúa con una frontera.</li>
+      <li>La frontera envía el evento al controlador.</li>
+      <li>El controlador coordina el escenario.</li>
+      <li>Las entidades ejecutan responsabilidades según Experto.</li>
+      <li>La creación de objetos se asigna según Creador.</li>
+      <li>Durante todo el diseño se busca Bajo Acoplamiento y Alta Cohesión.</li>
+    </ol>
+  </section>
+</section>
+
+<section>
+  <h2>13. Relaciones clave entre todos los temas</h2>
+
+  <section>
+    <h3>13.1. De requerimientos a análisis</h3>
+    <p>El modelo de requerimientos expresa qué necesita el usuario. El modelo de análisis expresa cómo se organiza internamente el sistema, todavía en un nivel lógico, para satisfacer esos requisitos.</p>
+  </section>
+
+  <section>
+    <h3>13.2. De casos de uso a realizaciones</h3>
+    <p>Un caso de uso se transforma en una realización de caso de uso de análisis. La realización abre la caja negra del caso de uso y muestra clases, objetos y mensajes necesarios para cumplir un escenario.</p>
+  </section>
+
+  <section>
+    <h3>13.3. De modelo de dominio a clases de entidad</h3>
+    <p>El modelo de dominio aporta conceptos del problema. Muchos de esos conceptos se convierten en clases de entidad del análisis, especialmente cuando representan información que el sistema debe manejar o conservar.</p>
+  </section>
+
+  <section>
+    <h3>13.4. De comportamiento a máquina de estados</h3>
+    <p>Cuando una clase tiene comportamiento dependiente del estado, se complementa el diagrama de clases con una máquina de estados. Esto permite entender qué eventos cambian el estado del objeto y bajo qué condiciones.</p>
+  </section>
+
+  <section>
+    <h3>13.5. De colaboración a diagramas de interacción</h3>
+    <p>Cuando se necesita mostrar cómo colaboran varios objetos para cumplir un caso de uso, se utilizan diagramas de interacción: secuencia si importa el orden temporal; comunicación si importa la estructura de enlaces.</p>
+  </section>
+
+  <section>
+    <h3>13.6. De responsabilidades a GRASP</h3>
+    <p>GRASP ayuda a decidir dónde ubicar responsabilidades. En análisis, esto es fundamental para evitar que las pantallas hagan demasiado, que los controladores se saturen o que las entidades queden como simples estructuras de datos sin comportamiento.</p>
+  </section>
+</section>
+
+<section>
+  <h2>14. Guía conceptual rápida para repasar antes del parcial</h2>
+
+  <section>
+    <h3>14.1. Preguntas que deberías poder responder</h3>
+    <ul>
+      <li>¿Qué diferencia hay entre modelo de casos de uso y modelo de análisis?</li>
+      <li>¿Por qué el análisis usa lenguaje del desarrollador?</li>
+      <li>¿Por qué el análisis no es diseño?</li>
+      <li>¿Cuáles son los artefactos del modelo de análisis?</li>
+      <li>¿Qué diferencia hay entre clase de entidad, frontera y control?</li>
+      <li>¿Qué es una realización de caso de uso de análisis?</li>
+      <li>¿Qué diferencia hay entre vista estática y vista dinámica?</li>
+      <li>¿Cuándo corresponde hacer una máquina de estados?</li>
+      <li>¿Qué elementos tiene una transición?</li>
+      <li>¿Qué responsabilidades son de hacer y cuáles de conocer?</li>
+      <li>¿Qué problema resuelve cada patrón GRASP?</li>
+      <li>¿Cómo se relacionan bajo acoplamiento y alta cohesión?</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>14.2. Errores conceptuales frecuentes</h3>
+    <ul>
+      <li>Confundir caso de uso con diagrama de secuencia. El caso de uso describe funcionalidad externa; el diagrama de secuencia muestra colaboración interna para un escenario.</li>
+      <li>Poner lógica de negocio en una clase boundary. La frontera debe comunicar, no coordinar todo el sistema.</li>
+      <li>Crear controladores saturados. El controlador coordina, pero no debe absorber responsabilidades que pertenecen a entidades.</li>
+      <li>Usar máquina de estados para cualquier clase. Solo corresponde cuando el comportamiento cambia según el estado.</li>
+      <li>Confundir atributo estado con estado de máquina. Un estado de máquina representa una condición significativa del ciclo de vida, no cualquier valor de atributo.</li>
+      <li>Asignar responsabilidades sin mirar quién tiene la información. El patrón Experto exige ubicar responsabilidades en quien conoce los datos necesarios.</li>
+      <li>Diseñar demasiado pronto con detalles tecnológicos. El análisis debe permanecer conceptual y lógico.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>14.3. Frase integradora</h3>
+    <p>El primer parcial teórico gira alrededor de una idea central: <strong>partir de requisitos expresados externamente, abrir la caja negra del sistema mediante el modelo de análisis y distribuir responsabilidades entre objetos usando UML, clases de análisis, realizaciones de casos de uso, máquinas de estados y patrones GRASP.</strong></p>
+  </section>
+</section>
+
+<footer>
+  <h2>Fuentes utilizadas</h2>
+  <p>Índice y desarrollo principal basados en los resúmenes y materiales de DSI cargados en la conversación: :contentReference[oaicite:0]{index=0} :contentReference[oaicite:1]{index=1} :contentReference[oaicite:2]{index=2} :contentReference[oaicite:3]{index=3} :contentReference[oaicite:4]{index=4} :contentReference[oaicite:5]{index=5} :contentReference[oaicite:6]{index=6}</p>
+</footer>

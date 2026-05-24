@@ -1,0 +1,15 @@
+---
+interface Props {
+  titulo: string;
+}
+
+const { titulo } = Astro.props;
+---
+
+<figure class="my-6 max-w-3xl rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
+  <figcaption class="mb-3 font-semibold">{titulo}</figcaption>
+  <div class="font-mono text-sm">
+    <slot />
+  </div>
+</figure>
+

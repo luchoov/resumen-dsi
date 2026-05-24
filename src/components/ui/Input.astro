@@ -1,0 +1,15 @@
+---
+import { cn } from "@/lib/utils";
+
+interface Props {
+  id?: string;
+  name?: string;
+  placeholder?: string;
+  type?: "text" | "search" | "email" | "password" | "number" | "url";
+  class?: string;
+}
+
+const { id, name, placeholder, type = "text", class: className } = Astro.props;
+---
+
+<input id={id} name={name} type={type} placeholder={placeholder} class={cn("h-10 rounded-lg border border-[hsl(var(--input))] bg-[hsl(var(--background))] px-3 text-sm text-[hsl(var(--foreground))] outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]", className)} />
