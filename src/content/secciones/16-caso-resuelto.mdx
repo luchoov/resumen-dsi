@@ -1,0 +1,207 @@
+---
+id: "sec-16"
+numero: 16
+titulo: "Caso resuelto: de un caso de uso a los diagramas"
+slug: "16-caso-resuelto"
+resumen: "Un caso completo de punta a punta: a partir de un caso de uso dado se construyen la máquina de estados, el diagrama de secuencia y el modelo de dominio."
+keywords: ["caso resuelto", "registrar laboreos", "administración de campos", "secuencia", "máquina de estados", "modelo de dominio", "end to end"]
+relacionadas: ["15-guia-practica", "10-maquina-estados", "11-secuencia-comunicacion"]
+---
+
+### 16.1. El punto de partida (lo que te dan)
+
+En el parcial el enunciado y la <strong>especificación del caso de uso ya vienen dados</strong>. Tu trabajo es construir, a partir de ellos, los tres diagramas: <strong>máquina de estados</strong>, <strong>secuencia</strong> y <strong>modelo de dominio / clases de análisis</strong>. Esta sección recorre un caso completo para que veas cómo se arma cada uno.
+
+Usamos el caso de cátedra <strong>Administración de Campos</strong> (Agro S.R.L.). Resumen del dominio:
+
+- Un <strong>Campo</strong> está compuesto por varios <strong>Lotes</strong>; cada lote tiene un <strong>TipoSuelo</strong>.
+- En un lote se inicia un <strong>ProyectoDeCultivo</strong> (un solo proyecto vigente por lote a la vez).
+- Durante el proyecto se realizan <strong>Laboreos</strong> (arar, rastrillar, sembrar, escardillar, cosechar). Los laboreos aplicables dependen del <strong>Cultivo</strong>.
+- El <strong>estado</strong> del proyecto cambia según los laboreos que se registran: al sembrar pasa a *EnSiembra*, al cosechar a *Cosechado*, etc.
+
+<EjemploClase titulo="Especificación dada — CU 01: Registrar Laboreos en Lotes">
+<strong>Objetivo:</strong> registrar uno o más laboreos realizados para cada lote seleccionado de un campo.<br />
+<strong>Actor principal:</strong> Encargado de Laboreos (EL). &nbsp; <strong>Precondición:</strong> usuario logueado.<br />
+<strong>Curso normal (condensado):</strong> el EL elige un campo habilitado → el sistema busca sus lotes con proyecto vigente → el EL selecciona lotes → el sistema muestra el cultivo y los tipos de laboreo aplicables → el EL elige el laboreo, fechas y empleado → el sistema valida fechas y registra el laboreo → si el laboreo es siembra o cosecha, actualiza el estado del proyecto → fin del CU.<br />
+<strong>Alternativas:</strong> A1 no hay campos habilitados · A2 no hay lotes con proyecto vigente · A4 el laboreo es siembra · A5 el laboreo es cosecha · A6 fechas inválidas.
+</EjemploClase>
+
+<Callout tipo="info" titulo="Lo que te dan vs. lo que construís">
+El enunciado, el glosario, las reglas de negocio y la especificación del CU de arriba <strong>te los entregan</strong>. Lo que sigue (16.3 a 16.6) es lo que tenés que <strong>producir vos</strong> a partir de eso.
+</Callout>
+
+### 16.2. Paso 1 — Leer y marcar
+
+Antes de dibujar, convertí el texto en decisiones. Subrayá <strong>sustantivos</strong> (candidatos a clases), <strong>verbos</strong> (candidatos a eventos/métodos) y buscá la <strong>clase con ciclo de vida</strong>.
+
+<TablaComparativa
+  caption="Del enunciado a las decisiones de análisis"
+  columnas={["En el texto aparece...", "Se modela como...", "Pista"]}
+  filas={[
+    ["Campo, Lote, Proyecto de Cultivo, Laboreo, Tipo de Laboreo, Empleado, Cultivo, Estado", "Clases de <strong>entidad</strong> candidatas", "Sustantivos que el sistema debe recordar."],
+    ["seleccionar campo, registrar laboreo, validar fechas, confirmar, sembrar, cosechar", "<strong>Eventos</strong> del CU y <strong>métodos</strong> de las clases", "Verbos de negocio."],
+    ["\"el estado del proyecto cambia según los laboreos\"", "Clase con <strong>ciclo de vida</strong> → máquina de estados de <code>ProyectoDeCultivo</code>", "Su comportamiento depende del estado."],
+    ["\"para cada lote\", \"uno o más laboreos\"", "<strong>Loops</strong> en la secuencia y multiplicidades en clases", "Colecciones."],
+    ["\"un solo proyecto vigente por lote\"", "<strong>Regla de negocio</strong> → guarda / validación", "Restricción a verificar."]
+  ]}
+/>
+
+La frase clave es que el proyecto **cambia de estado según los laboreos**: eso obliga a hacerle una máquina de estados a `ProyectoDeCultivo`. Arrancamos por ahí.
+
+### 16.3. Paso 2 — Máquina de estados de `ProyectoDeCultivo`
+
+El proyecto nace *EnPreparación* (al registrarlo) y avanza a medida que se registran laboreos. Fijate que el <strong>evento de casi todas las transiciones es el mismo caso de uso</strong> ("Registrar Laboreos en Lotes"); lo que cambia el destino es la <strong>guarda</strong>.
+
+<MermaidDiagram caption="Máquina de estados de ProyectoDeCultivo (caso Administración de Campos)" code={`stateDiagram-v2
+  [*] --> EnPreparacion: 67 Registrar Proyecto / new()
+  EnPreparacion --> EnPreparacion: 1 Registrar Laboreos [siembra = NO] / laborear()
+  EnPreparacion --> EnSiembra: 1 Registrar Laboreos [siembra = SI] / sembrar()
+  EnSiembra --> EnSiembra: 1 Registrar Laboreos [requiere sembrar = SI] / sembrar()
+  EnSiembra --> EnPostSiembra: 1 Registrar Laboreos [requiere sembrar = NO] / laborearLuegoDeSiembra()
+  EnPostSiembra --> EnPostSiembra: 1 Registrar Laboreos [cosecha = NO] / laborearLuegoDeSiembra()
+  EnPostSiembra --> Cosechado: 1 Registrar Laboreos [cosecha = SI] / cosechar()
+  EnPreparacion --> Cancelado: 71 Cancelar Proyecto / abortar()
+  EnSiembra --> Cancelado: 71 Cancelar Proyecto / abortar()
+  EnPostSiembra --> Cancelado: 71 Cancelar Proyecto / abortar()
+  Cosechado --> [*]
+  Cancelado --> [*]`} />
+
+<Callout tipo="atencion">
+La sintaxis de cátedra para cada transición es <code>Nº CU. Nombre del CU [guarda] / metodo()</code>. La <strong>transición a sí mismo</strong> (`EnPreparacion → EnPreparacion`) representa registrar un laboreo que <em>no</em> es siembra: el proyecto sigue en el mismo estado. Y una <strong>misma transición con guardas distintas</strong> (`[siembra = SI]` vs `[siembra = NO]`) muestra que el mismo evento puede llevar a estados diferentes.
+</Callout>
+
+### 16.4. Paso 3 — Diagrama de secuencia (realización del CU)
+
+Ahora modelamos el <strong>escenario del curso normal</strong>. Estructura BCE: el actor habla con la <strong>pantalla</strong> (boundary), que delega en el <strong>gestor</strong> (control), que coordina a las <strong>entidades</strong>. Va condensado a lo esencial; el flujo completo del PDF tiene más loops de carga.
+
+<MermaidDiagram caption="Secuencia — CU Registrar Laboreos en Lotes (curso normal, condensado)" code={`sequenceDiagram
+  actor EL as Encargado de Laboreos
+  participant P as :PantAdmLaboreos
+  participant G as :GestorLaboreos
+  participant C as :Campo
+  participant L as vigente:ProyectoDeCultivo
+  participant Lab as :Laboreo
+
+  EL->>P: opcionRegLaboreoLote()
+  P->>P: habilitarVentana()
+  P->>G: nuevoLaboreo()
+  G->>C: buscarCampos()
+  loop campos habilitados
+    C->>C: estaHabilitado()
+  end
+  G-->>P: mostrarCamposHabilitados()
+  EL->>P: tomarSeleccionCampo()
+  P->>G: tomarSeleccionCampo()
+  G->>C: buscarLotesProyCultivo()
+  C->>L: tieneProyectoCultivoVigente()
+  G-->>P: mostrarLotesConProyecto()
+  EL->>P: tomarSeleccionLaboreo()
+  P->>G: tomarDatosLaboreo()
+  G->>G: validarFechas()
+  G->>L: crearLaboreo()
+  L->>Lab: new()
+  G->>L: validarTipoLaboreo()
+  L->>L: sembrar()
+  G-->>P: confirmacion()
+  EL->>P: tomarSeleccionFinalizar()
+  P->>G: finCU()`} />
+
+<Callout tipo="tip">
+Convenciones que ya viste en la sección 11 y que reaparecen acá: <strong>objetos-rol</strong> (`vigente:ProyectoDeCultivo`), <strong>self-message</strong> del gestor (`validarFechas()`), <strong>loop</strong> para recorrer colecciones, creación con `new()`, y cierre con <code>finCU()</code>. La pantalla solo recibe/muestra; el gestor coordina; las entidades resuelven lo suyo.
+</Callout>
+
+### 16.5. Paso 4 — Modelo de dominio / clases de análisis
+
+Cada <strong>objeto</strong> que apareció en la secuencia se vuelve <strong>clase</strong>; cada <strong>mensaje entrante</strong>, un <strong>método</strong>; cada <strong>enlace</strong> usado para mandar mensajes, una <strong>asociación con navegabilidad</strong>. Las multiplicidades salen del dominio.
+
+<MermaidDiagram caption="Vista de clases de análisis que soporta la realización" code={`classDiagram
+  class PantAdmLaboreos {
+    <<boundary>>
+    +habilitarVentana()
+    +tomarSeleccionCampo()
+    +tomarDatosLaboreo()
+  }
+  class GestorLaboreos {
+    <<control>>
+    +nuevoLaboreo()
+    +validarFechas()
+    +finCU()
+  }
+  class Campo {
+    <<entity>>
+    -nombre
+    -habilitado
+    +estaHabilitado()
+    +buscarLotesProyCultivo()
+  }
+  class Lote {
+    <<entity>>
+    -numero
+    +tieneProyectoCultivoVigente()
+  }
+  class ProyectoDeCultivo {
+    <<entity>>
+    -fechaInicio
+    -fechaFin
+    +crearLaboreo()
+    +sembrar()
+    +cosechar()
+    +laborear()
+    +estaVigente()
+  }
+  class Laboreo {
+    <<entity>>
+    -fechaInicio
+    -fechaFin
+    +new()
+  }
+  class TipoLaboreo {
+    <<entity>>
+    -nombre
+  }
+  class Empleado {
+    <<entity>>
+    -nombre
+  }
+  class Estado {
+    <<entity>>
+    -nombre
+    -esFinal
+  }
+  PantAdmLaboreos ..> GestorLaboreos
+  GestorLaboreos --> Campo
+  Campo "1" --> "1..*" Lote : lotes
+  Lote "1" --> "0..1" ProyectoDeCultivo : vigente
+  ProyectoDeCultivo "1" o-- "0..*" Laboreo : laboreos
+  Laboreo --> TipoLaboreo
+  Laboreo --> Empleado
+  ProyectoDeCultivo --> Estado : estado`} />
+
+<EjemploReal titulo="Por qué cada clase tiene esos métodos" dominio="Caso cátedra">
+`ProyectoDeCultivo` lleva `sembrar()`, `cosechar()` y `laborear()` <strong>porque son los métodos de transición de su máquina de estados</strong> (16.3) y además aparecen como mensajes en la secuencia (16.4). `Campo` sabe `buscarLotesProyCultivo()` porque conoce sus lotes (Experto en Información). El `GestorLaboreos` coordina pero no calcula: delega en las entidades.
+</EjemploReal>
+
+### 16.6. Cómo se conectan los tres
+
+La clave para no equivocarte: los tres diagramas cuentan <strong>la misma historia</strong> y se corrigen juntos. Un método de transición tiene que poder rastrearse en los tres.
+
+<MermaidDiagram caption="Trazabilidad: el mismo método en los tres diagramas" code={`flowchart LR
+  A["Máquina de estados<br/>EnPreparacion --> EnSiembra<br/>1 Registrar Laboreos [siembra=SI] / sembrar()"] --> B["Secuencia<br/>GestorLaboreos -> ProyectoDeCultivo<br/>validarTipoLaboreo() -> sembrar()"]
+  B --> C["Clases de análisis<br/>ProyectoDeCultivo<br/>+ sembrar()"]`} />
+
+<Callout tipo="tip" titulo="Chequeo final de coherencia">
+Si en la máquina pusiste <code>/ sembrar()</code>, ese mensaje <strong>debe verse</strong> en la secuencia (hacia `ProyectoDeCultivo`) y <code>sembrar()</code> <strong>debe figurar</strong> como método de esa clase. Si los tres no cierran, algo falta. Esa es la forma más rápida de detectar errores antes de entregar.
+</Callout>
+
+<ChecklistRepaso
+  id="caso-resuelto-final"
+  preguntas={[
+    "¿Identifiqué la clase con ciclo de vida y le hice la máquina de estados?",
+    "¿Las transiciones usan la sintaxis Nº CU. Nombre [guarda] / metodo()?",
+    "¿La secuencia arranca con actor → pantalla → gestor → entidades?",
+    "¿Usé loops para las colecciones y finCU() al cerrar?",
+    "¿Cada objeto de la secuencia es una clase y cada mensaje entrante un método?",
+    "¿Las multiplicidades y la navegabilidad salen del dominio y de los mensajes?",
+    "¿Los métodos de transición (sembrar, cosechar) aparecen en los tres diagramas?"
+  ]}
+/>
