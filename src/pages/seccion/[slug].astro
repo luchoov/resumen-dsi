@@ -1,0 +1,33 @@
+---
+import { getCollection, render } from "astro:content";
+import SeccionLayout from "@/layouts/SeccionLayout.astro";
+import Callout from "@/components/contenido/Callout.astro";
+import ChecklistRepaso from "@/components/contenido/ChecklistRepaso.astro";
+import Definicion from "@/components/contenido/Definicion.astro";
+import EjemploClase from "@/components/contenido/EjemploClase.astro";
+import PatronGRASP from "@/components/contenido/PatronGRASP.astro";
+import TablaComparativa from "@/components/contenido/TablaComparativa.astro";
+import DiagramaAnalisisOO from "@/components/diagramas/DiagramaAnalisisOO.astro";
+import MapaMentalDSI from "@/components/diagramas/MapaMentalDSI.astro";
+import MermaidDiagram from "@/components/diagramas/MermaidDiagram.astro";
+import { crearIndiceBusqueda, extraerEncabezados, obtenerPrevNext, ordenarSecciones } from "@/lib/secciones";
+
+export async function getStaticPaths() {
+  const secciones = ordenarSecciones(await getCollection("secciones"));
+  return secciones.map((seccion) => ({
+    params: { slug: seccion.data.slug },
+    props: { seccion, secciones }
+  }));
+}
+
+const { seccion, secciones } = Astro.props;
+const { Content } = await render(seccion);
+const { previa, siguiente } = obtenerPrevNext(secciones, seccion.data.slug);
+const encabezados = extraerEncabezados(seccion.body ?? "");
+const indiceBusqueda = crearIndiceBusqueda(secciones);
+---
+
+<SeccionLayout seccion={seccion} secciones={secciones} encabezados={encabezados} previa={previa} siguiente={siguiente} indiceBusqueda={indiceBusqueda}>
+  <Content components={{ Callout, ChecklistRepaso, Definicion, EjemploClase, PatronGRASP, TablaComparativa, MermaidDiagram, DiagramaAnalisisOO, MapaMentalDSI }} />
+</SeccionLayout>
+

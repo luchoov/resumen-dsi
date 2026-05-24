@@ -1,0 +1,72 @@
+---
+id: "sec-14"
+numero: 14
+titulo: "Guía conceptual rápida para repasar antes del parcial"
+slug: "14-guia-repaso"
+resumen: "Una guía de preguntas, errores frecuentes y conexiones mínimas para repasar la teoría antes del parcial."
+keywords: ["repaso", "preguntas", "errores frecuentes", "cheatsheet", "parcial"]
+relacionadas: ["13-relaciones-clave", "12-grasp"]
+---
+
+### 14.1. Preguntas que deberías poder responder
+
+<ChecklistRepaso
+  id="guia-parcial"
+  preguntas={[
+    "¿Qué diferencia hay entre modelo de casos de uso y modelo de análisis?",
+    "¿Por qué el análisis usa lenguaje del desarrollador?",
+    "¿Por qué el análisis no es diseño?",
+    "¿Cuáles son los artefactos del modelo de análisis?",
+    "¿Qué diferencia hay entre clase de entidad, frontera y control?",
+    "¿Qué es una realización de caso de uso de análisis?",
+    "¿Qué diferencia hay entre vista estática y vista dinámica?",
+    "¿Cuándo corresponde hacer una máquina de estados?",
+    "¿Qué elementos tiene una transición?",
+    "¿Qué responsabilidades son de hacer y cuáles de conocer?",
+    "¿Qué problema resuelve cada patrón GRASP?",
+    "¿Cómo se relacionan bajo acoplamiento y alta cohesión?"
+  ]}
+/>
+
+### 14.2. Errores conceptuales frecuentes
+
+<Callout tipo="error" titulo="Errores que más confunden">
+- Confundir caso de uso con diagrama de secuencia.
+- Poner lógica de negocio en una clase boundary.
+- Crear controladores saturados.
+- Usar máquina de estados para cualquier clase.
+- Confundir atributo estado con estado de máquina.
+- Asignar responsabilidades sin mirar quién tiene la información.
+- Diseñar demasiado pronto con detalles tecnológicos.
+</Callout>
+
+<TablaComparativa
+  caption="Confusiones rápidas"
+  columnas={["Confusión", "Corrección"]}
+  filas={[
+    ["Caso de uso = secuencia", "El caso de uso describe funcionalidad externa; la secuencia muestra colaboración interna."],
+    ["Boundary coordina todo", "Boundary comunica; Control coordina."],
+    ["Estado como atributo = máquina de estados", "Solo hay máquina si el comportamiento cambia según estados significativos."],
+    ["Análisis = diseño", "Análisis es lógico/conceptual; diseño incorpora tecnología."]
+  ]}
+/>
+
+### 14.3. Patrón mental mínimo
+
+<MermaidDiagram caption="Patrón mental para resolver preguntas teóricas" code={`flowchart TD
+  P[Pregunta del parcial] --> A{¿Habla de qué necesita el actor?}
+  A -->|Sí| CU[Casos de uso / requerimientos]
+  A -->|No| B{¿Habla de colaboración interna?}
+  B -->|Sí| R[Realización + secuencia/comunicación]
+  B -->|No| C{¿Habla de ciclo de vida?}
+  C -->|Sí| E[Máquina de estados]
+  C -->|No| G[GRASP / paquetes / arquitectura lógica]`} />
+
+### 14.4. Frase integradora
+
+El primer parcial teórico gira alrededor de una idea central: <strong>partir de requisitos expresados externamente, abrir la caja negra del sistema mediante el modelo de análisis y distribuir responsabilidades entre objetos usando UML, clases de análisis, realizaciones de casos de uso, máquinas de estados y patrones GRASP.</strong>
+
+<Callout tipo="tip">
+La ruta de estudio recomendada para una última vuelta es: sección 4 → 6 → 7 → 11 → 12 → cheatsheet.
+</Callout>
+

@@ -1,0 +1,93 @@
+---
+id: "sec-05"
+numero: 5
+titulo: "Modelo de análisis y sus artefactos"
+slug: "05-modelo-analisis"
+resumen: "El modelo de análisis reúne clases, realizaciones, paquetes y arquitectura lógica para satisfacer requisitos funcionales."
+keywords: ["modelo de análisis", "artefactos", "clases de análisis", "realizaciones", "paquetes", "arquitectura"]
+relacionadas: ["04-workflow-analisis", "07-realizaciones-casos-uso"]
+---
+
+### 5.1. Entrada del workflow de análisis
+
+El análisis recibe principalmente el modelo de requerimientos: casos de uso, actores, glosario, modelo de dominio, requisitos especiales y restricciones conocidas.
+
+<MermaidDiagram caption="Entradas del workflow de análisis" code={`flowchart LR
+  CU[Casos de uso] --> ANA[Análisis]
+  ACT[Actores] --> ANA
+  GLO[Glosario] --> ANA
+  DOM[Modelo de dominio] --> ANA
+  RNF[Requisitos especiales] --> ANA
+  ANA --> MA[Modelo de análisis]`} />
+
+### 5.2. Salida del workflow de análisis
+
+La salida central es el <strong>modelo de análisis</strong>. Este modelo contiene clases de análisis, realizaciones de casos de uso de análisis, paquetes de análisis y descripción de arquitectura desde la vista del modelo de análisis.
+
+<MermaidDiagram caption="Artefactos del modelo de análisis" code={`graph TD
+  MA[Modelo de análisis]
+  MA --> CA[Clases de análisis]
+  MA --> RCU[Realizaciones de casos de uso]
+  MA --> PAQ[Paquetes de análisis]
+  MA --> ARQ[Descripción de arquitectura]
+  CA --> BCE[Entidad / Frontera / Control]
+  RCU --> EST[Vista estática]
+  RCU --> DIN[Vista dinámica]`} />
+
+### 5.3. Artefactos y diagramas que los representan
+
+Los resúmenes en PDF conectan cada artefacto con los diagramas UML que conviene usar para documentarlo.
+
+<TablaComparativa
+  caption="Artefactos del análisis y diagramas asociados"
+  columnas={["Artefacto", "Qué describe", "Diagramas típicos"]}
+  filas={[
+    ["<strong>Clase de análisis</strong>", "Responsabilidades, atributos conceptuales, relaciones y requisitos especiales.", "Diagrama de clases; máquina de estados si su comportamiento depende del estado."],
+    ["<strong>Realización de caso de uso</strong>", "Colaboración que refina un caso de uso.", "Clase para vista estática; secuencia, comunicación u objeto para vista dinámica."],
+    ["<strong>Paquete de análisis</strong>", "Organización de clases, realizaciones y subpaquetes.", "Diagrama de paquetes."],
+    ["<strong>Descripción de arquitectura</strong>", "Elementos significativos: paquetes, clases fundamentales y realizaciones críticas.", "Vista combinada del modelo de análisis."]
+  ]}
+/>
+
+<MermaidDiagram caption="Qué diagrama conviene según el artefacto" code={`flowchart LR
+  Artefacto{Artefacto de analisis}
+  Artefacto --> Clase[Clase de analisis]
+  Artefacto --> Realizacion[Realizacion de CU]
+  Artefacto --> Paquete[Paquete de analisis]
+  Artefacto --> Arquitectura[Descripcion de arquitectura]
+  Clase --> DC[Diagrama de clases]
+  Clase --> ME[Maquina de estados]
+  Realizacion --> VE[Vista estatica]
+  Realizacion --> VD[Vista dinamica]
+  VE --> DC
+  VD --> SEC[Secuencia]
+  VD --> COM[Comunicacion]
+  Paquete --> DP[Diagrama de paquetes]
+  Arquitectura --> SIG[Elementos significativos]`} />
+
+### 5.4. Qué es el modelo de análisis
+
+<Definicion termino="modelo de análisis">
+El <strong>modelo de análisis</strong> es una jerarquía de paquetes que contiene clases de análisis y realizaciones de casos de uso.
+</Definicion>
+
+Describe cómo los objetos conceptuales del sistema colaboran para satisfacer requisitos funcionales, todavía sin atarse a decisiones tecnológicas de diseño.
+
+### 5.5. Cómo se construye el modelo de análisis
+
+- <strong>Clases de análisis:</strong> se modelan con diagrama de clases y, si corresponde, máquina de estados.
+- <strong>Realizaciones de casos de uso:</strong> tienen vista estática y vista dinámica.
+- <strong>Paquetes de análisis:</strong> se modelan con diagrama de paquetes.
+- <strong>Descripción de arquitectura:</strong> destaca paquetes, clases y realizaciones significativas.
+
+<MermaidDiagram caption="Construcción incremental del modelo de análisis" code={`flowchart TB
+  A[Identificar paquetes principales] --> B[Realizar casos de uso]
+  B --> C[Descubrir clases BCE]
+  C --> D[Asignar responsabilidades]
+  D --> E[Revisar cohesión y acoplamiento]
+  E --> F[Actualizar arquitectura lógica]
+  F --> B`} />
+
+<Callout tipo="atencion">
+El modelo de análisis no reemplaza al diseño: lo prepara. Si aparecen decisiones de framework, base de datos o protocolo, probablemente ya estás pasando a diseño.
+</Callout>

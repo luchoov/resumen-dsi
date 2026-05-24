@@ -1,0 +1,949 @@
+---
+id: "sec-15"
+numero: 15
+titulo: "Guía práctica para resolver parciales"
+slug: "15-guia-practica"
+resumen: "Método de resolución basado en ejercicios de cátedra: máquina de estados, secuencia y clases de análisis."
+keywords: ["práctica", "parcial", "máquina de estados", "secuencia", "clases de análisis", "FIA F1", "Líneas Aéreas", "Orden de Traslado", "Vuelo"]
+relacionadas: ["10-maquina-estados", "11-secuencia-comunicacion", "06-clases-analisis", "07-realizaciones-casos-uso"]
+---
+
+### 15.1. Para qué sirve esta guía práctica
+
+Esta sección no intenta explicar UML desde cero. La idea es sistematizar la forma en que la cátedra resuelve ejercicios: leer el enunciado, detectar la clase con ciclo de vida, armar una máquina de estados con casos de uso y métodos, modelar un escenario con `Pantalla -> Gestor -> Entidades`, y cerrar con una vista de clases de análisis que soporte lo anterior.
+
+Los tres diagramas se corrigen juntos:
+
+- La <strong>máquina de estados</strong> muestra el ciclo de vida de una clase importante del dominio, como `OrdenTraslado`, `Vuelo`, `Cuenta`, `Pedido` o `PuntoDeEmision`.
+- El <strong>diagrama de secuencia o comunicación</strong> muestra cómo colaboran actor, boundary, control y entidades para ejecutar un escenario concreto.
+- El <strong>diagrama de clases de análisis</strong> consolida las clases, atributos, métodos, relaciones, multiplicidades y navegabilidad que aparecieron en la dinámica.
+
+<Callout tipo="info" titulo="Fuentes prácticas revisadas">
+Los patrones salen de los PDFs y `.mmd` de `docs/fuente/practico`: FIA F1 - Orden de Traslado, Líneas Aéreas - Vuelo, Guía 2026 de Máquina de Estados, PPA Peaje, Publicidad Multipunto, Frigorífico, Administración de Campos, Crustáceo Cascarudo, Estrella de la Muerte y casos de requerimientos. Se priorizan ejemplos donde aparecen soluciones oficiales o diagramas ya resueltos.
+</Callout>
+
+### 15.2. Método general para encarar un ejercicio
+
+La forma más segura de resolver es no empezar dibujando. Primero hay que convertir el enunciado en decisiones de análisis.
+
+1. Leer dominio, glosario, reglas de negocio y descripción del caso de uso pedido.
+2. Marcar sustantivos del dominio que el sistema necesita recordar: `Vuelo`, `OrdenTraslado`, `Contenedor`, `Reserva`, `Cuenta`, `Estado`.
+3. Marcar verbos de negocio y casos de uso: generar, cancelar, aprobar, rechazar, consultar, registrar llegada, actualizar situación.
+4. Detectar si una clase cambia de situación a lo largo del tiempo y si ese cambio condiciona lo que se puede hacer.
+5. Si hay ciclo de vida, construir la máquina de estados de esa clase.
+6. Elegir el escenario exacto pedido: curso normal, flujo alternativo, cancelación, creación con detalles, actualización de estado.
+7. Identificar actor, `Pantalla...`, `Gestor...`, `Sesion` si corresponde, entidades y servicios externos.
+8. Construir la secuencia o comunicación siguiendo el flujo del caso de uso.
+9. Pasar a clases de análisis: cada objeto relevante de la dinámica se vuelve clase, y cada mensaje entrante relevante se vuelve método.
+10. Revisar multiplicidades, navegabilidad, historial de estados y coherencia de nombres entre diagramas.
+
+<MermaidDiagram caption="Receta de resolución de parcial" code={`flowchart TD
+  A[Leer dominio y glosario] --> B[Identificar clases del dominio]
+  B --> C[Identificar casos de uso pedidos]
+  C --> D{Hay clase con ciclo de vida?}
+  D -->|Si| E[Armar maquina de estados]
+  D -->|No| F[Ir directo a realizacion del CU]
+  E --> F
+  F --> G[Elegir escenario concreto]
+  G --> H[Actor + Pantalla + Gestor + Entidades]
+  H --> I[Secuencia o comunicacion]
+  I --> J[Derivar clases, metodos y relaciones]
+  J --> K[Revisar multiplicidad, navegabilidad y responsabilidades]`} />
+
+<Callout tipo="tip">
+En los parciales, la consigna suele decir explícitamente qué construir: "máquina de estados", "realización de caso de uso de análisis", "vista dinámica", "vista de clases de análisis", "atributos, métodos, navegabilidad y multiplicidad". Esas palabras son el contrato de corrección.
+</Callout>
+
+### 15.3. Máquina de estados: cuándo corresponde
+
+Corresponde hacer máquina de estados cuando una clase tiene comportamiento dependiente de su situación actual. No alcanza con que tenga un atributo `estado`: el estado debe modificar qué eventos son válidos, qué reglas se aplican o qué caminos quedan prohibidos.
+
+Indicadores fuertes del enunciado:
+
+- "puede encontrarse en..."
+- "se encuentra en estado..."
+- "cuando pasa a..."
+- "si está en... puede..."
+- "no puede cancelarse si..."
+- "se registra el cambio de estado..."
+- "se debe mantener el historial de estados..."
+- "estado final", "no final", "estado actual", "estado vigente".
+
+En FIA F1, la `OrdenTraslado` cambia desde `Creada` o `Aprobada` hasta `Exitosa`, `Incompleta`, `Cancelada` o `Rechazada`. En Líneas Aéreas, `Vuelo` tiene estados operativos como programado, demorado, embarque, ejecución, aterrizaje, finalización o cancelación. En PPA Peaje, `Cuenta` usa un estado compuesto `EnUso` y una estructura de historial.
+
+#### 15.3.1. Cómo identificar estados
+
+Buscá estados en reglas de negocio, postcondiciones, flujos alternativos y frases que describen una situación estable. Un estado suele nombrarse como sustantivo/adjetivo de situación, no como acción.
+
+<TablaComparativa
+  caption="Separar estado, evento, método y postcondición"
+  columnas={["Elemento del enunciado", "Cómo conviene modelarlo"]}
+  filas={[
+    ["Cancelar Vuelo", "Caso de uso o evento disparador."],
+    ["Cancelado", "Estado del negocio."],
+    ["registrar la cancelación", "Mensaje o método del flujo."],
+    ["vuelo cancelado", "Postcondición del caso de uso."],
+    ["aprobar Orden de Traslado", "Evento/método de transición."],
+    ["Aprobada", "Estado alcanzado por la OT."]
+  ]}
+/>
+
+Procedimiento práctico:
+
+1. Subrayá las situaciones estables: `Creada`, `Aprobada`, `Rechazada`, `EnPreparacion`, `ListaParaEnvio`, `EnTraslado`.
+2. Separá acciones: `aprobar`, `rechazar`, `cancelar`, `comenzarPreparacion`, `registrarLlegadaADestino`.
+3. Separá condiciones: "si pasaron 24 horas", "si la revisión OK es SI", "si hay contenedores pendientes".
+4. Separá estados de objetos distintos: una OT puede estar `EnTraslado`; un contenedor puede estar `AsignadoAOrden`, `Ocioso` o `Dañado`.
+5. Si la consigna pide una clase concreta, no mezcles ciclos de vida de otras clases salvo como soporte.
+
+#### 15.3.2. Cómo identificar transiciones
+
+La cátedra suele exigir que la transición tenga caso de uso, método y condición de control cuando aplique.
+
+<MermaidDiagram caption="Formato de transición que pide la cátedra" code={`flowchart LR
+  A[EstadoOrigen] -->|"Caso de Uso / metodo()"| B[EstadoDestino]
+  C[EstadoOrigen] -->|"Caso de Uso [condicion] / metodo()"| D[EstadoDestino]`} />
+
+Ejemplos basados en FIA F1 - Orden de Traslado:
+
+<MermaidDiagram caption="Transiciones típicas de OT" code={`stateDiagram-v2
+  Creada --> Aprobada: Registrar evaluacion de OT / aprobar()
+  Creada --> Rechazada: Registrar evaluacion de OT / rechazar()
+  Aprobada --> EnPreparacion: Registrar inicio de preparacion / comenzarPreparacion()
+  EnDestino --> Exitosa: Registrar revision de contenedores [sin pendientes y revision OK = SI] / revisarContenido()`} />
+
+Ejemplo de una condición que parte el flujo en dos:
+
+<MermaidDiagram caption="Bifurcación por condición de control" code={`stateDiagram-v2
+  Creada --> Creada: Procesar OT no analizadas [pasaron 24 horas = NO] / validarAprobacion()
+  Creada --> Rechazada: Procesar OT no analizadas [pasaron 24 horas = SI] / validarAprobacion()`} />
+
+<MermaidDiagram caption="Síntesis del patrón FIA F1 - Orden de Traslado" code={`stateDiagram-v2
+  [*] --> Creada: Generar OT [crea Jefe Mecanica] / new()
+  [*] --> Aprobada: Generar OT [crea Jefe Equipo] / new()
+  Creada --> Aprobada: Registrar evaluacion de OT / aprobar()
+  Creada --> Rechazada: Registrar evaluacion de OT / rechazar()
+  Creada --> Rechazada: Procesar OT no analizadas [pasaron 24 horas] / validarAprobacion()
+  Creada --> Cancelada: Registrar cancelacion de OT / cancelar()
+  Aprobada --> EnPreparacion: Registrar inicio preparacion / comenzarPreparacion()
+  EnPreparacion --> ListaParaEnvio: Registrar armado / finalizarPreparacion()
+  ListaParaEnvio --> EnTraslado: Informar inicio traslado / comenzarTraslado()
+  EnTraslado --> EnDestino: Registrar llegada / registrarLlegadaADestino()
+  EnDestino --> Exitosa: Registrar revision [OK] / revisarContenido()
+  EnDestino --> Incompleta: Registrar revision [NO OK] / revisarContenido()
+  Rechazada --> [*]
+  Cancelada --> [*]
+  Exitosa --> [*]
+  Incompleta --> [*]`} />
+
+#### 15.3.3. Cómo obtener métodos
+
+El método de transición debe pertenecer a la clase que cambia de estado. No representa toda la pantalla ni todo el caso de uso: representa la responsabilidad de la entidad para pasar de una situación a otra.
+
+Métodos típicos detectados en soluciones:
+
+- `aprobar()`
+- `rechazar()`
+- `cancelar()`
+- `validarAprobacion()`
+- `comenzarPreparacion()`
+- `finalizarPreparacion()`
+- `comenzarTraslado()`
+- `registrarLlegadaDestino()`
+- `revisarContenido()`
+- `calcularDisponibilidad()`
+- `esFactibleCancelar()`
+- `obtenerEstadoActual()`
+- `marcarNoCobrado()`
+
+<Callout tipo="atencion">
+Si en la máquina aparece `/ cancelar()`, en la dinámica de cancelar debería verse un mensaje hacia la entidad que cambia, por ejemplo `GestorCancelacionVuelo -> Vuelo: cancelar()`. Si no aparece, los diagramas quedan desconectados.
+</Callout>
+
+#### 15.3.4. Condiciones de control
+
+Usá guarda cuando el enunciado dice que una transición depende de una regla. También cuando un mismo caso de uso puede llevar a más de un estado.
+
+<MermaidDiagram caption="Guardas cuando el caso puede terminar distinto" code={`stateDiagram-v2
+  EnDestino --> Incompleta: Registrar revision [hay pendientes o revision OK = NO] / revisarContenido()
+  EnDestino --> Exitosa: Registrar revision [sin pendientes y revision OK = SI] / revisarContenido()
+  Programado --> Cancelado: Cancelar Vuelo [estado actual permite cancelacion] / cancelar()`} />
+
+No hace falta poner condiciones inventadas para todo. Si una transición es directa y la regla no se bifurca, la condición puede omitirse.
+
+#### 15.3.5. Estados finales y estados de negocio
+
+`Cancelada`, `Rechazada`, `Exitosa`, `Finalizado` o `EnDesuso` pueden ser estados del negocio. El pseudoelemento final UML (`[*]`) indica que termina el ciclo de vida modelado. No son lo mismo.
+
+En FIA F1, `Rechazada`, `Cancelada`, `Incompleta` y `Exitosa` son estados nombrados; luego pueden ir al final UML. En Publicidad Multipunto, `EnDesuso` se aclara como estado final de negocio del `PuntoDeEmision`.
+
+#### 15.3.6. Estados compuestos
+
+Usá estado compuesto cuando una fase tiene subetapas internas que conviene encapsular. Aparece en ejemplos como `EnUso` para `Cuenta` en PPA Peaje y `EnReproduccion` para `PuntoDeEmision` en Publicidad Multipunto. En Líneas Aéreas, el vuelo puede agrupar etapas de ejecución como despegue, aire, zona y aterrizaje.
+
+<MermaidDiagram caption="Patrón de estado compuesto para Vuelo" code={`stateDiagram-v2
+  [*] --> Programado
+  Programado --> Demorado: Actualizar situacion / demorar()
+  Programado --> EnEmbarque: Iniciar embarque / iniciarEmbarque()
+  EnEmbarque --> Cerrado: Cerrar embarque / cerrar()
+  Cerrado --> EnEjecucion: Despegar / despegar()
+  state EnEjecucion {
+    [*] --> EnDespegue
+    EnDespegue --> EnAire: Alcanzar altura / enAire()
+    EnAire --> EnZona: Llegar a zona / enZona()
+    EnZona --> Aterrizado: Aterrizar / aterrizar()
+  }
+  EnEjecucion --> Finalizado: Finalizar vuelo / finalizar()
+  Programado --> Cancelado: Cancelar vuelo / cancelar()
+  Demorado --> Cancelado: Cancelar vuelo / cancelar()
+  Cancelado --> [*]
+  Finalizado --> [*]`} />
+
+#### 15.3.7. Vista de clases que soporta una máquina
+
+La Guía 2026 de Máquina de Estados repite una consigna: además de la máquina, construir la vista de análisis con las clases necesarias para darle soporte. La solución no siempre muestra todo el dominio; a veces aclara que solo incluye atributos y métodos usados por la máquina.
+
+Patrón de soporte:
+
+<MermaidDiagram caption="Soporte estructural mínimo para historial de estados" code={`classDiagram
+  class EntidadConEstados {
+    <<entity>>
+    +obtenerEstadoActual()
+  }
+  class CambioEstadoEntidad {
+    <<entity>>
+    - fechaHoraInicio
+    - fechaHoraFin
+  }
+  class Estado {
+    <<entity>>
+    - nombre
+  }
+  class Responsable {
+    <<entity>>
+    - nombre
+  }
+  EntidadConEstados "1" --> "1..*" CambioEstadoEntidad
+  CambioEstadoEntidad "*" --> "1" Estado
+  CambioEstadoEntidad "*" --> "0..1" Responsable`} />
+
+Si el enunciado dice que no hay historial, puede alcanzar una relación directa con `Estado`. Si pide historial, fecha/hora, responsable o permanencia en estados, necesitás `CambioEstado...`, `HistorialEstado...` o clase equivalente.
+
+<ChecklistRepaso
+  id="practica-maquina-estados"
+  preguntas={[
+    "¿La clase modelada tiene ciclo de vida propio?",
+    "¿Todos los estados son situaciones y no acciones?",
+    "¿Cada transición tiene caso de uso o evento disparador?",
+    "¿Cada transición importante tiene método de la clase que cambia de estado?",
+    "¿Puse guardas solo donde hay condición de control real?",
+    "¿Separé estados de la clase principal de estados de objetos relacionados?",
+    "¿Incluí cancelaciones, rechazos, vencimientos o caminos automáticos si el enunciado los menciona?",
+    "¿Distinguí estados finales de negocio del final UML?",
+    "¿Agregué Estado/CambioEstado o HistorialEstado cuando se pide historial?",
+    "¿Los métodos de transición después aparecen en secuencia y clases?"
+  ]}
+/>
+
+### 15.4. Diagrama de secuencia y comunicación
+
+El diagrama de secuencia muestra cómo colaboran objetos para ejecutar un escenario específico de un caso de uso. En muchas soluciones de cátedra también aparece el diagrama de comunicación; cambia la forma visual, pero el contenido es el mismo: objetos, enlaces y mensajes numerados.
+
+No modeles todos los casos de uso juntos. Elegí el flujo pedido: curso normal, flujo alternativo, cancelación, creación con detalles, procesamiento de lote o actualización de estado.
+
+#### 15.4.1. Participantes típicos
+
+La estructura más repetida es:
+
+<MermaidDiagram caption="Estructura BCE repetida en realizaciones de análisis" code={`flowchart LR
+  Actor([Actor]) --> Pantalla["boundary Pantalla..."]
+  Pantalla --> Gestor["control Gestor..."]
+  Gestor --> Entidades["entity Entidades del dominio"]`} />
+
+Participantes habituales:
+
+- <strong>Actor:</strong> rol externo que inicia el caso de uso.
+- <strong>Boundary:</strong> `Pantalla...`, `Interfaz...`, `Formulario...`; recibe eventos, muestra datos, solicita selecciones.
+- <strong>Control:</strong> `Gestor...`; coordina el caso de uso, valida, busca entidades, delega responsabilidades.
+- <strong>Entity:</strong> clases del dominio con datos y comportamiento: `Vuelo`, `OrdenTraslado`, `Estado`, `CambioEstadoVuelo`, `Escuderia`, `Reserva`.
+- <strong>Sesion/Usuario:</strong> aparece cuando el flujo necesita usuario logueado, permisos, rol o responsable.
+- <strong>Interfaces externas:</strong> mail, SMS, controlador, servicio de pago o pantallas interesadas.
+
+<Callout tipo="error">
+Un error típico es hacer que la pantalla hable con todas las entidades. En las soluciones, la pantalla suele pedir/tomar/mostrar; el gestor coordina; las entidades responden por información propia.
+</Callout>
+
+#### 15.4.2. Boundary: `Pantalla...`
+
+La boundary representa la frontera sistema-actor. En los diagramas resueltos aparecen nombres como `PantallaRegistrarOrdenTraslado`, `PantallaConsultarDisponibilidad`, `PantallaCancelacionVuelo`, `PantallaEstadosDeVuelo`.
+
+Métodos típicos:
+
+- `habilitarVentana()` o `habilitarPantalla()`
+- `solicitarSeleccion...()`
+- `tomarSeleccion...()`
+- `listar...()`
+- `mostrar...()`
+- `pedirConfirmacion()`
+- `tomarConfirmacion()`
+
+#### 15.4.3. Control: `Gestor...`
+
+El gestor encapsula la coordinación del caso de uso. En la cátedra suele haber un gestor por caso de uso o por responsabilidad principal: `GestorRegistrarOrdenTraslado`, `GestorDeConsultaDisponibilidad`, `GestorCancelacionVuelo`, `GestorDA`.
+
+Métodos típicos:
+
+- `iniciarCU()` o un nombre del caso, como `generarOT()` o `consultarDispVuelos()`
+- `validarRolUsuarioLogueado()`
+- `buscar...()`
+- `obtener...()`
+- `verificar...()`
+- `tomar...()`
+- `generar...()`
+- `cancelar...()`
+- `notificar()`
+- `finCU()` o `finCasoDeUso()`
+
+#### 15.4.4. Entity: clases del dominio
+
+La entidad no es solo una tabla: conoce datos y puede tener comportamiento experto. En las soluciones se ve al gestor pidiendo información a entidades, pero también delegando operaciones de dominio:
+
+<MermaidDiagram caption="Entidades con responsabilidades propias" code={`classDiagram
+  class Vuelo {
+    <<entity>>
+    +esFactibleCancelar()
+    +obtenerEstadoActual()
+    +calcularDisponibilidad()
+  }
+  class Estado {
+    <<entity>>
+    +permiteCancelacion()
+    +esCancelado()
+    +esOcioso()
+  }
+  class OrdenTraslado {
+    <<entity>>
+    +crearCambioEstado()
+    +crearDetallesOT()
+    +revisarContenido()
+  }
+  class Contenedor {
+    <<entity>>
+    +estaOcioso()
+    +asignarAOT()
+  }`} />
+
+#### 15.4.5. Patrón de flujo inicial
+
+En FIA F1 - CU Generar Orden de Traslado, Líneas Aéreas - Consultar Disponibilidad y PPA Peaje - Consultar Tarifa se repite este inicio:
+
+<MermaidDiagram caption="Patrón de flujo inicial" code={`flowchart TD
+  A[Actor selecciona opcion] --> B[Pantalla se habilita]
+  B --> C[Pantalla invoca al gestor]
+  C --> D[Gestor valida usuario o rol]
+  D --> E[Gestor busca datos iniciales]
+  E --> F[Pantalla muestra o lista opciones]
+  F --> G[Actor selecciona]
+  G --> H[Pantalla toma seleccion]
+  H --> I[Gestor continua]`} />
+
+<MermaidDiagram caption="Plantilla de inicio boundary-control-entity" code={`sequenceDiagram
+  actor A as Actor
+  participant Pantalla
+  participant Gestor
+  participant Sesion
+  participant Usuario
+  participant Entidad
+
+  A->>Pantalla: opcionCasoUso()
+  Pantalla->>Pantalla: habilitarVentana()
+  Pantalla->>Gestor: iniciarCasoUso()
+  Gestor->>Sesion: getUsuarioLogueado()
+  Sesion-->>Gestor: usuario
+  Gestor->>Usuario: validarRolUsuarioLogueado()
+  Gestor->>Entidad: buscarDatosIniciales()
+  Entidad-->>Gestor: datos
+  Gestor-->>Pantalla: mostrarDatos()
+  A->>Pantalla: tomarSeleccion()
+  Pantalla->>Gestor: seleccionTomada()`} />
+
+#### 15.4.6. Patrón de búsqueda y selección
+
+Este patrón aparece con países/provincias/ciudades en Líneas Aéreas y con circuitos, fábrica, elementos y contenedores en FIA F1.
+
+<MermaidDiagram caption="Patrón de búsqueda y selección" code={`sequenceDiagram
+  actor A as Actor
+  participant Pantalla
+  participant Gestor
+  participant Catalogo as EntidadCatalogo
+  participant Item
+
+  Gestor->>Catalogo: obtenerColeccion()
+  loop mientras existan items
+    Catalogo->>Item: getNombre()
+  end
+  Gestor-->>Pantalla: listarOpciones()
+  A->>Pantalla: seleccionOpcion()
+  Pantalla->>Gestor: opcionSeleccionada()`} />
+
+La marca `*` en varios diagramas indica repetición sobre una colección. En Mermaid conviene expresarlo con `loop`.
+
+<MermaidDiagram caption="Loop para recorrer elementos" code={`sequenceDiagram
+  participant Gestor
+  participant Elemento
+  participant TipoElemento
+  loop mientras existan elementos
+    Gestor->>Elemento: getCodigo()
+    Gestor->>Elemento: getNombre()
+    Gestor->>TipoElemento: getNombre()
+  end`} />
+
+#### 15.4.7. Patrón de validación
+
+En las soluciones, las validaciones de flujo suelen quedar en el gestor, pero las validaciones que dependen del estado o de datos propios se delegan a la entidad experta.
+
+<MermaidDiagram caption="Validación de flujo y estado actual" code={`sequenceDiagram
+  participant Gestor
+  participant Vuelo
+  participant Cambio as CambioEstadoVuelo
+  participant Estado
+
+  Gestor->>Gestor: verificarDatosRequeridos()
+  Gestor->>Vuelo: esFactibleCancelar()
+  Vuelo->>Cambio: obtenerEstadoActual()
+  Cambio->>Estado: permiteCancelacion()`} />
+
+Esto se ve en Líneas Aéreas - CU Cancelar Vuelo: antes de ofrecer vuelos cancelables, el gestor busca vuelos y el vuelo/cambio/estado colaboran para saber si permite cancelación.
+
+#### 15.4.8. Patrón de cambio de estado con historial
+
+Cuando una entidad cambia de estado y se pide historial, el patrón es:
+
+1. El gestor valida que la transición sea posible.
+2. La entidad ejecuta el método de transición.
+3. Se busca o cierra el cambio de estado actual.
+4. Se crea un nuevo `CambioEstado...` o `HistorialEstado...`.
+5. Se asocia el nuevo `Estado`.
+6. Se registra fecha/hora, motivo y responsable si el enunciado lo exige.
+7. Se notifica si corresponde.
+
+Ejemplo basado en Líneas Aéreas - CU Cancelar Vuelo:
+
+<MermaidDiagram caption="Cambio de estado con historial - Cancelar Vuelo" code={`sequenceDiagram
+  participant Gestor as GestorCancelacionVuelo
+  participant Vuelo
+  participant Actual as CambioEstadoVuelo actual
+  participant Nuevo as CambioEstadoVuelo cancelado
+  participant Estado
+  participant Consulta as PantallaConsultarDisponibilidad
+  participant Estados as PantallaEstadosDeVuelo
+
+  Gestor->>Vuelo: cancelar()
+  Vuelo->>Actual: setFechaHoraFin()
+  Vuelo->>Nuevo: new()
+  Nuevo->>Estado: estadoCancelado
+  Gestor->>Consulta: actualizarEstadoVuelos()
+  Gestor->>Estados: actualizarEstadoVuelos()`} />
+
+Ejemplo basado en PPA Peaje - Cuenta:
+
+<MermaidDiagram caption="Cambio de estado con historial - Cuenta" code={`sequenceDiagram
+  participant Cuenta
+  participant EstadoActual
+  participant Historial as HistorialEstadoCuenta
+  participant Estado
+
+  Cuenta->>EstadoActual: marcarNoCobrado()
+  EstadoActual->>Historial: setFechaFinEstado()
+  EstadoActual->>Estado: crearProximoEstado()
+  EstadoActual->>Historial: crearHistorialEstadoCuenta()
+  Cuenta->>Cuenta: agregarHistorial()
+  Cuenta->>Cuenta: setEstadoActual()`} />
+
+#### 15.4.9. Patrón de creación con detalles
+
+FIA F1 - CU Generar Orden de Traslado muestra una creación con cabecera, detalles, estado inicial y asignación de objetos parte:
+
+<MermaidDiagram caption="Creación con cabecera, detalle y estado inicial" code={`sequenceDiagram
+  participant Gestor
+  participant OT as OrdenTraslado
+  participant CambioEstado
+  participant DetalleOT
+  participant Contenedor
+
+  Gestor->>OT: new()
+  OT->>CambioEstado: crearCambioEstado()
+  OT->>OT: crearDetallesOT()
+  loop contenedores
+    OT->>DetalleOT: new()
+    DetalleOT->>Contenedor: asignarAOT()
+  end`} />
+
+Regla práctica: el gestor reúne datos y coordina; la entidad principal puede crear o asociar detalles si es el todo que los contiene.
+
+#### 15.4.10. Patrón de consulta con filtros
+
+Líneas Aéreas - CU Consultar Disponibilidad es el caso típico:
+
+1. Pantalla recolecta filtros: tipo de vuelo, origen, destino, fecha, flexibilidad, cantidad por clase.
+2. Gestor valida datos requeridos.
+3. Gestor determina rango horario y tipo de vuelo.
+4. Gestor busca vuelos candidatos.
+5. `Vuelo` calcula disponibilidad con reservas, definición, capacidad, tipo de aeronave y tarifas.
+6. Gestor determina si alcanza para lo pedido.
+7. Pantalla muestra vuelos disponibles.
+
+No es un CRUD: hay selección incremental, validación, cálculo y consulta sobre varias entidades relacionadas.
+
+#### 15.4.11. Patrón de notificación
+
+Hay dos niveles:
+
+- En análisis, el gestor notifica a interfaces externas o pantallas interesadas.
+- En diseño, algunos PDFs rediseñan con Observer. Para esta guía práctica alcanza mencionarlo como puente, no como eje.
+
+Ejemplos:
+
+<MermaidDiagram caption="Notificación simple a interfaces o pantallas interesadas" code={`sequenceDiagram
+  participant GestorOT as GestorRegistrarOrdenTraslado
+  participant Mail as InterfazMail
+  participant SMS as InterfazSMS
+  participant GestorVuelo as GestorCancelacionVuelo
+  participant PantallaEstados as PantallaEstadosDeVuelo
+  participant PantallaConsulta as PantallaConsultarDisponibilidad
+
+  GestorOT->>Mail: enviarNotificacion()
+  GestorOT->>SMS: enviarNotificacion()
+  GestorVuelo->>PantallaEstados: actualizarEstadoVuelos()
+  GestorVuelo->>PantallaConsulta: actualizarEstadoVuelos()`} />
+
+En Publicidad Multipunto, cuando se actualiza una tanda publicitaria vigente, se notifica a pantallas de puntos de emisión y a la vista previa. El PDF de diseño lo resuelve con Observer, pero el patrón de análisis sigue siendo detectar interesados y mostrar el loop de notificación.
+
+<ChecklistRepaso
+  id="practica-secuencia"
+  preguntas={[
+    "¿Modelé un escenario concreto y no todo el sistema?",
+    "¿Arranqué con actor y boundary?",
+    "¿La pantalla solo recibe, muestra, solicita y toma datos?",
+    "¿El gestor coordina el caso de uso?",
+    "¿Las entidades responden por información o comportamiento propio?",
+    "¿Incluí Sesion/Usuario cuando hay rol, permisos o responsable?",
+    "¿Puse loops donde se recorren colecciones?",
+    "¿Las validaciones importantes están modeladas?",
+    "¿Los métodos de transición de la máquina aparecen como mensajes?",
+    "¿El final del CU aparece como finCU() o finCasoDeUso() si el estilo del ejercicio lo usa?"
+  ]}
+/>
+
+### 15.5. Diagrama de clases del modelo de análisis
+
+La vista de clases de análisis es la estructura que soporta la realización. Debe incluir las clases necesarias para el escenario y para la máquina de estados cuando la consigna las conecta.
+
+En soluciones de cátedra suele pedirse:
+
+- clases `<<boundary>>`, `<<control>>` y `<<entity>>`;
+- atributos y métodos;
+- relaciones;
+- multiplicidad;
+- navegabilidad;
+- clases que aparecen en la comunicación o secuencia.
+
+#### 15.5.1. Derivar clases desde la secuencia
+
+Regla principal:
+
+<MermaidDiagram caption="Regla de derivación desde la dinámica" code={`flowchart TD
+  A[Objeto significativo en la dinamica] --> B[Clase en la vista de analisis]
+  C[Mensaje entrante relevante] --> D[Metodo en la clase receptora]
+  E[Enlace usado para enviar mensajes] --> F[Asociacion, dependencia o navegabilidad]`} />
+
+Ejemplo:
+
+<MermaidDiagram caption="Mensaje que deriva un método en Vuelo" code={`sequenceDiagram
+  participant Gestor as GestorCancelacionVuelo
+  participant Vuelo
+  Gestor->>Vuelo: cancelar()`} />
+
+Implica:
+
+<MermaidDiagram caption="Método derivado en la clase receptora" code={`classDiagram
+  class Vuelo {
+    <<entity>>
+    +cancelar()
+  }`} />
+
+Ejemplo:
+
+<MermaidDiagram caption="Mensaje que deriva un método en Estado" code={`sequenceDiagram
+  participant Vuelo
+  participant Estado
+  Vuelo->>Estado: permiteCancelacion()`} />
+
+Implica:
+
+<MermaidDiagram caption="Método derivado en Estado" code={`classDiagram
+  class Estado {
+    <<entity>>
+    +permiteCancelacion()
+  }`} />
+
+#### 15.5.2. Estereotipos y nombres
+
+<MermaidDiagram caption="Estereotipos BCE en clases de análisis" code={`classDiagram
+  class PantallaCancelarVuelo {
+    <<boundary>>
+  }
+  class GestorCancelacionVuelo {
+    <<control>>
+  }
+  class Vuelo {
+    <<entity>>
+  }
+  PantallaCancelarVuelo ..> GestorCancelacionVuelo
+  GestorCancelacionVuelo --> Vuelo`} />
+
+En FIA F1 y Líneas Aéreas, los nombres no son genéricos: conservan el caso de uso o concepto. Eso ayuda a trazar desde la dinámica hacia la clase.
+
+#### 15.5.3. Atributos
+
+Los atributos salen de:
+
+- datos persistentes del dominio;
+- datos que el objeto necesita recordar durante el caso de uso;
+- condiciones de negocio;
+- datos de pantalla si son parte de la boundary;
+- historial de estado.
+
+Ejemplos:
+
+<MermaidDiagram caption="Atributos típicos de Vuelo" code={`classDiagram
+  class Vuelo {
+    <<entity>>
+    - fecha
+    - horaPartidaProgramada
+  }`} />
+
+<MermaidDiagram caption="Atributos típicos de CambioEstadoVuelo" code={`classDiagram
+  class CambioEstadoVuelo {
+    <<entity>>
+    - fechaHoraInicio
+    - fechaHoraFin
+    - comentario
+    - descripcion
+  }`} />
+
+<MermaidDiagram caption="Atributos típicos de OrdenTraslado" code={`classDiagram
+  class OrdenTraslado {
+    <<entity>>
+    - fechaCreacion
+    - fechaLlegadaEsperada
+    - fechaUltimaSalidaPosible
+  }`} />
+
+#### 15.5.4. Métodos
+
+Incluí métodos que aparecen como mensajes entrantes, métodos de transición de estados y validaciones del dominio. No llenes la clase de getters/setters si no se usaron, salvo que el estilo del diagrama original los muestre para obtener datos.
+
+En las soluciones se ven muchos `getNombre()`, `getFecha()`, `getHoraPartidaProgramada()` porque la dinámica los usa para mostrar datos. Pero lo importante no es inflar la clase, sino que la clase tenga los métodos que justifican los mensajes.
+
+#### 15.5.5. Relaciones, multiplicidad y navegabilidad
+
+La multiplicidad se razona desde el dominio y desde los mensajes:
+
+<MermaidDiagram caption="Multiplicidades típicas en clases de análisis" code={`classDiagram
+  Vuelo "1" --> "1..*" CambioEstadoVuelo
+  CambioEstadoVuelo "*" --> "1" Estado
+  CambioEstadoVuelo "*" --> "0..1" MotivoCancelacion
+  OrdenTraslado "1" --> "1..*" DetalleOT
+  DetalleOT "1" --> "1" Contenedor
+  DefinicionDeVuelo "1" --> "1" Aeropuerto : origen
+  DefinicionDeVuelo "1" --> "1" Aeropuerto : destino
+  Vuelo "1" --> "0..*" Reserva`} />
+
+La navegabilidad se justifica por quién necesita conocer a quién para enviar mensajes. Si `GestorDeConsultaDisponibilidad` consulta `Vuelo`, `Pais`, `Provincia`, `Ciudad`, `TipoClase` y `TipoVuelo`, esas dependencias aparecen en la vista de clases. Si `OrdenTraslado` crea `DetalleOT`, hay relación estructural entre ambas.
+
+#### 15.5.6. Patrón `Estado` y `CambioEstado`
+
+Este patrón aparece en FIA F1, Líneas Aéreas, Peaje y otros ejercicios de ciclo de vida.
+
+- `Estado` representa el catálogo o concepto de estados posibles.
+- `CambioEstado...` o `HistorialEstado...` representa el paso de la entidad por un estado.
+- La entidad principal tiene muchos cambios si se pide historial.
+- El estado actual suele ser el cambio activo: fecha fin vacía, marca actual o método `esEstadoActual()`.
+- El cambio puede guardar fecha/hora de inicio, fecha/hora de fin, motivo, comentario y responsable.
+
+<MermaidDiagram caption="Plantilla de clases para historial de estados" code={`classDiagram
+  class Vuelo {
+    <<entity>>
+    - fecha
+    - horaPartidaProgramada
+    + obtenerEstadoActual()
+    + esFactibleCancelar()
+    + cancelar()
+  }
+  class CambioEstadoVuelo {
+    <<entity>>
+    - fechaHoraInicio
+    - fechaHoraFin
+    - descripcion
+    + esEstadoActual()
+    + setFechaHoraFin()
+  }
+  class Estado {
+    <<entity>>
+    - nombre
+    - ambito
+    + permiteCancelacion()
+    + esCancelado()
+  }
+  class MotivoCancelacion {
+    <<entity>>
+    - descripcion
+    + getDescripcion()
+  }
+  class Empleado {
+    <<entity>>
+    - nombre
+    + getNombre()
+  }
+  Vuelo "1" --> "1..*" CambioEstadoVuelo : cambios
+  CambioEstadoVuelo "*" --> "1" Estado : estado
+  CambioEstadoVuelo "*" --> "0..1" MotivoCancelacion : motivo
+  CambioEstadoVuelo "*" --> "1" Empleado : responsable`} />
+
+<ChecklistRepaso
+  id="practica-clases-analisis"
+  preguntas={[
+    "¿Están las clases que participan en la secuencia o comunicación?",
+    "¿Cada boundary representa interacción actor-sistema?",
+    "¿Hay un gestor claro para coordinar el caso de uso?",
+    "¿Las entidades salen del dominio y no de la tecnología?",
+    "¿Los mensajes entrantes importantes aparecen como métodos?",
+    "¿Los atributos están justificados por dominio, pantalla, validación o historial?",
+    "¿Las multiplicidades son razonables?",
+    "¿La navegabilidad coincide con los mensajes enviados?",
+    "¿Agregué Estado/CambioEstado si el enunciado pide historial?",
+    "¿Evité detalles de base de datos, frameworks o arquitectura?"
+  ]}
+/>
+
+### 15.6. Cómo se conectan los tres diagramas
+
+#### 15.6.1. Máquina de estados hacia secuencia
+
+Los métodos de transición de la máquina tienen que aparecer en la secuencia cuando el caso de uso cambia el estado.
+
+<MermaidDiagram caption="De transición de máquina a mensaje de secuencia" code={`flowchart TD
+  A["Maquina: Programado --> Cancelado : Cancelar Vuelo / cancelar()"] --> B["Secuencia: GestorCancelacionVuelo -> Vuelo : cancelar()"]`} />
+
+Si la transición tiene condición, la secuencia debería mostrar la validación que la justifica:
+
+<MermaidDiagram caption="La guarda se justifica con validaciones en la dinámica" code={`sequenceDiagram
+  participant Gestor as GestorCancelacionVuelo
+  participant Vuelo
+  participant Cambio as CambioEstadoVuelo
+  participant Estado
+  Gestor->>Vuelo: esFactibleCancelar()
+  Vuelo->>Cambio: obtenerEstadoActual()
+  Cambio->>Estado: permiteCancelacion()`} />
+
+#### 15.6.2. Secuencia hacia clases
+
+Los objetos de la secuencia se vuelven clases de análisis. Los mensajes entrantes se vuelven métodos. Los enlaces usados para enviar mensajes justifican relaciones o dependencias.
+
+<MermaidDiagram caption="De mensajes a clases, métodos y relaciones" code={`sequenceDiagram
+  participant Gestor as GestorRegistrarOrdenTraslado
+  participant Escuderia
+  participant Contenedor
+  participant Estado
+  Gestor->>Escuderia: buscarContenedoresOciosos()
+  Escuderia->>Contenedor: estaOcioso()
+  Contenedor->>Estado: esOcioso()`} />
+
+Eso justifica que `GestorRegistrarOrdenTraslado`, `Escuderia`, `Contenedor` y `Estado` estén en clases, con esos métodos disponibles.
+
+#### 15.6.3. Clases hacia máquina
+
+La clase que tiene estados debe contener métodos coherentes con la máquina. En FIA F1, `OrdenTraslado` incluye métodos como `aprobar()`, `rechazar()`, `cancelar()`, `comenzarPreparacion()`, `comenzarTraslado()`, `registrarLlegadaDestino()` y `revisarContenido()`.
+
+### 15.7. Catálogo de patrones de parcial
+
+#### 15.7.1. Patrón 1: selección simple
+
+Actor selecciona opción, pantalla se habilita, gestor busca datos, pantalla muestra, actor selecciona y el gestor continúa. Sirve para consultas simples y pasos iniciales de casos más grandes.
+
+<MermaidDiagram caption="Patrón 1 - Selección simple" code={`sequenceDiagram
+  actor A as Actor
+  participant Pantalla
+  participant Gestor
+  participant Entidad
+  A->>Pantalla: opcion()
+  Pantalla->>Pantalla: habilitarVentana()
+  Pantalla->>Gestor: iniciarCU()
+  Gestor->>Entidad: buscar()
+  Gestor-->>Pantalla: mostrarOListar()
+  A->>Pantalla: seleccion()
+  Pantalla->>Gestor: tomarSeleccion()`} />
+
+#### 15.7.2. Patrón 2: consulta con filtros
+
+Ejemplo: Líneas Aéreas - CU Consultar Disponibilidad de Vuelos.
+
+Recolecta criterios, valida datos, busca entidades relacionadas, calcula disponibilidad y muestra resultados. Suele tener muchos mensajes `get...()` y loops para colecciones.
+
+#### 15.7.3. Patrón 3: cancelación
+
+Ejemplos: Líneas Aéreas - CU Cancelar Vuelo; FIA F1 - Registrar cancelación de OT.
+
+<MermaidDiagram caption="Patrón 3 - Cancelación" code={`flowchart TD
+  A[Buscar objeto cancelable] --> B[Validar estado actual]
+  B --> C[Mostrar datos]
+  C --> D[Solicitar motivo y descripcion]
+  D --> E[Confirmar]
+  E --> F[Cambiar estado]
+  F --> G[Registrar historial]
+  G --> H[Notificar interesados]
+  H --> I["finCU()"]`} />
+
+#### 15.7.4. Patrón 4: cambio de estado con historial
+
+Ejemplos: Vuelo, Cuenta, Orden de Traslado cuando se pide historia.
+
+<MermaidDiagram caption="Patrón 4 - Cambio de estado con historial" code={`sequenceDiagram
+  participant Entidad
+  participant Actual as CambioEstado actual
+  participant Nuevo as CambioEstado nuevo
+  participant Estado
+  Entidad->>Actual: setFechaHoraFin()
+  Entidad->>Nuevo: new()
+  Nuevo->>Estado: asociar estado destino
+  Entidad->>Entidad: agregarCambioEstado()`} />
+
+#### 15.7.5. Patrón 5: creación con detalles
+
+Ejemplo: FIA F1 - CU Generar Orden de Traslado.
+
+Recolectar datos, validar, crear cabecera, crear cambio de estado inicial, crear detalles y asociar partes. Si hay contenedores o elementos, aparece loop.
+
+#### 15.7.6. Patrón 6: revisión con resultado alternativo
+
+Un mismo caso de uso puede terminar en estados distintos. Ejemplo FIA F1:
+
+<MermaidDiagram caption="Patrón 6 - Resultado alternativo según condición" code={`stateDiagram-v2
+  EnDestino --> Exitosa: Registrar revision [revision OK]
+  EnDestino --> Incompleta: Registrar revision [revision NO OK]`} />
+
+La condición no es decoración: explica por qué el mismo evento no siempre llega al mismo estado.
+
+#### 15.7.7. Patrón 7: procesamiento automático o periódico
+
+Ejemplos: FIA F1 - procesar OT no analizadas; Publicidad Multipunto - verificar conexión/actualización; Peaje - procesamiento de lote.
+
+La diferencia con un flujo manual es que el actor puede ser tiempo, sistema externo o proceso. Igual se modela con caso de uso, transición y método.
+
+#### 15.7.8. Patrón 8: notificación a interesados
+
+Ejemplos: Líneas Aéreas y Publicidad Multipunto. En análisis puede aparecer como llamadas directas a pantallas/interfaz; en diseño puede rediseñarse con Observer.
+
+<MermaidDiagram caption="Loop de notificación a interesados" code={`sequenceDiagram
+  participant Gestor
+  participant PantallaInteresada
+
+  Gestor->>Gestor: notificar()
+  loop mientras existan interesados
+    Gestor->>PantallaInteresada: actualizar()
+  end`} />
+
+### 15.8. Errores típicos de parcial
+
+<Callout tipo="error" titulo="Errores a evitar">
+- Confundir acciones con estados.
+- Poner todos los casos de uso como estados.
+- No poner métodos en las transiciones.
+- No poner condiciones de control cuando una regla bifurca el flujo.
+- Mezclar estados de la entidad principal con estados de objetos relacionados.
+- Hacer que la pantalla hable directamente con todas las entidades.
+- Hacer que el gestor haga responsabilidades que corresponden a una entidad experta.
+- Olvidar `Sesion`/`Usuario` cuando hay rol, permisos o responsable.
+- Olvidar `CambioEstado`/`HistorialEstado` cuando se pide historial.
+- No reflejar en clases los métodos usados en secuencia.
+- Omitir multiplicidades y navegabilidad cuando la consigna las pide.
+- Usar nombres distintos para el mismo concepto en cada diagrama.
+- Meter detalles de base de datos, framework, controlador técnico o despliegue en análisis.
+</Callout>
+
+### 15.9. Plantillas reutilizables
+
+#### 15.9.1. Plantilla de máquina de estados
+
+<MermaidDiagram caption="Plantilla de máquina de estados" code={`stateDiagram-v2
+  [*] --> EstadoInicial
+  EstadoInicial --> EstadoIntermedio: Caso de Uso / metodo()
+  EstadoIntermedio --> EstadoFinalNegocio: Caso de Uso [condicion] / metodo()
+  EstadoFinalNegocio --> [*]`} />
+
+#### 15.9.2. Plantilla de secuencia con BCE
+
+<MermaidDiagram caption="Plantilla de secuencia con boundary-control-entity" code={`sequenceDiagram
+  actor A as Actor
+  participant Pantalla
+  participant Gestor
+  participant Entidad
+
+  A->>Pantalla: opcionCasoUso()
+  Pantalla->>Pantalla: habilitarVentana()
+  Pantalla->>Gestor: iniciarCasoUso()
+  Gestor->>Entidad: buscarDatos()
+  Entidad-->>Gestor: datos
+  Gestor-->>Pantalla: mostrarDatos()
+  A->>Pantalla: confirmar()
+  Pantalla->>Gestor: tomarConfirmacion()
+  Gestor->>Entidad: metodoDeNegocio()`} />
+
+#### 15.9.3. Plantilla de clases de análisis
+
+<MermaidDiagram caption="Plantilla de clases de análisis" code={`classDiagram
+  class PantallaCasoUso {
+    <<boundary>>
+    - estado
+    + habilitarVentana()
+    + solicitarDatos()
+    + tomarConfirmacion()
+  }
+  class GestorCasoUso {
+    <<control>>
+    - datoSeleccionado
+    + iniciarCasoUso()
+    + validarDatos()
+    + ejecutarOperacion()
+    + finCU()
+  }
+  class EntidadPrincipal {
+    <<entity>>
+    - atributo
+    + metodoDeNegocio()
+  }
+  PantallaCasoUso ..> GestorCasoUso
+  GestorCasoUso --> EntidadPrincipal`} />
+
+### 15.10. Checklist final de autocorrección
+
+<ChecklistRepaso
+  id="practica-final"
+  preguntas={[
+    "¿La solución sigue el enunciado concreto y no una explicación UML genérica?",
+    "¿La máquina de estados usa la sintaxis caso de uso / método y guardas cuando aplica?",
+    "¿La secuencia corresponde a un escenario definido del caso de uso?",
+    "¿Usé nombres de cátedra: Pantalla..., Gestor..., Sesion, Usuario, Estado, CambioEstado...?",
+    "¿La pantalla no concentra lógica de negocio?",
+    "¿El gestor coordina sin tragarse todas las responsabilidades de las entidades?",
+    "¿Las entidades tienen los métodos expertos que reciben en la dinámica?",
+    "¿La vista de clases contiene las clases de la dinámica?",
+    "¿Las relaciones tienen multiplicidad y navegabilidad cuando la consigna lo pide?",
+    "¿Los tres diagramas se pueden leer como una misma solución?"
+  ]}
+/>
+
+<Callout tipo="tip" titulo="Forma de estudiar">
+Para practicar, tomá un caso resuelto y reconstruí la solución en este orden: primero escribí la tabla `estado origen -> estado destino -> caso de uso -> método -> guarda`; después armá la secuencia del caso de uso que dispara una transición; finalmente pasá cada objeto y mensaje a la vista de clases.
+</Callout>

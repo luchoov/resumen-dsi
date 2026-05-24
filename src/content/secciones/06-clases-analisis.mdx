@@ -1,0 +1,116 @@
+---
+id: "sec-06"
+numero: 6
+titulo: "Clases de análisis: entidad, frontera y control"
+slug: "06-clases-analisis"
+resumen: "Las clases de análisis se clasifican en entidad, frontera y control para separar datos duraderos, interacción y coordinación."
+keywords: ["clase de análisis", "entidad", "frontera", "boundary", "control", "BCE"]
+relacionadas: ["03-orientacion-objetos", "12-grasp"]
+---
+
+### 6.1. Qué es una clase de análisis
+
+<Definicion termino="clase de análisis">
+Una <strong>clase de análisis</strong> representa una abstracción de una o varias clases o subsistemas del futuro diseño.
+</Definicion>
+
+Es más conceptual que una clase de diseño y se centra principalmente en requisitos funcionales.
+
+<TablaComparativa
+  caption="Clase de análisis vs clase de diseño"
+  columnas={["Aspecto", "Clase de análisis", "Clase de diseño/implementación"]}
+  filas={[
+    ["Nivel", "Conceptual, orientado al dominio y requisitos funcionales.", "Tecnológico, orientado a solución ejecutable."],
+    ["Atributos", "Tipos conceptuales reconocibles en el dominio.", "Tipos de lenguaje, base de datos o framework."],
+    ["Operaciones", "Responsabilidades de alto nivel.", "Métodos con signatura, parámetros y retorno."],
+    ["Relaciones", "Conceptuales; la navegabilidad no es central.", "Más precisas; navegabilidad y multiplicidad pesan más."],
+    ["Evolución", "Un atributo puede transformarse luego en clase.", "Se decide estructura final de código."]
+  ]}
+/>
+
+<MermaidDiagram caption="Evolución de una clase de análisis hacia diseño" code={`flowchart LR
+  A[Clase de analisis\nPedido] --> B[Responsabilidades\ncalcular total / confirmar]
+  A --> C[Atributos conceptuales\nestado / fecha / total]
+  A --> D[Relaciones conceptuales\nCliente / Producto]
+  B --> E[Metodos con signatura]
+  C --> F[Tipos de lenguaje o clases nuevas]
+  D --> G[Asociaciones navegables y persistencia]`} />
+
+<DiagramaAnalisisOO
+  caption="Íconos clásicos de clases de análisis"
+  nodos={[
+    { id: "actor", tipo: "actor", etiqueta: "Actor", x: 100, y: 125 },
+    { id: "boundary", tipo: "boundary", etiqueta: "PantallaPedido", x: 300, y: 125 },
+    { id: "control", tipo: "control", etiqueta: "GestorPedido", x: 520, y: 125 },
+    { id: "entity", tipo: "entity", etiqueta: "Pedido", x: 740, y: 125 }
+  ]}
+  conexiones={[
+    { from: "actor", to: "boundary", etiqueta: "usa" },
+    { from: "boundary", to: "control", etiqueta: "delega" },
+    { from: "control", to: "entity", etiqueta: "coordina" }
+  ]}
+/>
+
+### 6.2. Clase de entidad
+
+Una <strong>clase de entidad</strong> modela información de larga vida, usualmente persistente. Representa conceptos relevantes del dominio que el sistema necesita recordar, consultar o modificar.
+
+### 6.3. Clase límite, frontera o boundary
+
+Una <strong>clase de frontera</strong> modela la interacción entre el sistema y sus actores: pantallas, formularios, paneles, interfaces de comunicación, sensores, impresoras, servicios externos o puntos de contacto.
+
+### 6.4. Clase de control
+
+Una <strong>clase de control</strong> representa coordinación, secuencia, transacciones y control de otros objetos. Suele encapsular la lógica de un caso de uso o flujo específico.
+
+### 6.5. Diferencias entre los tres estereotipos
+
+<TablaComparativa
+  caption="Estereotipos de clases de análisis"
+  columnas={["Estereotipo", "Responsabilidad principal", "Ejemplos"]}
+  filas={[
+    ["<strong>Entidad</strong>", "Conocer datos duraderos y comportamiento asociado.", "Pedido, Cliente, OrdenDeTraslado."],
+    ["<strong>Frontera</strong>", "Comunicar actor y sistema.", "PantallaPedido, APIExterna, SensorPeso."],
+    ["<strong>Control</strong>", "Coordinar un caso de uso o transacción.", "GestorPedido, ControlRegistrarFestival."]
+  ]}
+/>
+
+<MermaidDiagram caption="BCE expresado como clases UML estereotipadas" code={`classDiagram
+  class PantallaPedido {
+    <<boundary>>
+    +tomarDatos()
+    +mostrarResultado()
+  }
+  class GestorPedido {
+    <<control>>
+    +registrarPedido(datos)
+  }
+  class Pedido {
+    <<entity>>
+    -estado
+    +calcularTotal()
+  }
+  PantallaPedido --> GestorPedido
+  GestorPedido --> Pedido`} />
+
+### 6.6. Trazabilidad
+
+Las clases de análisis permiten trazar desde casos de uso hacia diseño e implementación. Una frontera suele relacionarse con una interacción externa; un control con un caso de uso; una entidad con conceptos del dominio.
+
+### 6.7. Atributos, asociaciones y generalizaciones
+
+Los PDFs remarcan que el ingeniero de componentes no inventa relaciones porque sí: estudia los enlaces usados en diagramas de interacción para decidir qué asociaciones, agregaciones, multiplicidades o generalizaciones hacen falta.
+
+<MermaidDiagram caption="De enlaces dinámicos a relaciones estáticas" code={`flowchart TB
+  INT[Diagramas de interaccion] --> ENL[Enlaces entre objetos]
+  ENL --> ASO[Asociaciones necesarias]
+  ENL --> AGR[Agregaciones si hay todo-parte]
+  ASO --> MUL[Multiplicidad]
+  AGR --> MUL
+  GEN[Comportamiento compartido] --> HER[Generalizacion conceptual]
+  MUL --> CLASES[Diagrama de clases refinado]
+  HER --> CLASES`} />
+
+<Callout tipo="error">
+Poner reglas de negocio en boundary es un error clásico: la frontera recibe y muestra, pero no debería concentrar lógica del dominio.
+</Callout>

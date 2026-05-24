@@ -1,0 +1,499 @@
+[
+  {
+    "termino": "abstracción",
+    "archivos": [
+      "03-orientacion-objetos.mdx"
+    ]
+  },
+  {
+    "termino": "Actividad",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "alta cohesión",
+    "archivos": [
+      "08-paquetes-arquitectura.mdx"
+    ]
+  },
+  {
+    "termino": "Ambigüedad del lenguaje del cliente",
+    "archivos": [
+      "04-workflow-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "análisis",
+    "archivos": [
+      "04-workflow-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "Arquitecto",
+    "archivos": [
+      "09-actividades-roles.mdx"
+    ]
+  },
+  {
+    "termino": "Artefacto",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "bajo acoplamiento",
+    "archivos": [
+      "08-paquetes-arquitectura.mdx"
+    ]
+  },
+  {
+    "termino": "Boundary",
+    "archivos": [
+      "12-grasp.mdx"
+    ]
+  },
+  {
+    "termino": "clase",
+    "archivos": [
+      "03-orientacion-objetos.mdx"
+    ]
+  },
+  {
+    "termino": "Clase de análisis",
+    "archivos": [
+      "05-modelo-analisis.mdx",
+      "06-clases-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "clase de control",
+    "archivos": [
+      "06-clases-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "clase de entidad",
+    "archivos": [
+      "06-clases-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "clase de frontera",
+    "archivos": [
+      "06-clases-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "Clases de análisis",
+    "archivos": [
+      "05-modelo-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "comportamiento",
+    "archivos": [
+      "03-orientacion-objetos.mdx"
+    ]
+  },
+  {
+    "termino": "Condición de guarda",
+    "archivos": [
+      "10-maquina-estados.mdx"
+    ]
+  },
+  {
+    "termino": "Construcción",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "Control",
+    "archivos": [
+      "06-clases-analisis.mdx",
+      "12-grasp.mdx"
+    ]
+  },
+  {
+    "termino": "Descripción de arquitectura",
+    "archivos": [
+      "05-modelo-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "diagrama de comunicación",
+    "archivos": [
+      "11-secuencia-comunicacion.mdx"
+    ]
+  },
+  {
+    "termino": "diagrama de máquina de estados",
+    "archivos": [
+      "10-maquina-estados.mdx"
+    ]
+  },
+  {
+    "termino": "diagrama de secuencia",
+    "archivos": [
+      "11-secuencia-comunicacion.mdx"
+    ]
+  },
+  {
+    "termino": "Diseño",
+    "archivos": [
+      "04-workflow-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "Efecto",
+    "archivos": [
+      "10-maquina-estados.mdx"
+    ]
+  },
+  {
+    "termino": "Elaboración",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "Entidad",
+    "archivos": [
+      "06-clases-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "Entity",
+    "archivos": [
+      "12-grasp.mdx"
+    ]
+  },
+  {
+    "termino": "estado",
+    "archivos": [
+      "03-orientacion-objetos.mdx",
+      "10-maquina-estados.mdx"
+    ]
+  },
+  {
+    "termino": "estado final",
+    "archivos": [
+      "10-maquina-estados.mdx"
+    ]
+  },
+  {
+    "termino": "Estado inicial",
+    "archivos": [
+      "10-maquina-estados.mdx"
+    ]
+  },
+  {
+    "termino": "Estereotipo",
+    "archivos": [
+      "02-uml.mdx"
+    ]
+  },
+  {
+    "termino": "Evento disparador",
+    "archivos": [
+      "10-maquina-estados.mdx"
+    ]
+  },
+  {
+    "termino": "Fabricación Pura",
+    "archivos": [
+      "12-grasp.mdx"
+    ]
+  },
+  {
+    "termino": "Falta de estructura interna",
+    "archivos": [
+      "04-workflow-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "Flujo de sucesos de análisis",
+    "archivos": [
+      "07-realizaciones-casos-uso.mdx"
+    ]
+  },
+  {
+    "termino": "framework de proceso",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "Frontera",
+    "archivos": [
+      "06-clases-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "GRASP",
+    "archivos": [
+      "12-grasp.mdx"
+    ]
+  },
+  {
+    "termino": "identidad",
+    "archivos": [
+      "03-orientacion-objetos.mdx"
+    ]
+  },
+  {
+    "termino": "Implementación",
+    "archivos": [
+      "04-workflow-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "incremento",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "Indirección",
+    "archivos": [
+      "12-grasp.mdx"
+    ]
+  },
+  {
+    "termino": "Ingeniero de casos de uso",
+    "archivos": [
+      "09-actividades-roles.mdx"
+    ]
+  },
+  {
+    "termino": "Ingeniero de componentes",
+    "archivos": [
+      "09-actividades-roles.mdx"
+    ]
+  },
+  {
+    "termino": "Inicio",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "instanciación",
+    "archivos": [
+      "03-orientacion-objetos.mdx"
+    ]
+  },
+  {
+    "termino": "Interferencia entre casos de uso",
+    "archivos": [
+      "04-workflow-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "iteración",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "método",
+    "archivos": [
+      "12-grasp.mdx"
+    ]
+  },
+  {
+    "termino": "modelo",
+    "archivos": [
+      "02-uml.mdx"
+    ]
+  },
+  {
+    "termino": "modelo de análisis",
+    "archivos": [
+      "05-modelo-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "objeto",
+    "archivos": [
+      "03-orientacion-objetos.mdx"
+    ]
+  },
+  {
+    "termino": "Paquete de análisis",
+    "archivos": [
+      "05-modelo-analisis.mdx",
+      "08-paquetes-arquitectura.mdx"
+    ]
+  },
+  {
+    "termino": "Paquetes de análisis",
+    "archivos": [
+      "05-modelo-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "Personas",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "Polimorfismo",
+    "archivos": [
+      "12-grasp.mdx"
+    ]
+  },
+  {
+    "termino": "proceso",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "Proceso Unificado de Desarrollo",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "Producto",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "Proyecto",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "PUD",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "Realización de caso de uso",
+    "archivos": [
+      "05-modelo-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "realización de caso de uso de análisis",
+    "archivos": [
+      "07-realizaciones-casos-uso.mdx"
+    ]
+  },
+  {
+    "termino": "Realizaciones de casos de uso",
+    "archivos": [
+      "05-modelo-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "Redundancias o inconsistencias",
+    "archivos": [
+      "04-workflow-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "release",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "Requisitos especiales",
+    "archivos": [
+      "07-realizaciones-casos-uso.mdx"
+    ]
+  },
+  {
+    "termino": "responsabilidad",
+    "archivos": [
+      "12-grasp.mdx"
+    ]
+  },
+  {
+    "termino": "responsabilidades",
+    "archivos": [
+      "03-orientacion-objetos.mdx"
+    ]
+  },
+  {
+    "termino": "Restricción",
+    "archivos": [
+      "02-uml.mdx"
+    ]
+  },
+  {
+    "termino": "SolicitudDeRequerimiento",
+    "archivos": [
+      "03-orientacion-objetos.mdx"
+    ]
+  },
+  {
+    "termino": "Trabajador",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  },
+  {
+    "termino": "Transición",
+    "archivos": [
+      "01-pud.mdx",
+      "10-maquina-estados.mdx"
+    ]
+  },
+  {
+    "termino": "UML",
+    "archivos": [
+      "02-uml.mdx"
+    ]
+  },
+  {
+    "termino": "Valor etiquetado",
+    "archivos": [
+      "02-uml.mdx"
+    ]
+  },
+  {
+    "termino": "Variaciones Protegidas",
+    "archivos": [
+      "12-grasp.mdx"
+    ]
+  },
+  {
+    "termino": "Vista dinámica",
+    "archivos": [
+      "07-realizaciones-casos-uso.mdx"
+    ]
+  },
+  {
+    "termino": "Vista estática",
+    "archivos": [
+      "07-realizaciones-casos-uso.mdx"
+    ]
+  },
+  {
+    "termino": "vista externa",
+    "archivos": [
+      "04-workflow-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "vista interna",
+    "archivos": [
+      "04-workflow-analisis.mdx"
+    ]
+  },
+  {
+    "termino": "workflow",
+    "archivos": [
+      "01-pud.mdx"
+    ]
+  }
+]

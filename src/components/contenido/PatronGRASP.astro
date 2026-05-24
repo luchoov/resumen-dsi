@@ -1,0 +1,47 @@
+---
+import Badge from "@/components/ui/Badge.astro";
+
+interface Props {
+  nombre: string;
+  ideaCentral: string;
+  problema: string;
+  solucion: string;
+  beneficios: string[];
+  ejemploTitulo?: string;
+}
+
+const { nombre, ideaCentral, problema, solucion, beneficios, ejemploTitulo } = Astro.props;
+---
+
+<section class="wide my-8 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5">
+  <header class="mb-4 flex flex-wrap items-start justify-between gap-3 border-b border-[hsl(var(--border))] pb-4">
+    <div>
+      <Badge>GRASP</Badge>
+      <h3 class="!mt-3">{nombre}</h3>
+    </div>
+    <p class="max-w-sm rounded-lg bg-[hsl(var(--primary)/0.10)] px-3 py-2 font-mono text-sm text-[hsl(var(--primary))]">{ideaCentral}</p>
+  </header>
+  <div class="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+    <div class="space-y-4">
+      <div>
+        <h4 class="!mt-0">Problema</h4>
+        <p>{problema}</p>
+      </div>
+      <div>
+        <h4>Solución</h4>
+        <p>{solucion}</p>
+      </div>
+      <div>
+        <h4>Beneficios</h4>
+        <ul>
+          {beneficios.map((beneficio) => <li>{beneficio}</li>)}
+        </ul>
+      </div>
+    </div>
+    <div>
+      {ejemploTitulo && <p class="mb-3 font-mono text-sm text-[hsl(var(--muted-foreground))]">{ejemploTitulo}</p>}
+      <slot />
+    </div>
+  </div>
+</section>
+

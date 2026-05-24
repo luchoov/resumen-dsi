@@ -1,0 +1,21 @@
+---
+import Badge from "@/components/ui/Badge.astro";
+
+interface Props {
+  termino: string;
+  variante?: "formal" | "nota";
+}
+
+const { termino, variante = "formal" } = Astro.props;
+---
+
+<aside class="my-6 max-w-3xl rounded-xl border border-[hsl(var(--primary)/0.35)] bg-[hsl(var(--primary)/0.08)] p-4">
+  <div class="mb-2 flex items-center gap-2">
+    <Badge>{variante === "formal" ? "Definición" : "Nota"}</Badge>
+    <strong class="font-mono text-sm">{termino}</strong>
+  </div>
+  <div class="text-[hsl(var(--foreground))]">
+    <slot />
+  </div>
+</aside>
+

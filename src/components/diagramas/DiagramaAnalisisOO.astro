@@ -1,0 +1,224 @@
+---
+import type { ConexionAnalisis, NodoAnalisis } from "./analisis-types";
+import { Maximize2 } from "@lucide/astro";
+
+interface Props {
+  nodos: NodoAnalisis[];
+  conexiones: ConexionAnalisis[];
+  modo?: "clases" | "comunicacion";
+  caption?: string;
+}
+
+const { nodos, conexiones, modo = "clases", caption } = Astro.props;
+const positioned = nodos.map((node, index) => ({
+  ...node,
+  x: node.x ?? 110 + index * 180,
+  y: node.y ?? 120
+}));
+const byId = new Map(positioned.map((node) => [node.id, node]));
+const markerId = `flecha-analisis-${Math.random().toString(36).slice(2)}`;
+const icon = {
+  actor: "M0 0 m-14 0 a14 14 0 1 0 28 0 a14 14 0 1 0 -28 0 M0 18 L0 66 M-32 34 L32 34 M0 66 L-28 108 M0 66 L28 108",
+  boundary: "M-34 -28 H34 V28 H-34 Z M34 0 H70 M52 -18 L70 0 L52 18",
+  control: "M0 0 m-36 0 a36 36 0 1 0 72 0 a36 36 0 1 0 -72 0 M0 -36 L0 -62 M-12 -50 L0 -62 L12 -50",
+  entity: "M0 0 m-36 0 a36 36 0 1 0 72 0 a36 36 0 1 0 -72 0 M-28 46 H28"
+};
+
+function connectionPath(conexion: ConexionAnalisis, index: number) {
+  const from = byId.get(conexion.from);
+  const to = byId.get(conexion.to);
+  if (!from || !to) return undefined;
+  const dx = to.x! - from.x!;
+  const dy = to.y! - from.y!;
+  const length = Math.max(1, Math.hypot(dx, dy));
+  const ux = dx / length;
+  const uy = dy / length;
+  const startPad = from.tipo === "actor" ? 42 : 58;
+  const endPad = to.tipo === "actor" ? 42 : 58;
+  const x1 = from.x! + ux * startPad;
+  const y1 = from.y! + uy * startPad;
+  const x2 = to.x! - ux * endPad;
+  const y2 = to.y! - uy * endPad;
+  const curve = modo === "comunicacion" ? ((index % 2 === 0 ? -1 : 1) * Math.min(34, length * 0.12)) : 0;
+  const px = -uy;
+  const py = ux;
+  const cx = (x1 + x2) / 2 + px * curve;
+  const cy = (y1 + y2) / 2 + py * curve;
+  const label = `${modo === "comunicacion" && conexion.numero ? `${conexion.numero}: ` : ""}${conexion.etiqueta ?? ""}`;
+  return {
+    d: curve ? `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}` : `M ${x1} ${y1} L ${x2} ${y2}`,
+    label,
+    labelX: cx,
+    labelY: cy - 10,
+    labelWidth: Math.max(48, label.length * 7.2 + 16)
+  };
+}
+---
+
+<figure class="analysis-diagram wide my-8 cursor-zoom-in rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4" data-analysis-root>
+  <div class="mb-3 flex items-center justify-between gap-3">
+    {caption && <figcaption class="text-sm font-semibold text-[hsl(var(--foreground))]">{caption}</figcaption>}
+    <button type="button" class="analysis-fullscreen inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))]" aria-label="Ver diagrama en pantalla completa">
+      <Maximize2 size={16} aria-hidden="true" />
+    </button>
+  </div>
+  <div class="overflow-x-auto">
+    <svg role="img" aria-label={caption ?? "Diagrama de análisis OO"} viewBox="0 0 920 360" class="min-w-[760px]">
+      <defs>
+        <marker id={markerId} markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,6 L9,3 z" fill="hsl(var(--muted-foreground))"></path>
+        </marker>
+      </defs>
+      <rect x="0" y="0" width="920" height="360" rx="14" fill="hsl(var(--background))" />
+      {conexiones.map((conexion, index) => {
+        const path = connectionPath(conexion, index);
+        if (!path) return null;
+        return (
+          <g>
+            <path d={path.d} fill="none" stroke="hsl(var(--muted-foreground))" stroke-width="1.6" marker-end={`url(#${markerId})`} />
+            {path.label && (
+              <g>
+                <rect x={path.labelX - path.labelWidth / 2} y={path.labelY - 15} width={path.labelWidth} height="22" rx="5" fill="hsl(var(--background))" opacity="0.94" />
+                <text x={path.labelX} y={path.labelY} text-anchor="middle" fill="hsl(var(--foreground))" font-size="13" font-family="JetBrains Mono Variable">
+                  {path.label}
+                </text>
+              </g>
+            )}
+          </g>
+        );
+      })}
+      {positioned.map((node) => (
+        <g transform={`translate(${node.x} ${node.y})`}>
+          <path d={icon[node.tipo]} fill="none" stroke={node.tipo === "control" ? "hsl(var(--warning))" : node.tipo === "entity" ? "hsl(var(--success))" : node.tipo === "boundary" ? "hsl(var(--primary))" : "hsl(var(--foreground))"} stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+          <rect x="-84" y="76" width="168" height="52" rx="8" fill="hsl(var(--background))" opacity="0.92" />
+          <text y="94" text-anchor="middle" fill="hsl(var(--foreground))" font-size="14" font-family="JetBrains Mono Variable" font-weight="700">{node.etiqueta}</text>
+          <text y="116" text-anchor="middle" fill="hsl(var(--muted-foreground))" font-size="12" font-family="JetBrains Mono Variable">«{node.tipo}»</text>
+        </g>
+      ))}
+    </svg>
+  </div>
+</figure>
+
+<dialog class="analysis-dialog w-[min(92rem,calc(100vw-2rem))] rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--popover))] p-0 text-[hsl(var(--popover-foreground))] shadow-2xl backdrop:bg-black/70">
+  <div class="flex items-center justify-between border-b border-[hsl(var(--border))] p-3">
+    <strong class="text-sm">{caption ?? "Diagrama"}</strong>
+    <div class="flex items-center gap-2">
+      <button type="button" class="diagram-zoom-out rounded-lg border border-[hsl(var(--border))] px-3 py-1.5 text-sm" aria-label="Alejar">-</button>
+      <button type="button" class="diagram-zoom-reset rounded-lg border border-[hsl(var(--border))] px-3 py-1.5 text-sm">100%</button>
+      <button type="button" class="diagram-zoom-in rounded-lg border border-[hsl(var(--border))] px-3 py-1.5 text-sm" aria-label="Acercar">+</button>
+      <form method="dialog"><button class="rounded-lg border border-[hsl(var(--border))] px-3 py-1.5 text-sm">Cerrar</button></form>
+    </div>
+  </div>
+  <div class="diagram-viewport analysis-dialog-body h-[min(78vh,52rem)] overflow-hidden bg-[hsl(var(--background))]"></div>
+</dialog>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-analysis-root]").forEach((root) => {
+    const button = root.querySelector<HTMLButtonElement>(".analysis-fullscreen");
+    const dialog = root.nextElementSibling as HTMLDialogElement | null;
+    const body = dialog?.querySelector<HTMLElement>(".analysis-dialog-body");
+    const openDiagram = () => {
+      const svg = root.querySelector("svg")?.cloneNode(true) as SVGElement | null;
+      if (!dialog || !body || !svg) return;
+      svg.style.width = "max-content";
+      svg.style.minWidth = "900px";
+      svg.style.maxWidth = "none";
+      svg.style.transformOrigin = "0 0";
+      body.innerHTML = "";
+      const surface = document.createElement("div");
+      surface.className = "diagram-surface";
+      surface.append(svg);
+      body.append(surface);
+      dialog.showModal();
+      setupPanZoom(dialog, surface);
+    };
+    button?.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openDiagram();
+    });
+    root.addEventListener("click", (event) => {
+      if ((event.target as HTMLElement).closest("a, button")) return;
+      openDiagram();
+    });
+  });
+
+  function setupPanZoom(dialog: HTMLDialogElement, surface: HTMLElement) {
+    const viewport = dialog.querySelector<HTMLElement>(".diagram-viewport");
+    const zoomIn = dialog.querySelector<HTMLButtonElement>(".diagram-zoom-in");
+    const zoomOut = dialog.querySelector<HTMLButtonElement>(".diagram-zoom-out");
+    const reset = dialog.querySelector<HTMLButtonElement>(".diagram-zoom-reset");
+    if (!viewport) return;
+    let scale = 1;
+    let x = 24;
+    let y = 24;
+    let dragging = false;
+    let startX = 0;
+    let startY = 0;
+    const apply = () => {
+      surface.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+      if (reset) reset.textContent = `${Math.round(scale * 100)}%`;
+    };
+    const zoom = (delta: number, originX = viewport.clientWidth / 2, originY = viewport.clientHeight / 2) => {
+      const next = Math.min(4, Math.max(0.4, scale + delta));
+      const ratio = next / scale;
+      x = originX - (originX - x) * ratio;
+      y = originY - (originY - y) * ratio;
+      scale = next;
+      apply();
+    };
+    zoomIn?.addEventListener("click", () => zoom(0.2));
+    zoomOut?.addEventListener("click", () => zoom(-0.2));
+    reset?.addEventListener("click", () => {
+      scale = 1;
+      x = 24;
+      y = 24;
+      apply();
+    });
+    viewport.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      const rect = viewport.getBoundingClientRect();
+      zoom(event.deltaY > 0 ? -0.12 : 0.12, event.clientX - rect.left, event.clientY - rect.top);
+    }, { passive: false });
+    viewport.addEventListener("pointerdown", (event) => {
+      dragging = true;
+      startX = event.clientX - x;
+      startY = event.clientY - y;
+      viewport.setPointerCapture(event.pointerId);
+    });
+    viewport.addEventListener("pointermove", (event) => {
+      if (!dragging) return;
+      x = event.clientX - startX;
+      y = event.clientY - startY;
+      apply();
+    });
+    viewport.addEventListener("pointerup", (event) => {
+      dragging = false;
+      viewport.releasePointerCapture(event.pointerId);
+    });
+    apply();
+  }
+</script>
+
+<style>
+  .analysis-dialog[open] {
+    position: fixed;
+    inset: 50% auto auto 50%;
+    margin: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  .diagram-viewport {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .diagram-viewport:active {
+    cursor: grabbing;
+  }
+
+  .diagram-surface {
+    width: max-content;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+</style>

@@ -1,0 +1,340 @@
+---
+import { Maximize2 } from "@lucide/astro";
+
+interface Props {
+  code: string;
+  caption?: string;
+  tipo?: string;
+}
+
+const { code, caption, tipo = "mermaid" } = Astro.props;
+const id = `mermaid-${Math.random().toString(36).slice(2)}`;
+---
+
+<figure class="mermaid-figure wide my-8 cursor-zoom-in rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4" data-mermaid-root>
+  <div class="mb-3 flex items-center justify-between gap-3">
+    {caption ? <figcaption class="text-sm font-semibold text-[hsl(var(--foreground))]">{caption}</figcaption> : <span class="font-mono text-xs uppercase tracking-[0.16em] text-[hsl(var(--muted-foreground))]">{tipo}</span>}
+    <button type="button" class="mermaid-fullscreen inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))]" aria-label="Ver diagrama en pantalla completa">
+      <Maximize2 size={16} aria-hidden="true" />
+    </button>
+  </div>
+  <div id={id} class="mermaid-target overflow-x-auto rounded-lg bg-[hsl(var(--background))] p-4" data-code={code}></div>
+</figure>
+
+<dialog class="mermaid-dialog w-[min(92rem,calc(100vw-2rem))] rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--popover))] p-0 text-[hsl(var(--popover-foreground))] shadow-2xl backdrop:bg-black/70">
+  <div class="flex items-center justify-between border-b border-[hsl(var(--border))] p-3">
+    <strong class="text-sm">{caption ?? "Diagrama"}</strong>
+    <div class="flex items-center gap-2">
+      <button type="button" class="diagram-zoom-out rounded-lg border border-[hsl(var(--border))] px-3 py-1.5 text-sm" aria-label="Alejar">-</button>
+      <button type="button" class="diagram-zoom-reset rounded-lg border border-[hsl(var(--border))] px-3 py-1.5 text-sm">100%</button>
+      <button type="button" class="diagram-zoom-in rounded-lg border border-[hsl(var(--border))] px-3 py-1.5 text-sm" aria-label="Acercar">+</button>
+      <form method="dialog"><button class="rounded-lg border border-[hsl(var(--border))] px-3 py-1.5 text-sm">Cerrar</button></form>
+    </div>
+  </div>
+  <div class="diagram-viewport mermaid-dialog-body h-[min(78vh,52rem)] overflow-hidden bg-[hsl(var(--background))]"></div>
+</dialog>
+
+<script>
+  const baseConfig = {
+    startOnLoad: false,
+    securityLevel: "strict",
+    fontFamily: "JetBrains Mono Variable, ui-monospace, monospace"
+  } as const;
+
+  const darkThemeVariables = {
+    background: "#09090f",
+    mainBkg: "#171625",
+    secondBkg: "#211f33",
+    tertiaryColor: "#2b2942",
+    primaryColor: "#241f45",
+    primaryTextColor: "#f4f4f6",
+    primaryBorderColor: "#9b8cff",
+    secondaryColor: "#2f274f",
+    secondaryTextColor: "#f4f4f6",
+    secondaryBorderColor: "#7c6cff",
+    tertiaryTextColor: "#f4f4f6",
+    tertiaryBorderColor: "#565071",
+    lineColor: "#a7a7b7",
+    textColor: "#f4f4f6",
+    nodeTextColor: "#f4f4f6",
+    clusterBkg: "#11111a",
+    clusterBorder: "#36334b",
+    edgeLabelBackground: "#11111a",
+    actorBkg: "#171625",
+    actorBorder: "#9b8cff",
+    actorTextColor: "#f4f4f6",
+    actorLineColor: "#a7a7b7",
+    signalColor: "#f4f4f6",
+    signalTextColor: "#f4f4f6",
+    labelBoxBkgColor: "#171625",
+    labelBoxBorderColor: "#565071",
+    labelTextColor: "#f4f4f6",
+    loopTextColor: "#f4f4f6",
+    noteBkgColor: "#2b2432",
+    noteTextColor: "#f4f4f6",
+    noteBorderColor: "#f59e0b",
+    mindmapMainBkg: "#241f45",
+    mindmapMainTextColor: "#f4f4f6",
+    mindmapNodeBkg: "#2f274f",
+    mindmapNodeTextColor: "#f4f4f6",
+    mindmapNodeBorderColor: "#9b8cff",
+    mindmapBranchColor: "#9b8cff"
+  } as const;
+
+  const lightThemeVariables = {
+    background: "#fafafa",
+    mainBkg: "#ffffff",
+    secondBkg: "#f3f1ff",
+    tertiaryColor: "#ebe7ff",
+    primaryColor: "#efeaff",
+    primaryTextColor: "#151320",
+    primaryBorderColor: "#6653f1",
+    secondaryColor: "#f5f3ff",
+    secondaryTextColor: "#151320",
+    secondaryBorderColor: "#7c6cff",
+    tertiaryTextColor: "#151320",
+    tertiaryBorderColor: "#d7d2ee",
+    lineColor: "#57526d",
+    textColor: "#151320",
+    nodeTextColor: "#151320",
+    clusterBkg: "#ffffff",
+    clusterBorder: "#d7d2ee",
+    edgeLabelBackground: "#ffffff",
+    actorBkg: "#ffffff",
+    actorBorder: "#6653f1",
+    actorTextColor: "#151320",
+    actorLineColor: "#57526d",
+    signalColor: "#151320",
+    signalTextColor: "#151320",
+    labelBoxBkgColor: "#ffffff",
+    labelBoxBorderColor: "#d7d2ee",
+    labelTextColor: "#151320",
+    loopTextColor: "#151320",
+    noteBkgColor: "#fff7ed",
+    noteTextColor: "#151320",
+    noteBorderColor: "#f59e0b",
+    mindmapMainBkg: "#efeaff",
+    mindmapMainTextColor: "#151320",
+    mindmapNodeBkg: "#f5f3ff",
+    mindmapNodeTextColor: "#151320",
+    mindmapNodeBorderColor: "#6653f1",
+    mindmapBranchColor: "#6653f1"
+  } as const;
+
+  let mermaidModule: typeof import("mermaid").default | undefined;
+
+  async function getMermaid() {
+    if (!mermaidModule) {
+      mermaidModule = (await import("mermaid")).default;
+    }
+    return mermaidModule;
+  }
+
+  async function renderMermaid(target: HTMLElement) {
+    const code = target.dataset.code ?? "";
+    const isDark = document.documentElement.classList.contains("dark");
+    const mermaid = await getMermaid();
+    mermaid.initialize({
+      ...baseConfig,
+      theme: "base",
+      themeVariables: isDark ? darkThemeVariables : lightThemeVariables
+    });
+    const id = `m-${crypto.randomUUID()}`;
+    try {
+      const result = await mermaid.render(id, code);
+      target.innerHTML = result.svg;
+      target.dataset.rendered = "true";
+    } catch (error) {
+      target.innerHTML = `<pre class="text-sm text-[hsl(var(--destructive))]">${String(error)}</pre>`;
+    }
+  }
+
+  const observedTargets = new WeakSet<HTMLElement>();
+  const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const target = entry.target as HTMLElement;
+          if (!entry.isIntersecting || target.dataset.rendered === "true") return;
+          renderMermaid(target);
+        });
+      },
+      { rootMargin: "600px 0px" }
+    );
+
+  function observeAll() {
+    const targets = Array.from(document.querySelectorAll<HTMLElement>(".mermaid-target"));
+    targets.forEach((target) => {
+      if (observedTargets.has(target)) return;
+      observedTargets.add(target);
+      observer.observe(target);
+    });
+  }
+
+  async function rerenderVisible() {
+    const targets = Array.from(document.querySelectorAll<HTMLElement>(".mermaid-target[data-rendered='true']"));
+    await Promise.all(targets.map((target) => renderMermaid(target)));
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", observeAll, { once: true });
+  } else {
+    observeAll();
+  }
+  requestAnimationFrame(observeAll);
+  window.addEventListener("themechange", rerenderVisible);
+  document.addEventListener("astro:page-load", observeAll);
+
+  const wiredRoots = new WeakSet<HTMLElement>();
+
+  function wireDiagramDialogs() {
+    document.querySelectorAll<HTMLElement>("[data-mermaid-root]").forEach((root) => {
+      if (wiredRoots.has(root)) return;
+      wiredRoots.add(root);
+    const button = root.querySelector<HTMLButtonElement>(".mermaid-fullscreen");
+    const dialog = root.nextElementSibling as HTMLDialogElement | null;
+    const body = dialog?.querySelector<HTMLElement>(".mermaid-dialog-body");
+    const openDiagram = () => {
+      const svg = root.querySelector(".mermaid-target svg")?.cloneNode(true) as SVGElement | null;
+      if (!dialog || !body || !svg) return;
+      svg.removeAttribute("width");
+      svg.removeAttribute("height");
+      svg.style.width = "max-content";
+      svg.style.minWidth = "900px";
+      svg.style.maxWidth = "none";
+      svg.style.transformOrigin = "0 0";
+      body.innerHTML = "";
+      const surface = document.createElement("div");
+      surface.className = "diagram-surface";
+      surface.append(svg);
+      body.append(surface);
+      dialog.showModal();
+      setupPanZoom(dialog, surface);
+    };
+    button?.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openDiagram();
+    });
+    root.addEventListener("click", (event) => {
+      if ((event.target as HTMLElement).closest("a, button")) return;
+      openDiagram();
+    });
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", wireDiagramDialogs, { once: true });
+  } else {
+    wireDiagramDialogs();
+  }
+  requestAnimationFrame(wireDiagramDialogs);
+  document.addEventListener("astro:page-load", wireDiagramDialogs);
+
+  function setupPanZoom(dialog: HTMLDialogElement, surface: HTMLElement) {
+    const viewport = dialog.querySelector<HTMLElement>(".diagram-viewport");
+    const zoomIn = dialog.querySelector<HTMLButtonElement>(".diagram-zoom-in");
+    const zoomOut = dialog.querySelector<HTMLButtonElement>(".diagram-zoom-out");
+    const reset = dialog.querySelector<HTMLButtonElement>(".diagram-zoom-reset");
+    if (!viewport) return;
+    let scale = 1;
+    let x = 24;
+    let y = 24;
+    let dragging = false;
+    let startX = 0;
+    let startY = 0;
+
+    const apply = () => {
+      surface.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+      if (reset) reset.textContent = `${Math.round(scale * 100)}%`;
+    };
+    const zoom = (delta: number, originX = viewport.clientWidth / 2, originY = viewport.clientHeight / 2) => {
+      const next = Math.min(4, Math.max(0.4, scale + delta));
+      const ratio = next / scale;
+      x = originX - (originX - x) * ratio;
+      y = originY - (originY - y) * ratio;
+      scale = next;
+      apply();
+    };
+
+    zoomIn?.addEventListener("click", () => zoom(0.2));
+    zoomOut?.addEventListener("click", () => zoom(-0.2));
+    reset?.addEventListener("click", () => {
+      scale = 1;
+      x = 24;
+      y = 24;
+      apply();
+    });
+    viewport.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      const rect = viewport.getBoundingClientRect();
+      zoom(event.deltaY > 0 ? -0.12 : 0.12, event.clientX - rect.left, event.clientY - rect.top);
+    }, { passive: false });
+    viewport.addEventListener("pointerdown", (event) => {
+      dragging = true;
+      startX = event.clientX - x;
+      startY = event.clientY - y;
+      viewport.setPointerCapture(event.pointerId);
+    });
+    viewport.addEventListener("pointermove", (event) => {
+      if (!dragging) return;
+      x = event.clientX - startX;
+      y = event.clientY - startY;
+      apply();
+    });
+    viewport.addEventListener("pointerup", (event) => {
+      dragging = false;
+      viewport.releasePointerCapture(event.pointerId);
+    });
+    apply();
+  }
+</script>
+
+<style>
+  .mermaid-dialog[open] {
+    position: fixed;
+    inset: 50% auto auto 50%;
+    margin: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  .diagram-viewport {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .diagram-viewport:active {
+    cursor: grabbing;
+  }
+
+  .diagram-surface {
+    width: max-content;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+
+  .mermaid-target :global(svg) {
+    display: block;
+    margin-inline: auto;
+  }
+
+  .mermaid-target :global(.node rect),
+  .mermaid-target :global(.node circle),
+  .mermaid-target :global(.node ellipse),
+  .mermaid-target :global(.node polygon),
+  .mermaid-target :global(.node path) {
+    stroke: hsl(var(--primary)) !important;
+  }
+
+  .mermaid-target :global(.nodeLabel),
+  .mermaid-target :global(.label),
+  .mermaid-target :global(.cluster-label),
+  .mermaid-target :global(.edgeLabel),
+  .mermaid-target :global(text) {
+    color: hsl(var(--foreground)) !important;
+    fill: hsl(var(--foreground)) !important;
+  }
+
+  .mermaid-target :global(.edgeLabel),
+  .mermaid-target :global(.edgeLabel p) {
+    background: hsl(var(--background)) !important;
+  }
+</style>

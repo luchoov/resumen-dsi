@@ -1,0 +1,269 @@
+%% Documento origen: DSI 2026 Ejercicio tipo Parcial 3 FIA Formula 1.pdf
+%% Diagrama: Realización de Caso de Uso de Análisis - CU 14 Generar Orden de Traslado - Vista de Estructura
+%% Tipo: Diagrama de clases / vista estática de estructura
+%% Fuente visual: captura provista por el usuario
+%% Nota: se preservan nombres, estereotipos, atributos, operaciones y relaciones principales visibles en la captura.
+
+classDiagram
+direction LR
+
+class PantallaRegistrarOrdenTraslado {
+  <<boundary>>
+  - btnConfirmar
+  - lblDestino
+  - lblOrigen
+  - txtDestino
+  - txtOrigen
+  + habilitarVentana()
+  + mostrarFabricaYCircuitos()
+  + opcionGenerarOT()
+  + solicitarConfirmacion()
+  + solicitarSeleccionElementos()
+  + solicitarSeleccionFechaLlegada()
+  + solicitarSeleccionOrigenYDestino()
+  + tomarConfirmacion()
+  + tomarSeleccionDestino()
+  + tomarSeleccionElementos()
+  + tomarSeleccionFechaLlegada()
+  + tomarSeleccionOrigen()
+}
+
+class GestorRegistrarOrdenTraslado {
+  <<control>>
+  - calendarioActual
+  - calendarios
+  - circuitosActivos
+  - contenedoresOciosos
+  - destino
+  - elementosATrasladar
+  - elementosEscuderia
+  - esJefeEquipo
+  - estadoContenedor
+  - estadoOT
+  - fabricaEscuderia
+  - fechaLlegadaDestino
+  - fechaUltimaSalidaPosible
+  - observacion
+  - origen
+  - sesionActiva
+  - usuarioLogueado
+  + agruparElementosPorTipoElemento()
+  + asignarElementosAContenedor()
+  + buscarEstados()
+  + buscarFabricaDeEscuderiaDelUsuarioLogueado()
+  + enviarMail()
+  + enviarSMS()
+  + finCU()
+  + generarOrdenTraslado()
+  + generarOT()
+  + getFechaHoraActual()
+  + notificar()
+  + quitar()
+  + suscribir()
+  + tomarConfirmacion()
+  + validarNotificaciones()
+  + validarRolUsuarioLogueado()
+}
+
+class Sesion {
+  <<entity>>
+  - fechaHoraInicio
+  + getUsuarioLogueado()
+}
+
+class Usuario {
+  - nombre
+  - password
+  + validarRolUsuarioLogueado()
+}
+
+class InterfazSMS {
+  <<boundary>>
+  + enviarNotificacion()
+}
+
+class InterfazMail {
+  <<boundary>>
+  + enviarNotificacion()
+}
+
+class Estado {
+  <<entity>>
+  - ambito
+  - nombre
+  + esAmbitoContenedor()
+  + esAmbitoOT()
+  + esAsignadaAOrden()
+  + esCreada()
+  + esOcioso()
+}
+
+class Calendario {
+  <<entity>>
+  - anio
+  + buscarCircuitosActivos()
+  + esDeEsteAnio()
+}
+
+class GranPremio {
+  <<entity>>
+  - fechaFin
+  - fechaInicio
+  + getNombreCircuito()
+}
+
+class Circuito {
+  <<entity>>
+  - anioFinContrato
+  - cantidadVueltas
+  - coordenadasUbicacion
+  - longitudVuelta
+  - nombre
+  - sede
+  - traza
+  + estaActivo()
+  + getNombre()
+}
+
+class OrdenTraslado {
+  <<entity>>
+  - fechaCreacion
+  - fechaLlegadaEsperada
+  - fechaUltimaSalidaPosible
+  + aprobar()
+  + cancelar()
+  + comenzarPreparacion()
+  + comenzarTraslado()
+  + crearCambioEstado()
+  + crearDetallesOT()
+  + finalizarPreparacion()
+  + new()
+  + rechazar()
+  + registrarLlegadaDestino()
+  + revisarContenido()
+  + validarAprobacion()
+}
+
+class Fabrica {
+  <<entity>>
+  - coordenadasUbicacion
+  - direccion
+  - nombre
+  + getNombre()
+}
+
+class CambioEstado {
+  <<entity>>
+  - fechaHoraFin
+  - fechaHoraInicio
+  + new()
+}
+
+class DetalleOT {
+  <<entity>>
+  - observacion
+  + new()
+}
+
+class Elemento {
+  <<entity>>
+  - codigo
+  - nombre
+  + asignarAOT()
+  + getCodigo()
+  + getNombre()
+  + getNombreTipo()
+}
+
+class TipoElemento {
+  <<entity>>
+  - nombre
+  + getNombre()
+}
+
+class Contenedor {
+  <<entity>>
+  - codigo
+  - idRastreador
+  + asignarAOT()
+  + estaOcioso()
+}
+
+class MiembroEquipo {
+  <<entity>>
+  - apellido
+  - mail
+  - nombre
+  - notificacionMail
+  - notificacionSMS
+  - notificacionWhatsApp
+  - telefono
+  + esJefeDeEquipo()
+  + getMail()
+  + getTelefono()
+  + validarFormasNotificacion()
+}
+
+class Rol {
+  <<entity>>
+  - nombre
+  + esJefeEquipo()
+}
+
+class Escuderia {
+  <<entity>>
+  - nombre
+  + buscarContenedoresOciosos()
+  + buscarJefeDeEquipo()
+  + esTuMecanico()
+  + getElementos()
+  + getFabricaEscuderia()
+}
+
+%% Relaciones boundary/control y dependencias de servicio
+PantallaRegistrarOrdenTraslado --> GestorRegistrarOrdenTraslado
+GestorRegistrarOrdenTraslado ..> Sesion : sesionActiva
+GestorRegistrarOrdenTraslado ..> InterfazSMS : enviarSMS()
+GestorRegistrarOrdenTraslado ..> InterfazMail : enviarMail()
+GestorRegistrarOrdenTraslado ..> Calendario : calendarioActual
+GestorRegistrarOrdenTraslado ..> Estado : buscarEstados()
+GestorRegistrarOrdenTraslado ..> OrdenTraslado : generarOT()
+GestorRegistrarOrdenTraslado ..> Escuderia : buscarFabricaDeEscuderiaDelUsuarioLogueado()
+GestorRegistrarOrdenTraslado ..> Elemento : elementosATrasladar
+GestorRegistrarOrdenTraslado ..> Contenedor : contenedoresOciosos
+
+%% Sesión, usuario y equipo
+Sesion "1" --> "1" Usuario : usuarioLogueado
+Usuario "0..1" --> "1" MiembroEquipo
+MiembroEquipo "1" --> "1" Rol : rol
+Escuderia "1" o-- "1..*" MiembroEquipo : miembrosEquipo
+Escuderia "1" --> "1" MiembroEquipo : jefeEquipo
+
+%% Calendario, grandes premios y circuitos
+Calendario "1" --> "1..*" GranPremio : grandPrix
+GranPremio "1" --> "1" Circuito : circuito
+
+%% Origen y destino posibles de una Orden de Traslado
+OrdenTraslado "0..1" --> "0..1" Circuito : origen
+OrdenTraslado "0..1" --> "0..1" Circuito : destino
+OrdenTraslado "0..1" --> "0..1" Fabrica : origen
+OrdenTraslado "0..1" --> "0..1" Fabrica : destino
+
+%% Orden de traslado, detalle y estados
+OrdenTraslado "1" o-- "1..*" CambioEstado : cambioEstado
+OrdenTraslado "1" o-- "1..*" DetalleOT : detalleOT
+OrdenTraslado "1" --> "1" Estado : estado
+CambioEstado "1" --> "1" Estado : estado
+CambioEstado "1" --> "1" MiembroEquipo : mecanico
+
+%% Detalle, contenedores y elementos
+DetalleOT "1" --> "1" Contenedor : contenedorAsignado
+DetalleOT "1" --> "1..*" Elemento : elementoPedido
+Contenedor "1" --> "1" Estado : estado
+Contenedor "1" --> "0..*" Elemento : elemento
+Elemento "0..*" --> "1" TipoElemento : tipoElemento
+
+%% Escudería, fábrica, contenedores y elementos
+Escuderia "1" --> "1" Fabrica : fabrica
+Escuderia "1" --> "0..*" Contenedor : contenedor
+Escuderia "1" --> "0..*" Elemento : elemento

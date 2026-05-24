@@ -1,0 +1,84 @@
+---
+id: "sec-08"
+numero: 8
+titulo: "Paquetes de análisis y descripción de arquitectura"
+slug: "08-paquetes-arquitectura"
+resumen: "Los paquetes organizan el modelo de análisis en partes cohesivas y con dependencias controladas."
+keywords: ["paquete", "arquitectura", "cohesión", "acoplamiento", "dependencias"]
+relacionadas: ["05-modelo-analisis", "12-grasp"]
+---
+
+### 8.1. Paquetes de análisis
+
+<Definicion termino="paquete de análisis">
+Un <strong>paquete de análisis</strong> organiza el modelo en piezas manejables que pueden contener clases, realizaciones de casos de uso y otros paquetes.
+</Definicion>
+
+Un buen paquete debe tener <strong>alta cohesión</strong>, <strong>bajo acoplamiento</strong> y reconocimiento en el dominio.
+
+Los PDFs agregan una idea importante: un paquete puede aparecer inicialmente para dividir el trabajo de análisis, o puede descubrirse después cuando el modelo crece y necesita descomposición.
+
+<MermaidDiagram caption="Paquetes de análisis con dependencias controladas" code={`flowchart LR
+  subgraph Ventas
+    Pedido
+    Cliente
+    RegistrarPedido
+  end
+  subgraph Catalogo
+    Producto
+    Stock
+  end
+  subgraph Facturacion
+    Factura
+    Pago
+  end
+  Ventas --> Catalogo
+  Ventas --> Facturacion`} />
+
+### 8.2. Criterios para identificar paquetes
+
+- Agrupar clases y realizaciones fuertemente relacionadas.
+- Separar áreas del dominio reconocibles.
+- Reducir dependencias cruzadas.
+- Mantener paquetes comprensibles y evolutivos.
+
+<MermaidDiagram caption="Criterios de corte de paquetes" code={`flowchart LR
+  Paquete((Paquete))
+  Paquete --> Dominio
+  Paquete --> Cohesion[Cohesion]
+  Paquete --> Acoplamiento
+  Paquete --> Escala
+  Dominio --> Conceptos[Conceptos cercanos]
+  Dominio --> Vocabulario[Vocabulario comun]
+  Cohesion --> Responsabilidades[Responsabilidades relacionadas]
+  Cohesion --> Cambios[Cambios similares]
+  Acoplamiento --> Dependencias[Dependencias minimas]
+  Acoplamiento --> Interfaces[Interfaces claras]
+  Escala --> Tamano[Tamano manejable]
+  Escala --> Evolucion[Evolucion incremental]`} />
+
+### 8.3. Descripción de arquitectura en análisis
+
+La descripción de arquitectura en análisis resalta paquetes, clases y realizaciones significativas para entender la estructura lógica del sistema.
+
+<MermaidDiagram caption="Arquitectura lógica desde el análisis" code={`flowchart TB
+  UI[Interacción externa] --> CASOS[Realizaciones de casos de uso]
+  CASOS --> DOMINIO[Paquetes de dominio]
+  DOMINIO --> SOPORTE[Servicios conceptuales]
+  CASOS -. casos críticos .-> ARQ[Vista arquitectónica]
+  DOMINIO -. clases significativas .-> ARQ`} />
+
+<TablaComparativa
+  caption="Qué se considera significativo para la arquitectura"
+  columnas={["Elemento", "Por qué importa"]}
+  filas={[
+    ["Descomposición en paquetes y dependencias", "Permite estimar impacto de cambios y repartir trabajo."],
+    ["Clases fundamentales del análisis", "Concentran conceptos centrales del dominio o comportamiento crítico."],
+    ["Realizaciones críticas", "Cubren funcionalidad importante, compleja o de amplia cobertura."],
+    ["Requisitos especiales comunes", "Afectan decisiones posteriores de diseño e implementación."]
+  ]}
+/>
+
+<Callout tipo="atencion">
+En análisis, “arquitectura” no significa todavía framework, microservicio o base de datos. Significa estructura lógica significativa para sostener los casos de uso.
+</Callout>

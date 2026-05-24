@@ -1,0 +1,27 @@
+---
+import { CircleX, Info, Lightbulb, TriangleAlert } from "@lucide/astro";
+
+interface Props {
+  tipo?: "info" | "atencion" | "error" | "tip";
+  titulo?: string;
+}
+
+const { tipo = "info", titulo } = Astro.props;
+const styles = {
+  info: "border-[hsl(var(--primary)/0.35)] bg-[hsl(var(--primary)/0.08)] text-[hsl(var(--primary))]",
+  atencion: "border-[hsl(var(--warning)/0.35)] bg-[hsl(var(--warning)/0.10)] text-[hsl(var(--warning))]",
+  error: "border-[hsl(var(--destructive)/0.35)] bg-[hsl(var(--destructive)/0.10)] text-[hsl(var(--destructive))]",
+  tip: "border-[hsl(var(--success)/0.35)] bg-[hsl(var(--success)/0.10)] text-[hsl(var(--success))]"
+};
+const Icon = tipo === "atencion" ? TriangleAlert : tipo === "error" ? CircleX : tipo === "tip" ? Lightbulb : Info;
+---
+
+<aside class:list={["my-6 max-w-3xl rounded-xl border p-4", styles[tipo]]}>
+  <div class="mb-2 flex items-center gap-2 font-semibold">
+    <Icon size={18} aria-hidden="true" />
+    <span>{titulo ?? (tipo === "tip" ? "Tip de examen" : tipo === "error" ? "Error conceptual frecuente" : tipo === "atencion" ? "Atención" : "Idea clave")}</span>
+  </div>
+  <div class="text-[hsl(var(--foreground))]">
+    <slot />
+  </div>
+</aside>

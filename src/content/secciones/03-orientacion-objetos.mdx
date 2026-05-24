@@ -1,0 +1,111 @@
+---
+id: "sec-03"
+numero: 3
+titulo: "Paradigma de orientación a objetos"
+slug: "03-orientacion-objetos"
+resumen: "La orientación a objetos organiza el sistema como objetos con identidad, estado y comportamiento agrupados en clases."
+keywords: ["objeto", "clase", "estado", "atributo", "comportamiento", "abstracción", "herencia"]
+relacionadas: ["02-uml", "06-clases-analisis"]
+---
+
+### 3.1. Qué es un objeto
+
+<Definicion termino="objeto">
+Un <strong>objeto</strong> representa una entidad individual e identificable, real o abstracta, con un rol definido en el dominio del problema.
+</Definicion>
+
+Todo objeto se entiende por tres dimensiones: <strong>identidad</strong>, <strong>estado</strong> y <strong>comportamiento</strong>.
+
+<MermaidDiagram caption="Tres dimensiones de un objeto" code={`graph TD
+  O[Objeto]
+  O --> I[Identidad\nlo distingue]
+  O --> E[Estado\nvalores actuales]
+  O --> C[Comportamiento\nresponsabilidades]
+  E --> A[Atributo + valor]
+  C --> M[Mensajes y operaciones]`} />
+
+### 3.2. Qué es una clase
+
+<Definicion termino="clase">
+Una <strong>clase</strong> describe un conjunto de objetos que comparten estructura, comportamiento, relaciones y semántica.
+</Definicion>
+
+Un objeto se crea a partir de una clase. A ese acto se lo denomina <strong>instanciación</strong>.
+
+### 3.3. Estado, atributos y valores
+
+El <strong>estado</strong> de un objeto puede entenderse como:
+
+<EjemploClase titulo="Fórmula conceptual">
+Estado = atributo + valor en un momento determinado
+</EjemploClase>
+
+Si la clase es <strong>SolicitudDeRequerimiento</strong>, algunos atributos podrían ser número, fecha de creación, descripción y estado actual. Si cambia de “Pendiente” a “Aprobada”, el objeto sigue siendo el mismo, pero su estado interno cambió.
+
+### 3.4. Comportamiento y responsabilidades
+
+El comportamiento indica qué puede hacer un objeto. En análisis suele expresarse como <strong>responsabilidades</strong> de alto nivel, no como métodos con signatura completa.
+
+### 3.5. Abstracción
+
+<Definicion termino="abstracción">
+La <strong>abstracción</strong> consiste en concentrarse en las características esenciales de un objeto según la perspectiva del observador y el problema que se resuelve.
+</Definicion>
+
+### 3.6. Sistema orientado a objetos
+
+Un sistema orientado a objetos se piensa como una red de objetos que colaboran enviándose mensajes. Las responsabilidades no deberían concentrarse en una única clase central.
+
+<MermaidDiagram caption="Colaboración entre objetos" code={`sequenceDiagram
+  participant UI as Pantalla
+  participant G as GestorPedido
+  participant P as Pedido
+  participant D as DetallePedido
+  UI->>G: confirmarPedido(datos)
+  G->>P: crear(datos)
+  P->>D: agregarProducto(producto, cantidad)
+  D-->>P: subtotal
+  P-->>G: total
+  G-->>UI: confirmación`} />
+
+### 3.7. Clases en el dominio del problema
+
+Se identifican clases buscando roles, lugares, cosas, organizaciones, conceptos, eventos o transacciones.
+
+<MermaidDiagram caption="Ejemplo rico de clase UML: pedido" code={`classDiagram
+  class Cliente {
+    -nombre: String
+    -email: String
+    +actualizarEmail(email)
+  }
+  class Pedido {
+    -numero: int
+    -fecha: Date
+    -estado: EstadoPedido
+    +calcularTotal() Money
+    +confirmar()
+  }
+  class DetallePedido {
+    -cantidad: int
+    -precioUnitario: Money
+    +subtotal() Money
+  }
+  class Producto {
+    -sku: String
+    -descripcion: String
+    -stock: int
+    +reservar(cantidad)
+  }
+  class Direccion
+  class Pago
+  Pedido --> Cliente : pertenece a
+  Cliente o-- Direccion : direcciones
+  Pedido *-- DetallePedido : contiene
+  DetallePedido --> Producto : referencia
+  Pedido ..> Pago : solicita autorización
+  Pago <|-- PagoTarjeta`} />
+
+<Callout tipo="error">
+No confundas clase con tabla. En análisis, una clase también tiene responsabilidades y colaboración; no es solo una bolsa de atributos.
+</Callout>
+

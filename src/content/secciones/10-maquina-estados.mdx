@@ -1,0 +1,102 @@
+---
+id: "sec-10"
+numero: 10
+titulo: "Modelado de comportamiento con máquina de estados"
+slug: "10-maquina-estados"
+resumen: "Una máquina de estados modela el ciclo de vida de un objeto reactivo según estados, eventos, guardas y efectos."
+keywords: ["máquina de estados", "estado", "transición", "evento", "guarda", "efecto", "objeto reactivo"]
+relacionadas: ["03-orientacion-objetos", "11-secuencia-comunicacion"]
+---
+
+### 10.1. Qué es un diagrama de máquina de estados
+
+<Definicion termino="diagrama de máquina de estados">
+Un <strong>diagrama de máquina de estados</strong> muestra la secuencia de estados por los que pasa un objeto, los eventos que provocan transiciones, las condiciones que las habilitan y las acciones que ocurren.
+</Definicion>
+
+Se usa para modelar comportamiento dinámico de elementos cuyos objetos cambian su comportamiento según el estado.
+
+### 10.2. Clasificación y uso
+
+Es un diagrama de comportamiento, dinámico y lógico. Sirve para explorar clases, actores, subsistemas o componentes con ciclos de vida claros, especialmente en sistemas de tiempo real o entidades reactivas.
+
+### 10.3. Elementos principales
+
+- <strong>Estado inicial</strong> y <strong>estado final</strong>.
+- <strong>Estado:</strong> condición estable durante un período identificable.
+- <strong>Transición:</strong> cambio desde un estado origen hacia un destino.
+- <strong>Evento disparador:</strong> hecho que activa una transición.
+- <strong>Condición de guarda:</strong> expresión booleana requerida.
+- <strong>Efecto:</strong> acción ejecutada al dispararse la transición.
+
+<MermaidDiagram caption="Elementos de una transición" code={`flowchart LR
+  O[Estado origen] -->|"evento [guarda] / efecto"| D[Estado destino]`} />
+
+### 10.4. Sintaxis conceptual de una transición
+
+<EjemploClase titulo="Sintaxis">
+estado origen -- evento [condición] / efecto -- estado destino
+</EjemploClase>
+
+Ejemplo: <strong>Creada -- confirmarOrden() [hayContenedoresDisponibles] / asignarContenedores() -- Confirmada</strong>.
+
+### 10.5. Objeto reactivo
+
+Un objeto reactivo depende de eventos y del estado en que se encuentra. Para modelarlo se identifican estados relevantes, eventos, guardas, acciones, estado inicial y finales.
+
+<MermaidDiagram caption="OrdenDeTraslado como objeto reactivo" code={`stateDiagram-v2
+  [*] --> Borrador
+  Borrador --> Pendiente: confirmar() [datosCompletos] / reservarRecursos()
+  Pendiente --> EnTransito: iniciarTraslado() [vehiculoAsignado] / registrarSalida()
+  EnTransito --> Entregada: confirmarEntrega() / cerrarOrden()
+  Borrador --> Cancelada: cancelar() / descartar()
+  Pendiente --> Cancelada: cancelar() [sinSalida] / liberarRecursos()
+  EnTransito --> Cancelada: cancelarPorIncidente() / registrarIncidente()
+  Entregada --> [*]
+  Cancelada --> [*]`} />
+
+### 10.6. Buenas prácticas
+
+- Elegir una clase cuyo comportamiento realmente dependa del estado.
+- No modelar como estado algo que solo es un dato sin impacto.
+- Nombrar estados como condiciones estables.
+- Verificar que todos los estados sean alcanzables.
+- Verificar que no existan estados muertos no deseados.
+
+<MermaidDiagram caption="Checklist para decidir si corresponde máquina de estados" code={`flowchart TD
+  A[¿La clase cambia de comportamiento según estado?] -->|No| B[No hacer máquina]
+  A -->|Sí| C[¿Hay eventos que disparan cambios?]
+  C -->|No| B
+  C -->|Sí| D[Identificar estados estables]
+  D --> E[Definir transiciones con evento, guarda y efecto]`} />
+
+### 10.7. Pseudoestado de historia y estado suspendido
+
+Uno de los PDFs menciona el caso de un estado suspendido que debe recordar a qué estado volver. Para eso se usa un pseudoestado de historia.
+
+<MermaidDiagram caption="Historia: volver al estado previo luego de suspender" code={`stateDiagram-v2
+  [*] --> EnCurso
+  EnCurso --> EnPreparacion: preparar()
+  EnCurso --> EnTraslado: despachar()
+  state EnCurso {
+    [*] --> EnPreparacion
+    EnPreparacion --> EnTraslado: iniciarTraslado()
+    EnTraslado --> EsperandoConfirmacion: registrarLlegada()
+    EsperandoConfirmacion --> [H]
+  }
+  EnCurso --> Suspendida: suspender()
+  Suspendida --> EnCurso: reanudar() / volverPorHistoria
+  EnCurso --> Cerrada: cerrar()
+  Cerrada --> [*]`} />
+
+<Callout tipo="atencion">
+El pseudoestado de historia sirve cuando “reanudar” debe volver al subestado anterior, no a un inicio fijo.
+</Callout>
+
+### 10.8. Diferencia con diagramas de interacción
+
+La máquina de estados se concentra en el ciclo de vida de un objeto o clase. Secuencia y comunicación muestran colaboración entre varios objetos durante un escenario.
+
+<Callout tipo="error">
+No uses máquina de estados para cualquier atributo llamado “estado”. Corresponde cuando ese estado cambia el comportamiento permitido del objeto.
+</Callout>

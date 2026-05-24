@@ -1,0 +1,46 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Topbar from "@/components/layout/Topbar.astro";
+import { crearIndiceBusqueda, ordenarSecciones, seccionUrl } from "@/lib/secciones";
+
+const secciones = ordenarSecciones(await getCollection("secciones"));
+const indiceBusqueda = crearIndiceBusqueda(secciones);
+const terminos = new Map<string, { termino: string; apariciones: Array<{ titulo: string; url: string }> }>();
+const strongRegex = /<strong>([^<]+)<\/strong>|<Definicion\s+termino="([^"]+)"/g;
+
+for (const seccion of secciones) {
+  for (const match of (seccion.body ?? "").matchAll(strongRegex)) {
+    const raw = (match[1] ?? match[2] ?? "").replace(/:$/, "").trim();
+    if (!raw || raw.length > 90) continue;
+    const key = raw.toLowerCase();
+    const entry = terminos.get(key) ?? { termino: raw, apariciones: [] };
+    if (!entry.apariciones.some((a) => a.url === seccionUrl(seccion))) {
+      entry.apariciones.push({ titulo: seccion.data.titulo, url: seccionUrl(seccion) });
+    }
+    terminos.set(key, entry);
+  }
+}
+const lista = Array.from(terminos.values()).sort((a, b) => a.termino.localeCompare(b.termino, "es"));
+---
+
+<BaseLayout titulo="Glosario · Resumen DSI" descripcion="Glosario de términos UML, PUD, análisis y GRASP extraído del resumen.">
+  <Topbar indiceBusqueda={indiceBusqueda} />
+  <main class="mx-auto max-w-5xl px-4 pb-16 pt-24 lg:px-6">
+    <p class="mb-3 font-mono text-sm uppercase tracking-[0.18em] text-[hsl(var(--primary))]">Glosario</p>
+    <h1 class="text-[var(--text-fluid-3xl)] font-semibold leading-tight">Términos clave de DSI</h1>
+    <p class="mt-4 max-w-3xl text-[hsl(var(--muted-foreground))]">Generado desde términos marcados en los MDX con `strong` y componentes de definición. Cada entrada enlaza a las secciones donde aparece.</p>
+    <div class="mt-8 grid gap-3 sm:grid-cols-2">
+      {lista.map((item) => (
+        <article id={item.termino.toLowerCase().replaceAll(" ", "-")} class="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
+          <h2 class="font-mono text-base font-semibold">{item.termino}</h2>
+          <div class="mt-2 flex flex-wrap gap-2">
+            {item.apariciones.map((aparicion) => (
+              <a class="rounded-md border border-[hsl(var(--border))] px-2 py-1 text-xs hover:bg-[hsl(var(--muted))] hover:no-underline" href={aparicion.url}>{aparicion.titulo}</a>
+            ))}
+          </div>
+        </article>
+      ))}
+    </div>
+  </main>
+</BaseLayout>

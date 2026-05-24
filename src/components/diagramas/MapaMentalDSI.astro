@@ -1,0 +1,34 @@
+---
+import MermaidDiagram from "./MermaidDiagram.astro";
+
+const code = `flowchart LR
+  DSI((Diseno de Sistemas))
+  DSI --> PUD
+  DSI --> UML[UML 2.0]
+  DSI --> Req[Requerimientos]
+  DSI --> Analisis[Analisis]
+  DSI --> Comp[Comportamiento]
+  DSI --> Resp[Responsabilidades]
+  PUD --> Fases
+  PUD --> Iteraciones
+  PUD --> Workflows
+  UML --> Estructurales
+  UML --> Interaccion[Interaccion]
+  Req --> CU[Casos de uso]
+  Req --> Actores
+  Req --> Vista[Vista externa]
+  Analisis --> Modelo[Modelo de analisis]
+  Analisis --> BCE[Clases BCE]
+  Analisis --> Realizaciones
+  Analisis --> Paquetes
+  Comp --> Secuencia
+  Comp --> Comunicacion[Comunicacion]
+  Comp --> Estados
+  Resp --> Experto
+  Resp --> Creador
+  Resp --> Controlador
+  Resp --> Bajo[Bajo acoplamiento]
+  Resp --> Alta[Alta cohesion]`;
+---
+
+<MermaidDiagram caption="Mapa mental integral de la materia" code={code} tipo="mapa" />

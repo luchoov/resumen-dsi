@@ -1,0 +1,30 @@
+---
+interface Props {
+  caption: string;
+  columnas: string[];
+  filas: Array<Array<string>>;
+}
+
+const { caption, columnas, filas } = Astro.props;
+---
+
+<figure class="wide my-8 overflow-hidden rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))]">
+  <figcaption class="border-b border-[hsl(var(--border))] px-4 py-3 text-left text-sm font-semibold text-[hsl(var(--foreground))]">{caption}</figcaption>
+  <div class="overflow-x-auto">
+    <table class="w-full min-w-[44rem] border-collapse text-sm">
+      <thead>
+        <tr class="bg-[hsl(var(--muted))] text-left">
+          {columnas.map((columna) => <th class="border-b border-[hsl(var(--border))] px-4 py-3 font-semibold">{columna}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {filas.map((fila) => (
+          <tr class="border-b border-[hsl(var(--border))] last:border-b-0">
+            {fila.map((celda) => <td class="px-4 py-3 align-top text-[hsl(var(--foreground))]" set:html={celda} />)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</figure>
+

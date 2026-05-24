@@ -1,0 +1,83 @@
+---
+id: "sec-11"
+numero: 11
+titulo: "Diagramas de secuencia y comunicación"
+slug: "11-secuencia-comunicacion"
+resumen: "Los diagramas de secuencia y comunicación modelan interacciones; uno enfatiza tiempo y el otro estructura de enlaces."
+keywords: ["secuencia", "comunicación", "interacción", "mensaje", "línea de vida", "activación"]
+relacionadas: ["07-realizaciones-casos-uso", "10-maquina-estados"]
+---
+
+### 11.1. Diagramas de interacción
+
+Los diagramas de secuencia y comunicación son diagramas de interacción: ambos modelan objetos que colaboran mediante mensajes para realizar un comportamiento.
+
+### 11.2. Diagrama de secuencia
+
+El <strong>diagrama de secuencia</strong> enfatiza el orden temporal de los mensajes. Es útil para validar escenarios, describir lógica de caso de uso, analizar responsabilidades y detectar clases complejas.
+
+<MermaidDiagram caption="Elementos de un diagrama de secuencia" code={`sequenceDiagram
+  actor A as Actor
+  participant B as Boundary
+  participant C as Control
+  A->>B: mensaje
+  activate B
+  B->>C: delega
+  activate C
+  C-->>B: respuesta
+  deactivate C
+  B-->>A: salida
+  deactivate B`} />
+
+### 11.3. Diagrama de comunicación
+
+El <strong>diagrama de comunicación</strong> enfatiza la organización estructural de los objetos y enlaces. También muestra mensajes, pero el orden se expresa con numeración.
+
+### 11.4. Diferencia entre secuencia y comunicación
+
+<TablaComparativa
+  caption="Comparación entre diagramas de secuencia y comunicación"
+  columnas={["Aspecto", "Secuencia", "Comunicación"]}
+  filas={[
+    ["Foco", "Orden temporal.", "Estructura de colaboración."],
+    ["Lectura", "De arriba hacia abajo.", "Por enlaces y números de mensaje."],
+    ["Fortaleza", "Ver escenarios y activaciones.", "Ver qué objetos están conectados."],
+    ["Uso en análisis", "Validar flujo de caso de uso.", "Explorar responsabilidades y enlaces."]
+  ]}
+/>
+
+### 11.5. Secuencia típica en análisis
+
+<MermaidDiagram caption="Flujo canónico de un caso de uso en análisis" code={`sequenceDiagram
+  actor A as Actor
+  participant B as :Boundary
+  participant C as :Control
+  participant E as :Entity
+  A->>B: evento
+  B->>C: delega evento
+  C->>E: solicita dato / comportamiento
+  E-->>C: respuesta
+  C-->>B: resultado
+  B-->>A: muestra respuesta`} />
+
+<DiagramaAnalisisOO
+  modo="comunicacion"
+  caption="Mismo escenario como comunicación"
+  nodos={[
+    { id: "a", tipo: "actor", etiqueta: "Actor", x: 120, y: 130 },
+    { id: "b", tipo: "boundary", etiqueta: "Boundary", x: 330, y: 90 },
+    { id: "c", tipo: "control", etiqueta: "Control", x: 520, y: 180 },
+    { id: "e", tipo: "entity", etiqueta: "Entity", x: 730, y: 110 }
+  ]}
+  conexiones={[
+    { from: "a", to: "b", numero: 1, etiqueta: "evento" },
+    { from: "b", to: "c", numero: 2, etiqueta: "delega" },
+    { from: "c", to: "e", numero: 3, etiqueta: "solicita" },
+    { from: "e", to: "c", numero: 4, etiqueta: "responde" }
+  ]}
+/>
+
+<Callout tipo="tip">
+Casi todos los casos de uso pueden empezar con este patrón canónico. Las variaciones aparecen cuando hay múltiples entidades o controles colaborando.
+</Callout>
+

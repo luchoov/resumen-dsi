@@ -1,0 +1,108 @@
+---
+id: "sec-04"
+numero: 4
+titulo: "Workflow de análisis dentro del PUD"
+slug: "04-workflow-analisis"
+resumen: "El análisis refina requisitos y abre la caja negra del sistema con una solución lógica conceptual."
+keywords: ["análisis", "workflow", "modelo de casos de uso", "modelo de análisis", "vista externa", "vista interna"]
+relacionadas: ["01-pud", "05-modelo-analisis"]
+---
+
+### 4.1. Propósito del análisis
+
+<Definicion termino="análisis">
+El <strong>análisis</strong> toma requisitos capturados y los refina, estructura y formaliza para comprender el sistema con mayor precisión.
+</Definicion>
+
+Su objetivo es producir una descripción mantenible y útil para dar forma al diseño y a la arquitectura, concentrándose en requisitos funcionales y en una solución lógica.
+
+<MermaidDiagram caption="El análisis como apertura de caja negra" code={`flowchart LR
+  CU[Modelo de casos de uso\nvista externa] --> ANA[Workflow de análisis]
+  ANA --> MA[Modelo de análisis\nvista interna]
+  MA --> DIS[Diseño lógico-físico]
+  CU -. qué hace .-> ANA
+  MA -. cómo colaboran objetos .-> DIS`} />
+
+### 4.2. Problemas que el análisis ayuda a resolver
+
+- <strong>Interferencia entre casos de uso:</strong> casos que compiten por recursos internos compartidos.
+- <strong>Ambigüedad del lenguaje del cliente:</strong> expresiones entendibles para usuario pero insuficientes para construir software.
+- <strong>Redundancias o inconsistencias:</strong> requisitos repetidos o contradictorios.
+- <strong>Falta de estructura interna:</strong> los casos de uso dicen qué debe hacer el sistema, no cómo se organizan los objetos.
+
+### 4.3. Precondiciones para analizar bien
+
+Los PDFs insisten en que el análisis parte de un modelo de requerimientos suficientemente ordenado. Si los casos de uso están mezclados o escritos con detalle interno, el análisis se vuelve confuso.
+
+<MermaidDiagram caption="Precondiciones del workflow de análisis" code={`flowchart TB
+  CU[Casos de uso independientes] --> ANA[Analisis]
+  CLI[Lenguaje del cliente] --> ANA
+  COMP[Funcionalidad completa e intuitiva] --> ANA
+  ANA --> REF[Refinar requisitos]
+  ANA --> INT[Abrir vista interna]
+  ANA --> TRAZA[Trazar a realizaciones]`} />
+
+<Callout tipo="atencion">
+El caso de uso debe seguir describiendo qué necesita el actor. Si ya habla de clases internas, gestores o tablas, está invadiendo el análisis.
+</Callout>
+
+### 4.4. Modelo de casos de uso versus modelo de análisis
+
+<TablaComparativa
+  caption="Modelo de casos de uso vs modelo de análisis"
+  columnas={["Aspecto", "Modelo de casos de uso", "Modelo de análisis"]}
+  filas={[
+    ["Perspectiva", "Externa, caja negra.", "Interna, caja blanca."],
+    ["Lenguaje", "Usuario y negocio.", "Desarrollador y conceptos OO."],
+    ["Estructura", "Actores, casos de uso y relaciones.", "Clases, paquetes y realizaciones."],
+    ["Pregunta", "¿Qué servicio ofrece el sistema?", "¿Qué objetos colaboran para cumplirlo?"]
+  ]}
+/>
+
+<MermaidDiagram caption="Transición de vista externa a vista interna" code={`flowchart TB
+  Actor --> UC[Caso de uso: Registrar pedido]
+  UC --> RCU[Realización de caso de uso]
+  RCU --> B[Boundary: PantallaPedido]
+  RCU --> C[Control: GestorPedido]
+  RCU --> E[Entity: Pedido]
+  RCU --> P[Entity: Producto]`} />
+
+### 4.5. Vista externa y vista interna
+
+El modelo de casos de uso es una <strong>vista externa</strong>: trata al sistema como caja negra. El modelo de análisis es una <strong>vista interna</strong>: muestra clases de análisis colaborando para realizar los casos de uso.
+
+### 4.6. Análisis, diseño e implementación
+
+<MermaidDiagram caption="Del análisis a la implementación" code={`flowchart LR
+  ANA[Análisis\nconceptual y lógico] --> DIS[Diseño\ntecnología y arquitectura]
+  DIS --> IMP[Implementación\ncódigo ejecutable]
+  ANA -. requisitos funcionales .-> DIS
+  DIS -. persistencia, UI, distribución .-> IMP`} />
+
+- <strong>Análisis:</strong> estructura y refina requisitos.
+- <strong>Diseño:</strong> incorpora tecnología, arquitectura, persistencia, distribución, interfaces y requisitos no funcionales.
+- <strong>Implementación:</strong> convierte el diseño en componentes ejecutables, integrables y probables.
+
+### 4.7. Importancia del análisis
+
+El análisis ayuda a distribuir responsabilidades, descubrir clases, reconocer paquetes, detectar requisitos especiales y preservar una visión conceptual común aunque luego existan tecnologías distintas.
+
+### 4.8. Cuándo conviene hacer análisis
+
+Conviene cuando se planifican incrementos, se incorporan nuevos miembros, existen implementaciones alternativas o se integra un sistema heredado.
+
+### 4.9. Papel del análisis en el ciclo de vida
+
+<TablaComparativa
+  caption="Opciones de permanencia del modelo de análisis"
+  columnas={["Opción", "Uso", "Riesgo"]}
+  filas={[
+    ["Mantenido", "Se conserva como vista conceptual durante todo el ciclo de vida.", "Costo de actualización."],
+    ["Transitorio", "Se usa en elaboración y luego cede protagonismo al diseño.", "Puede perder trazabilidad."],
+    ["Sin modelo explícito", "Se fusiona con requerimientos o diseño.", "Solo conviene en sistemas muy simples."]
+  ]}
+/>
+
+<Callout tipo="tip">
+El análisis es la bisagra entre “lo que el usuario necesita” y “cómo los objetos colaboran para resolverlo”.
+</Callout>

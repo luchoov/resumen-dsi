@@ -1,0 +1,92 @@
+---
+id: "sec-09"
+numero: 9
+titulo: "Actividades y roles del workflow de análisis"
+slug: "09-actividades-roles"
+resumen: "El workflow de análisis distribuye responsabilidades entre arquitecto, ingeniero de casos de uso e ingeniero de componentes."
+keywords: ["roles", "actividades", "arquitecto", "ingeniero de casos de uso", "ingeniero de componentes"]
+relacionadas: ["04-workflow-analisis", "08-paquetes-arquitectura"]
+---
+
+### 9.1. Roles principales
+
+- <strong>Arquitecto:</strong> inicia el modelo de análisis, identifica paquetes principales, clases de entidad evidentes y requisitos especiales comunes.
+- <strong>Ingeniero de casos de uso:</strong> realiza cada caso de uso en términos de clases de análisis participantes.
+- <strong>Ingeniero de componentes:</strong> define y mantiene responsabilidades, atributos, relaciones y requisitos especiales de clases y paquetes.
+
+<TablaComparativa
+  caption="Roles del workflow de análisis"
+  columnas={["Rol", "Foco", "Artefactos que toca"]}
+  filas={[
+    ["Arquitecto", "Estructura global y decisiones significativas.", "Paquetes principales, vista arquitectónica."],
+    ["Ingeniero de casos de uso", "Escenarios y colaboraciones.", "Realizaciones, secuencias, flujos de análisis."],
+    ["Ingeniero de componentes", "Clases, responsabilidades y relaciones.", "Clases de análisis y paquetes."]
+  ]}
+/>
+
+### 9.2. Flujo general de trabajo
+
+<MermaidDiagram caption="Actividades del workflow de análisis" code={`flowchart TB
+  A[Analizar arquitectura] --> B[Analizar casos de uso]
+  B --> C[Analizar clases]
+  C --> D[Analizar paquetes]
+  D --> E[Revisar modelo de análisis]
+  E --> B
+  A -. identifica paquetes .-> D
+  B -. descubre clases .-> C`} />
+
+<MermaidDiagram caption="Responsables y entregables del análisis" code={`flowchart LR
+  ARQ[Arquitecto] --> MA[Integridad del modelo]
+  ARQ --> VA[Vista arquitectonica]
+  ICU[Ingeniero de casos de uso] --> RCU[Realizaciones de CU]
+  ICU --> DIN[Interacciones y flujos]
+  ICO[Ingeniero de componentes] --> CA[Clases de analisis]
+  ICO --> RESP[Responsabilidades]
+  ICO --> REL[Relaciones y requisitos especiales]
+  MA --> MODELO[Modelo de analisis consistente]
+  RCU --> MODELO
+  CA --> MODELO`} />
+
+### 9.3. Analizar la arquitectura
+
+Implica identificar paquetes principales, clases de entidad evidentes, mecanismos conceptuales comunes y requisitos especiales que afecten a varias partes del sistema.
+
+<TablaComparativa
+  caption="Subactividades de analizar la arquitectura"
+  columnas={["Subactividad", "Resultado"]}
+  filas={[
+    ["Identificar paquetes de análisis", "Primer corte del modelo en piezas manejables."],
+    ["Identificar clases de entidad obvias", "Bosquejo inicial de conceptos significativos del dominio."],
+    ["Identificar requisitos especiales comunes", "Restricciones que luego deben tratarse en diseño e implementación."]
+  ]}
+/>
+
+### 9.4. Analizar un caso de uso
+
+Consiste en describir una realización: qué clases participan, cómo colaboran y qué requisitos especiales aparecen.
+
+<MermaidDiagram caption="De caso de uso a colaboración" code={`flowchart LR
+  UC[Caso de uso] --> OBJ[Objetos participantes]
+  OBJ --> MSG[Mensajes]
+  MSG --> RESP[Responsabilidades]
+  RESP --> AJUSTE[Ajuste de clases y paquetes]`} />
+
+### 9.5. Analizar una clase
+
+Analizar una clase implica precisar responsabilidades, atributos relevantes, relaciones y requisitos especiales asociados. Si su comportamiento depende del estado, puede necesitar máquina de estados.
+
+### 9.6. Analizar un paquete
+
+Analizar un paquete implica verificar que sus clases estén relacionadas, sus dependencias externas sean mínimas y su propósito sea reconocible.
+
+<MermaidDiagram caption="Checklist de análisis de paquete" code={`flowchart TB
+  P[Paquete de analisis] --> I{Independiente?}
+  P --> O{Cumple su objetivo?}
+  P --> D{Dependencias descriptas?}
+  I --> OK[Menor acoplamiento]
+  O --> DOM[Realiza clases de dominio o casos de uso]
+  D --> IMP[Permite estimar impacto de cambios]`} />
+
+<Callout tipo="tip">
+Pensá estos roles como sombreros de trabajo. Una misma persona puede cumplir varios, pero el modelo gana claridad si las responsabilidades están separadas.
+</Callout>
