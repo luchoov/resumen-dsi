@@ -40,6 +40,21 @@ estado origen -- evento [condición] / efecto -- estado destino
 
 Ejemplo: <strong>Creada -- confirmarOrden() [hayContenedoresDisponibles] / asignarContenedores() -- Confirmada</strong>.
 
+<TablaComparativa
+  caption="Partes de la transición"
+  columnas={["Parte", "Qué representa", "Cómo se nombra"]}
+  filas={[
+    ["Evento", "Lo que ocurre y dispara el cambio.", "Verbo en infinitivo o método: confirmar(), cancelar()."],
+    ["Guarda", "Condición booleana que debe cumplirse.", "[hay stock], [datos completos]."],
+    ["Efecto", "Acción ejecutada durante la transición.", "/ reservar(), / registrarCambio()."],
+    ["Destino", "Nuevo estado estable del objeto.", "Confirmada, Cancelada, En traslado."]
+  ]}
+/>
+
+<Callout tipo="tip">
+En los ejercicios, los eventos de la máquina suelen transformarse en métodos de la clase de análisis. Por eso no alcanza con dibujar estados: las transiciones deben tener nombres operativos.
+</Callout>
+
 ### 10.5. Objeto reactivo
 
 Un objeto reactivo depende de eventos y del estado en que se encuentra. Para modelarlo se identifican estados relevantes, eventos, guardas, acciones, estado inicial y finales.
@@ -62,6 +77,9 @@ Un objeto reactivo depende de eventos y del estado en que se encuentra. Para mod
 - Nombrar estados como condiciones estables.
 - Verificar que todos los estados sean alcanzables.
 - Verificar que no existan estados muertos no deseados.
+- Evitar usar casos de uso como estados.
+- Agregar guardas cuando una regla de negocio decide entre dos caminos.
+- Registrar cambios de estado cuando el enunciado pide historial o trazabilidad.
 
 <MermaidDiagram caption="Checklist para decidir si corresponde máquina de estados" code={`flowchart TD
   A[¿La clase cambia de comportamiento según estado?] -->|No| B[No hacer máquina]
@@ -70,7 +88,35 @@ Un objeto reactivo depende de eventos y del estado en que se encuentra. Para mod
   C -->|Sí| D[Identificar estados estables]
   D --> E[Definir transiciones con evento, guarda y efecto]`} />
 
-### 10.7. Pseudoestado de historia y estado suspendido
+### 10.7. Cómo derivar métodos y reglas
+
+Una máquina de estados no queda aislada: debe impactar en la clase modelada y en la vista de clases de análisis.
+
+<MermaidDiagram caption="De la máquina a la clase de análisis" code={`flowchart LR
+  Estado[Estados] --> Atributo[atributo estado o situacion]
+  Evento[Eventos] --> Metodos[metodos de la clase]
+  Guarda[Guardas] --> Reglas[responsabilidades de validacion]
+  Efecto[Efectos] --> Operaciones[operaciones internas]
+  Historial[Historial requerido] --> CambioEstado[clase CambioEstado]
+  Atributo --> Clase[Clase de analisis]
+  Metodos --> Clase
+  Reglas --> Clase
+  Operaciones --> Clase
+  CambioEstado --> Clase`} />
+
+<TablaComparativa
+  caption="Qué mirar en el enunciado"
+  columnas={["Señal en el texto", "Qué modelar"]}
+  filas={[
+    ["'pasa a', 'queda en', 'cambia a'", "Estado o transición."],
+    ["'si', 'siempre que', 'cuando corresponda'", "Guarda o condición de control."],
+    ["'se registra', 'se notifica', 'se libera'", "Efecto de transición o responsabilidad asociada."],
+    ["'historial', 'fecha de cambio', 'responsable'", "Clase CambioEstado o relación similar."],
+    ["'reanudar', 'suspender', 'volver al estado anterior'", "Estado suspendido y pseudoestado de historia."]
+  ]}
+/>
+
+### 10.8. Pseudoestado de historia y estado suspendido
 
 Uno de los PDFs menciona el caso de un estado suspendido que debe recordar a qué estado volver. Para eso se usa un pseudoestado de historia.
 
@@ -92,7 +138,7 @@ Uno de los PDFs menciona el caso de un estado suspendido que debe recordar a qu�
 El pseudoestado de historia sirve cuando “reanudar” debe volver al subestado anterior, no a un inicio fijo.
 </Callout>
 
-### 10.8. Diferencia con diagramas de interacción
+### 10.9. Diferencia con diagramas de interacción
 
 La máquina de estados se concentra en el ciclo de vida de un objeto o clase. Secuencia y comunicación muestran colaboración entre varios objetos durante un escenario.
 

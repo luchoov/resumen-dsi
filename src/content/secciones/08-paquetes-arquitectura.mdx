@@ -41,6 +41,8 @@ Los PDFs agregan una idea importante: un paquete puede aparecer inicialmente par
 - Separar áreas del dominio reconocibles.
 - Reducir dependencias cruzadas.
 - Mantener paquetes comprensibles y evolutivos.
+- Separar servicios funcionales usados por varios casos de uso.
+- Revisar que las dependencias tengan sentido desde el dominio, no solo desde el diagrama.
 
 <MermaidDiagram caption="Criterios de corte de paquetes" code={`flowchart LR
   Paquete((Paquete))
@@ -57,7 +59,57 @@ Los PDFs agregan una idea importante: un paquete puede aparecer inicialmente par
   Escala --> Tamano[Tamano manejable]
   Escala --> Evolucion[Evolucion incremental]`} />
 
-### 8.3. Descripción de arquitectura en análisis
+### 8.3. Paquetes de servicio
+
+Un <strong>paquete de servicio</strong> es una subcategoría de paquete de análisis. Agrupa un conjunto coherente de acciones relacionadas funcionalmente que puede ser usado por varios casos de uso.
+
+La idea clave es que el servicio tiene valor como unidad funcional reconocible: no es una clase suelta ni una carpeta técnica. En análisis todavía no significa microservicio, API, módulo de código o componente desplegable.
+
+<TablaComparativa
+  caption="Paquete común vs paquete de servicio"
+  columnas={["Aspecto", "Paquete de análisis", "Paquete de servicio"]}
+  filas={[
+    ["Qué agrupa", "Clases, realizaciones u otros paquetes relacionados.", "Funcionalidad coherente ofrecida como servicio conceptual."],
+    ["Criterio principal", "Cohesión del dominio y manejo de complejidad.", "Conjunto de acciones funcionales que suelen reutilizarse."],
+    ["Relación con diseño", "Puede influir en subsistemas posteriores.", "Probablemente se transforme en subsistema o servicio de aplicación."],
+    ["Riesgo", "Partir por tecnología demasiado pronto.", "Confundirlo con endpoint, microservicio o componente físico."]
+  ]}
+/>
+
+<MermaidDiagram caption="Paquete de servicio usado por varios casos de uso" code={`flowchart TB
+  subgraph ServicioClientes[Paquete de servicio: Gestión de clientes]
+    Cliente
+    BuscarCliente
+    ValidarCliente
+  end
+  RegistrarPedido --> ServicioClientes
+  ConsultarPedidos --> ServicioClientes
+  EmitirFactura --> ServicioClientes`} />
+
+<Callout tipo="tip">
+Si una funcionalidad aparece como soporte de varios casos de uso, puede convenir pensarla como paquete de servicio. Si solo es una clase técnica, todavía no justifica ese nombre.
+</Callout>
+
+### 8.4. Dependencias entre paquetes
+
+Una dependencia entre paquetes significa que elementos de un paquete usan elementos de otro. No hay que llenar el modelo de flechas: cada dependencia debería poder explicarse con una colaboración, una realización de caso de uso o una necesidad del dominio.
+
+<TablaComparativa
+  caption="Cómo revisar dependencias entre paquetes"
+  columnas={["Pregunta", "Señal correcta", "Señal de problema"]}
+  filas={[
+    ["¿Por qué depende?", "Hay una realización o regla de negocio que lo justifica.", "La dependencia aparece solo por comodidad."],
+    ["¿La dirección es clara?", "El paquete cliente necesita conceptos del proveedor.", "Ambos paquetes se necesitan mutuamente sin razón clara."],
+    ["¿El acoplamiento es bajo?", "El paquete proveedor expone pocos conceptos estables.", "Muchos elementos internos quedan conocidos desde afuera."],
+    ["¿El paquete es cohesivo?", "Sus clases cambian por motivos parecidos.", "Mezcla pantallas, entidades, reglas y soporte sin criterio."]
+  ]}
+/>
+
+<Callout tipo="error">
+Un error frecuente es crear paquetes por capas técnicas, como UI, BaseDeDatos o Framework, dentro del análisis. En Unidad 1 el corte debe ser conceptual y funcional.
+</Callout>
+
+### 8.5. Descripción de arquitectura en análisis
 
 La descripción de arquitectura en análisis resalta paquetes, clases y realizaciones significativas para entender la estructura lógica del sistema.
 

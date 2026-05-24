@@ -29,9 +29,51 @@ El <strong>diagrama de secuencia</strong> enfatiza el orden temporal de los mens
   B-->>A: salida
   deactivate B`} />
 
+Elementos importantes:
+
+- <strong>Participante u objeto:</strong> actor, boundary, control o entity que interviene en el escenario.
+- <strong>Línea de vida:</strong> existencia del participante a lo largo del tiempo.
+- <strong>Mensaje:</strong> pedido de servicio, consulta, comando o respuesta entre objetos.
+- <strong>Foco de control:</strong> período durante el cual un objeto ejecuta una acción.
+- <strong>Retorno:</strong> respuesta o resultado, explícito cuando aporta comprensión.
+
+<TablaComparativa
+  caption="Mensajes habituales en secuencia"
+  columnas={["Tipo", "Qué significa", "Cuándo usarlo"]}
+  filas={[
+    ["Síncrono", "El emisor espera la respuesta antes de seguir.", "Validaciones, consultas, operaciones de negocio."],
+    ["Asíncrono", "El emisor no queda bloqueado esperando respuesta inmediata.", "Notificaciones, procesos disparados, eventos."],
+    ["Retorno", "Resultado de una llamada previa.", "Cuando el valor devuelto afecta el flujo."],
+    ["Creación", "Un objeto nace durante el escenario.", "Crear pedido, detalle, cambio de estado o sesión."]
+  ]}
+/>
+
 ### 11.3. Diagrama de comunicación
 
 El <strong>diagrama de comunicación</strong> enfatiza la organización estructural de los objetos y enlaces. También muestra mensajes, pero el orden se expresa con numeración.
+
+Sus elementos distintivos son:
+
+- <strong>Camino o enlace:</strong> relación temporal de colaboración por la que puede viajar un mensaje.
+- <strong>Número de secuencia:</strong> indica el orden del mensaje, por ejemplo `1`, `1.1`, `1.2`.
+- <strong>Mensaje:</strong> operación o responsabilidad solicitada a otro objeto.
+- <strong>Objeto receptor:</strong> debe tener sentido que conozca o pueda alcanzar al destinatario.
+
+<DiagramaAnalisisOO
+  modo="comunicacion"
+  caption="Numeración anidada en comunicación"
+  nodos={[
+    { id: "b", tipo: "boundary", etiqueta: "PantallaPedido", x: 180, y: 170 },
+    { id: "c", tipo: "control", etiqueta: "GestorPedido", x: 470, y: 170 },
+    { id: "p", tipo: "entity", etiqueta: "Pedido", x: 760, y: 90 },
+    { id: "cat", tipo: "entity", etiqueta: "Catalogo", x: 760, y: 260 }
+  ]}
+  conexiones={[
+    { from: "b", to: "c", numero: 1, etiqueta: "registrarPedido(datos)" },
+    { from: "c", to: "cat", numero: 1.1, etiqueta: "buscarProductos(items)" },
+    { from: "c", to: "p", numero: 1.2, etiqueta: "crear(datos)" }
+  ]}
+/>
 
 ### 11.4. Diferencia entre secuencia y comunicación
 
@@ -42,7 +84,8 @@ El <strong>diagrama de comunicación</strong> enfatiza la organización estructu
     ["Foco", "Orden temporal.", "Estructura de colaboración."],
     ["Lectura", "De arriba hacia abajo.", "Por enlaces y números de mensaje."],
     ["Fortaleza", "Ver escenarios y activaciones.", "Ver qué objetos están conectados."],
-    ["Uso en análisis", "Validar flujo de caso de uso.", "Explorar responsabilidades y enlaces."]
+    ["Uso en análisis", "Validar flujo de caso de uso.", "Explorar responsabilidades y enlaces."],
+    ["Mejor para", "Escenarios con orden delicado, alternativas o activaciones importantes.", "Ver acoplamiento, navegación y distribución de responsabilidades."]
   ]}
 />
 
@@ -81,3 +124,32 @@ El <strong>diagrama de comunicación</strong> enfatiza la organización estructu
 Casi todos los casos de uso pueden empezar con este patrón canónico. Las variaciones aparecen cuando hay múltiples entidades o controles colaborando.
 </Callout>
 
+### 11.6. Visibilidad y enlaces
+
+Para que un objeto le envíe un mensaje a otro, debe poder verlo de alguna manera. En análisis no se baja al detalle de punteros, repositorios o inyección de dependencias, pero sí debe existir una justificación conceptual.
+
+<TablaComparativa
+  caption="Formas de justificar visibilidad en análisis"
+  columnas={["Forma", "Idea", "Ejemplo"]}
+  filas={[
+    ["Por asociación", "Un objeto está relacionado estructuralmente con otro.", "Pedido conoce sus DetallePedido."],
+    ["Por parámetro", "Un objeto recibe una referencia durante el mensaje.", "Gestor recibe datos o una entidad seleccionada."],
+    ["Por creación", "Quien crea un objeto puede comunicarse con él.", "Pedido crea DetallePedido y luego lo agrega."],
+    ["Por servicio conceptual", "Un objeto consulta un catálogo o gestor especializado.", "GestorPedido consulta CatalogoProductos."]
+  ]}
+/>
+
+<Callout tipo="atencion">
+En el parcial, si dibujás un mensaje entre dos objetos, después la vista de clases debería poder explicar ese enlace con asociación, dependencia o una colaboración razonable.
+</Callout>
+
+### 11.7. Errores comunes al modelar interacciones
+
+<Callout tipo="error" titulo="Errores típicos">
+- Hacer que el actor le hable directo a entidades internas.
+- Hacer que la boundary consulte todas las entidades y coordine el flujo.
+- Poner un único control que crea, valida, calcula, persiste y decide todo.
+- Enviar mensajes a objetos que no aparecen en la vista estática.
+- Dibujar retornos y mensajes sin nombre de responsabilidad.
+- Mezclar muchos escenarios independientes en un solo diagrama.
+</Callout>

@@ -3,8 +3,8 @@ id: "sec-12"
 numero: 12
 titulo: "Patrones GRASP para análisis"
 slug: "12-grasp"
-resumen: "GRASP ayuda a decidir dónde ubicar responsabilidades en objetos para lograr bajo acoplamiento y alta cohesión."
-keywords: ["GRASP", "responsabilidad", "experto", "creador", "controlador", "bajo acoplamiento", "alta cohesión"]
+resumen: "GRASP ayuda a decidir dónde ubicar responsabilidades en objetos para lograr bajo acoplamiento, alta cohesión y diseños más flexibles."
+keywords: ["GRASP", "responsabilidad", "experto", "creador", "controlador", "bajo acoplamiento", "alta cohesión", "fabricación pura", "polimorfismo", "indirección", "variaciones protegidas"]
 relacionadas: ["06-clases-analisis", "13-relaciones-clave"]
 ---
 
@@ -20,6 +20,7 @@ Ayudan a decidir qué objeto debe asumir cada responsabilidad en un diseño orie
   GRASP((GRASP))
   GRASP --> Asignar[Asignar responsabilidades]
   GRASP --> Mantener[Mantener diseno sano]
+  GRASP --> Proteger[Proteger frente a cambios]
   Asignar --> Experto
   Asignar --> Creador
   Asignar --> Controlador
@@ -40,6 +41,8 @@ Ayudan a decidir qué objeto debe asumir cada responsabilidad en un diseño orie
 ### 12.3. Responsabilidad versus método
 
 Una <strong>responsabilidad</strong> es una obligación conceptual del objeto. Un <strong>método</strong> es una operación concreta que implementa una responsabilidad.
+
+En análisis se habla más de responsabilidades que de métodos con firma completa. El método aparece como una forma de nombrar el mensaje, pero todavía no se decide tipo de retorno, excepción, framework, base de datos ni detalles de implementación.
 
 <MermaidDiagram caption="Dónde se decide la asignación de responsabilidades" code={`flowchart LR
   RCU[Realizacion de caso de uso] --> INT[Diagramas de interaccion]
@@ -129,6 +132,16 @@ Una <strong>responsabilidad</strong> es una obligación conceptual del objeto. U
 Un controlador puede saturarse si absorbe responsabilidades que pertenecen a entidades. Controlar no significa hacer todo.
 </Callout>
 
+<TablaComparativa
+  caption="Tipos de controlador"
+  columnas={["Tipo", "Cuándo aparece", "Ejemplo"]}
+  filas={[
+    ["Controlador de fachada", "Representa al sistema completo o un subsistema.", "SistemaVentas, SubsistemaFacturacion."],
+    ["Controlador de caso de uso", "Coordina un caso de uso o una sesión concreta.", "GestorRegistrarPedido, ControlCancelarVuelo."],
+    ["Controlador artificial", "No pertenece naturalmente al dominio, pero organiza el flujo.", "Una clase control creada para no cargar la UI ni las entidades."]
+  ]}
+/>
+
 ### 12.7. Patrón Bajo Acoplamiento
 
 <PatronGRASP
@@ -196,10 +209,68 @@ Un controlador puede saturarse si absorbe responsabilidades que pertenecen a ent
   Experto --> BA[Bajo acoplamiento]
   Creador --> AC[Alta cohesión]`} />
 
-### 12.10. Patrones GRASP mencionados fuera del foco principal
+### 12.10. Cómo elegir el patrón en un ejercicio
 
-Algunos PDFs nombran otros GRASP, como <strong>Fabricación Pura</strong>, <strong>Polimorfismo</strong>, <strong>Indirección</strong> y <strong>Variaciones Protegidas</strong>. Para este resumen se mantienen como contexto, porque el bloque central pedido para el parcial trabaja especialmente con Experto, Creador, Controlador, Bajo Acoplamiento y Alta Cohesión.
+<TablaComparativa
+  caption="Preguntas rápidas para asignar responsabilidades"
+  columnas={["Pregunta del ejercicio", "Patrón que conviene mirar", "Decisión típica"]}
+  filas={[
+    ["¿Quién calcula, valida o informa algo?", "Experto en Información", "La entidad o catálogo que conoce los datos."],
+    ["¿Quién crea una nueva instancia?", "Creador", "Quien contiene, agrega, registra o tiene datos iniciales."],
+    ["¿Quién recibe el evento del actor?", "Controlador", "Un control de caso de uso o fachada del sistema."],
+    ["¿Cómo evitar dependencias innecesarias?", "Bajo Acoplamiento", "No hacer que una clase conozca demasiadas clases concretas."],
+    ["¿Cómo evitar clases que hacen de todo?", "Alta Cohesión", "Separar responsabilidades no relacionadas."]
+  ]}
+/>
 
-<Callout tipo="info" titulo="Fabricación pura">
-Una fabricación pura es una clase inventada para resolver una responsabilidad de diseño cuando no encaja naturalmente en una clase del dominio. Es útil como idea, pero puede confundirte si todavía estás separando análisis de diseño.
+<Callout tipo="tip">
+En los diagramas, GRASP se ve en los mensajes: cada flecha debería poder defenderse con una responsabilidad razonable.
 </Callout>
+
+### 12.11. Otros GRASP que pueden aparecer
+
+Además de los cinco patrones más usados en análisis, los PDFs y la bibliografía suelen nombrar otros GRASP. Conviene reconocerlos para no confundirlos con patrones de diseño de Unidad 2.
+
+<TablaComparativa
+  caption="GRASP complementarios"
+  columnas={["Patrón", "Problema que resuelve", "Idea central"]}
+  filas={[
+    ["Fabricación Pura", "La responsabilidad no encaja bien en una clase del dominio.", "Crear una clase artificial para mantener cohesión y bajo acoplamiento."],
+    ["Polimorfismo", "El comportamiento varía según el tipo.", "Asignar la responsabilidad a las variantes, no llenar el control de condicionales."],
+    ["Indirección", "Dos elementos quedan demasiado acoplados.", "Interponer un objeto mediador para desacoplar."],
+    ["Variaciones Protegidas", "Hay puntos del sistema que cambian o pueden cambiar.", "Encapsular la variación detrás de una interfaz estable."]
+  ]}
+/>
+
+<MermaidDiagram caption="Fabricación pura como clase artificial de coordinación" code={`classDiagram
+  class GestorNotificaciones {
+    <<control>>
+    +notificarInteresados(evento)
+  }
+  class Orden
+  class Interesado
+  class PantallaOrden {
+    <<boundary>>
+  }
+  PantallaOrden --> GestorNotificaciones : delega
+  GestorNotificaciones --> Orden : obtiene evento
+  GestorNotificaciones --> Interesado : avisa`} />
+
+<Callout tipo="atencion">
+Fabricación pura no significa inventar clases sin motivo. Se usa cuando poner la responsabilidad en una entidad, frontera o control existente dañaría la cohesión o aumentaría demasiado el acoplamiento.
+</Callout>
+
+### 12.12. GRASP versus patrones de diseño
+
+GRASP son criterios para asignar responsabilidades. Los patrones de diseño, como Observer o State, son soluciones de diseño más específicas. En Unidad 1 puede aparecer la mención como puente, pero el foco es justificar responsabilidades en el modelo de análisis.
+
+<TablaComparativa
+  caption="GRASP vs patrones de diseño"
+  columnas={["Aspecto", "GRASP", "Patrones de diseño"]}
+  filas={[
+    ["Nivel", "Principios de asignación de responsabilidades.", "Soluciones reutilizables para problemas de diseño."],
+    ["Pregunta típica", "¿Quién debería hacer o conocer esto?", "¿Qué estructura de clases resuelve esta variación?"],
+    ["Uso en Unidad 1", "Central para análisis y diagramas de interacción.", "Solo como referencia o puente hacia diseño."],
+    ["Ejemplos", "Experto, Creador, Controlador.", "Observer, State, Strategy, Adapter."]
+  ]}
+/>

@@ -20,11 +20,17 @@ relacionadas: ["13-relaciones-clave", "12-grasp"]
     "¿Qué diferencia hay entre clase de entidad, frontera y control?",
     "¿Qué es una realización de caso de uso de análisis?",
     "¿Qué diferencia hay entre vista estática y vista dinámica?",
+    "¿Qué es un paquete de servicio y en qué se diferencia de un paquete común?",
+    "¿Qué elementos de análisis son significativos para la arquitectura?",
     "¿Cuándo corresponde hacer una máquina de estados?",
     "¿Qué elementos tiene una transición?",
+    "¿Cómo se derivan métodos y clases desde una máquina de estados?",
+    "¿Qué diferencia hay entre línea de vida, mensaje y foco de control?",
+    "¿Cómo se justifica la visibilidad entre objetos en una interacción?",
     "¿Qué responsabilidades son de hacer y cuáles de conocer?",
     "¿Qué problema resuelve cada patrón GRASP?",
-    "¿Cómo se relacionan bajo acoplamiento y alta cohesión?"
+    "¿Cómo se relacionan bajo acoplamiento y alta cohesión?",
+    "¿Para qué sirven Fabricación Pura, Polimorfismo, Indirección y Variaciones Protegidas?"
   ]}
 />
 
@@ -36,7 +42,11 @@ relacionadas: ["13-relaciones-clave", "12-grasp"]
 - Crear controladores saturados.
 - Usar máquina de estados para cualquier clase.
 - Confundir atributo estado con estado de máquina.
+- Poner casos de uso como estados.
+- Dibujar mensajes entre objetos sin justificar visibilidad.
+- Crear paquetes por tecnología en vez de por dominio o funcionalidad.
 - Asignar responsabilidades sin mirar quién tiene la información.
+- Confundir GRASP con patrones de diseño específicos.
 - Diseñar demasiado pronto con detalles tecnológicos.
 </Callout>
 
@@ -47,6 +57,8 @@ relacionadas: ["13-relaciones-clave", "12-grasp"]
     ["Caso de uso = secuencia", "El caso de uso describe funcionalidad externa; la secuencia muestra colaboración interna."],
     ["Boundary coordina todo", "Boundary comunica; Control coordina."],
     ["Estado como atributo = máquina de estados", "Solo hay máquina si el comportamiento cambia según estados significativos."],
+    ["Paquete de análisis = carpeta técnica", "El paquete organiza conceptos del análisis; no representa base de datos, framework o deployment."],
+    ["Mensaje = flecha libre", "Cada mensaje debe representar una responsabilidad y requerir visibilidad entre objetos."],
     ["Análisis = diseño", "Análisis es lógico/conceptual; diseño incorpora tecnología."]
   ]}
 />
@@ -67,6 +79,6 @@ relacionadas: ["13-relaciones-clave", "12-grasp"]
 El primer parcial teórico gira alrededor de una idea central: <strong>partir de requisitos expresados externamente, abrir la caja negra del sistema mediante el modelo de análisis y distribuir responsabilidades entre objetos usando UML, clases de análisis, realizaciones de casos de uso, máquinas de estados y patrones GRASP.</strong>
 
 <Callout tipo="tip">
-La ruta de estudio recomendada para una última vuelta es: sección 4 → 6 → 7 → 11 → 12 → cheatsheet.
+La ruta de estudio recomendada para una última vuelta es: sección 4 → 5 → 6 → 7 → 8 → 10 → 11 → 12 → cheatsheet.
 </Callout>
 
