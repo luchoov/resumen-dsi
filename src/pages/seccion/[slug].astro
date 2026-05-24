@@ -5,6 +5,7 @@ import Callout from "@/components/contenido/Callout.astro";
 import ChecklistRepaso from "@/components/contenido/ChecklistRepaso.astro";
 import Definicion from "@/components/contenido/Definicion.astro";
 import EjemploClase from "@/components/contenido/EjemploClase.astro";
+import EjemploReal from "@/components/contenido/EjemploReal.astro";
 import PatronGRASP from "@/components/contenido/PatronGRASP.astro";
 import TablaComparativa from "@/components/contenido/TablaComparativa.astro";
 import DiagramaAnalisisOO from "@/components/diagramas/DiagramaAnalisisOO.astro";
@@ -28,6 +29,6 @@ const indiceBusqueda = crearIndiceBusqueda(secciones);
 ---
 
 <SeccionLayout seccion={seccion} secciones={secciones} encabezados={encabezados} previa={previa} siguiente={siguiente} indiceBusqueda={indiceBusqueda}>
-  <Content components={{ Callout, ChecklistRepaso, Definicion, EjemploClase, PatronGRASP, TablaComparativa, MermaidDiagram, DiagramaAnalisisOO, MapaMentalDSI }} />
+  <Content components={{ Callout, ChecklistRepaso, Definicion, EjemploClase, EjemploReal, PatronGRASP, TablaComparativa, MermaidDiagram, DiagramaAnalisisOO, MapaMentalDSI }} />
 </SeccionLayout>
 

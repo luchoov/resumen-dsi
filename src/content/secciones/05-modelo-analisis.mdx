@@ -73,6 +73,10 @@ El <strong>modelo de análisis</strong> es una jerarquía de paquetes que contie
 
 Describe cómo los objetos conceptuales del sistema colaboran para satisfacer requisitos funcionales, todavía sin atarse a decisiones tecnológicas de diseño.
 
+<EjemploReal titulo="Del requerimiento al modelo en la pizzería" dominio="Caso cátedra">
+El requerimiento del pizzero es simple: "quiero gestionar los pedidos". El análisis lo convierte en modelo: aparece la realización del caso de uso "Registrar Pedido", y de ahí surgen las clases `Pedido`, `DetallePedido`, `Pizza` (entidades), la `PantallaRegistrarPedido` (frontera) y el `GestorRegistrarPedido` (control). Todavía no se decide si será MySQL o una pantalla web: eso es diseño.
+</EjemploReal>
+
 ### 5.5. Cómo se construye el modelo de análisis
 
 - <strong>Clases de análisis:</strong> se modelan con diagrama de clases y, si corresponde, máquina de estados.

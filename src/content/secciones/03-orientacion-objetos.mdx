@@ -32,6 +32,10 @@ Una <strong>clase</strong> describe un conjunto de objetos que comparten estruct
 
 Un objeto se crea a partir de una clase. A ese acto se lo denomina <strong>instanciación</strong>.
 
+<EjemploReal titulo="Variedad de pizza vs. la pizza que te llevás" dominio="Caso cátedra">
+La <strong>clase</strong> `VariedadPizza` describe qué es "una muzzarella": nombre e ingredientes. La pizza concreta de 8 porciones que se está preparando para el pedido número 47 es un <strong>objeto</strong> (una instancia) con su propia identidad. Mil clientes pueden pedir muzzarella, pero cada pizza horneada es un objeto distinto, todas creadas a partir de la misma clase.
+</EjemploReal>
+
 ### 3.3. Estado, atributos y valores
 
 El <strong>estado</strong> de un objeto puede entenderse como:
@@ -45,6 +49,10 @@ Si la clase es <strong>SolicitudDeRequerimiento</strong>, algunos atributos podr
 ### 3.4. Comportamiento y responsabilidades
 
 El comportamiento indica qué puede hacer un objeto. En análisis suele expresarse como <strong>responsabilidades</strong> de alto nivel, no como métodos con signatura completa.
+
+<EjemploReal titulo="El cajero del banco" dominio="Cotidiano">
+Pensá en un cajero como objeto: su <strong>estado</strong> es el saldo de su caja y la sucursal donde trabaja; su <strong>comportamiento</strong> son responsabilidades como "depositar", "extraer" o "consultar saldo". No te importa cómo cuenta los billetes internamente: le mandás un mensaje ("quiero extraer 5000") y él responde. Eso es un objeto colaborando por mensajes.
+</EjemploReal>
 
 ### 3.5. Abstracción
 

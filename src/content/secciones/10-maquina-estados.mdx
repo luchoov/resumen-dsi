@@ -59,6 +59,11 @@ En los ejercicios, los eventos de la máquina suelen transformarse en métodos d
 
 Un objeto reactivo depende de eventos y del estado en que se encuentra. Para modelarlo se identifican estados relevantes, eventos, guardas, acciones, estado inicial y finales.
 
+<EjemploReal titulo="Ciclo de vida del pedido en la pizzería" dominio="Caso cátedra">
+El `Pedido` es un objeto reactivo clásico: lo que se le permite hacer depende de su estado.
+<br />`PtePreparación` → (confirmar) → `EnPreparación` → (informar cierre) → `PteFacturación` → (generar factura) → `Facturado`. Desde casi cualquier estado puede ir a `Cancelado` (cancelar). La regla "solo se puede modificar mientras está *PtePreparación*" es exactamente comportamiento que cambia según el estado: por eso el `Pedido` merece máquina de estados y no un simple atributo de texto.
+</EjemploReal>
+
 <MermaidDiagram caption="OrdenDeTraslado como objeto reactivo" code={`stateDiagram-v2
   [*] --> Borrador
   Borrador --> Pendiente: confirmar() [datosCompletos] / reservarRecursos()
@@ -141,6 +146,10 @@ El pseudoestado de historia sirve cuando “reanudar” debe volver al subestado
 ### 10.9. Diferencia con diagramas de interacción
 
 La máquina de estados se concentra en el ciclo de vida de un objeto o clase. Secuencia y comunicación muestran colaboración entre varios objetos durante un escenario.
+
+<EjemploReal titulo="Estado de una reserva de vuelo" dominio="Cotidiano">
+Otro objeto reactivo: una `Reserva` de pasaje. `Pendiente` → (pagar [hay asiento]) → `Confirmada` → (hacer check-in) → `EmitidaTarjetaEmbarque`. Si no pagás dentro del plazo: `Pendiente` → (vencerPlazo) → `Expirada`. Acá la guarda `[hay asiento]` decide si la confirmación procede: una regla de negocio que vive en la transición.
+</EjemploReal>
 
 <Callout tipo="error">
 No uses máquina de estados para cualquier atributo llamado “estado”. Corresponde cuando ese estado cambia el comportamiento permitido del objeto.

@@ -77,6 +77,9 @@ En análisis se habla más de responsabilidades que de métodos con firma comple
     }
     PantallaRegistrar ..> CatalogoFestivales : antes logica en UI
     GestorRegistrar --> CatalogoFestivales : despues consulta experto`} />
+  <EjemploReal titulo="¿Quién calcula el total del pedido?" dominio="Caso cátedra">
+    El `Pedido` de la pizzería es el experto: él conoce sus `DetallePedido`, y cada detalle conoce su pizza y cantidad. Por eso `Pedido.calcularTotal()` suma los subtotales de sus detalles. Sería un error que lo calcule la `PantallaRegistrarPedido` (no tiene los datos) o el gestor (no es su info).
+  </EjemploReal>
 </PatronGRASP>
 
 ### 12.5. Patrón Creador
@@ -104,6 +107,9 @@ En análisis se habla más de responsabilidades que de métodos con firma comple
     GestorPedido ..> DetallePedido : antes crea desde control
     GestorPedido --> Pedido : despues delega
     Pedido *-- DetallePedido : crea y contiene`} />
+  <EjemploReal titulo="¿Quién crea cada DetallePedido?" dominio="Caso cátedra">
+    Como el `Pedido` <em>contiene</em> sus `DetallePedido` (composición), es él quien los crea cuando se agrega una pizza al pedido. El gestor no crea los detalles sueltos: le dice al pedido "agregá esta pizza" y el pedido instancia el detalle. La creación queda cerca de quien tiene el contexto.
+  </EjemploReal>
 </PatronGRASP>
 
 ### 12.6. Patrón Controlador
@@ -126,6 +132,9 @@ En análisis se habla más de responsabilidades que de métodos con firma comple
     C->>E: crear/validar
     E-->>C: resultado
     C-->>B: respuesta`} />
+  <EjemploReal titulo="¿Quién recibe 'registrar pedido'?" dominio="Caso cátedra">
+    Cuando el empleado aprieta "registrar pedido", el evento no lo maneja la pantalla ni la entidad `Pedido`: lo recibe el `GestorRegistrarPedido` (controlador del caso de uso). Él orquesta los pasos —crear el pedido, agregar detalles, calcular total— pero delega el trabajo real a quien corresponde. Coordina, no hace todo.
+  </EjemploReal>
 </PatronGRASP>
 
 <Callout tipo="error">
@@ -191,6 +200,9 @@ Un controlador puede saturarse si absorbe responsabilidades que pertenecen a ent
     GestorPedido ..> Pedido : antes clase cargada
     GestorRegistrarPedido --> Pedido : despues
     GestorRegistrarPedido --> Factura`} />
+  <EjemploReal titulo="Por qué la pantalla no calcula precios" dominio="Caso cátedra">
+    Si `PantallaRegistrarPedido` calculara el total y conociera los precios de cada variedad, quedaría <strong>muy acoplada</strong> a `Pizza`, `VariedadPizza` y `TamañoPizza`, y mezclaría dos trabajos (mostrar + calcular), perdiendo <strong>cohesión</strong>. Dejándole el cálculo al `Pedido` y la coordinación al gestor, cada clase hace una sola cosa y un cambio en los precios no rompe la pantalla.
+  </EjemploReal>
 </PatronGRASP>
 
 ### 12.9. GRASP aplicado a clases de análisis

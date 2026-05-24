@@ -35,6 +35,15 @@ Los PDFs agregan una idea importante: un paquete puede aparecer inicialmente par
   Ventas --> Catalogo
   Ventas --> Facturacion`} />
 
+<EjemploReal titulo="Paquetes del sistema de la pizzería" dominio="Caso cátedra">
+El modelo de la pizzería se vuelve grande, así que se agrupa en paquetes según áreas reconocibles del negocio:
+<br />• <strong>Ventas:</strong> `Pedido`, `DetallePedido` y la realización "Registrar Pedido".
+<br />• <strong>Productos:</strong> `Pizza`, `VariedadPizza`, `TipoPizza`, `TamañoPizza`.
+<br />• <strong>Facturación:</strong> `Factura` y la realización "Generar Factura".
+<br />• <strong>Reportes:</strong> "pizzas más pedidas", "ingresos por período".
+<br /><br />Ventas <em>depende de</em> Productos (un detalle necesita una pizza) y de Facturación, pero el corte sigue al negocio, no a la tecnología.
+</EjemploReal>
+
 ### 8.2. Criterios para identificar paquetes
 
 - Agrupar clases y realizaciones fuertemente relacionadas.
@@ -64,6 +73,10 @@ Los PDFs agregan una idea importante: un paquete puede aparecer inicialmente par
 Un <strong>paquete de servicio</strong> es una subcategoría de paquete de análisis. Agrupa un conjunto coherente de acciones relacionadas funcionalmente que puede ser usado por varios casos de uso.
 
 La idea clave es que el servicio tiene valor como unidad funcional reconocible: no es una clase suelta ni una carpeta técnica. En análisis todavía no significa microservicio, API, módulo de código o componente desplegable.
+
+<EjemploReal titulo="Servicio de pagos en un e-commerce" dominio="Cotidiano">
+En una tienda online, "cobrar" aparece en varios casos de uso: comprar un producto, renovar una suscripción, pagar un envío extra. En vez de repetir esa lógica, se la agrupa en un <strong>paquete de servicio</strong> "Gestión de Pagos" (validar tarjeta, autorizar, registrar cobro) que todos esos casos de uso reutilizan. Ojo: en análisis es un concepto funcional, todavía no decimos que será Stripe ni un microservicio.
+</EjemploReal>
 
 <TablaComparativa
   caption="Paquete común vs paquete de servicio"

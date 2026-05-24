@@ -120,6 +120,15 @@ Sus elementos distintivos son:
   ]}
 />
 
+<EjemploReal titulo="Pasar por el peaje con telepase" dominio="Caso cátedra">
+El flujo canónico Actor→Boundary→Control→Entity en un peaje:
+<br />1. El `SensorTelepase` (boundary) detecta el dispositivo del auto.
+<br />2. Avisa al `GestorTransito` (control).
+<br />3. El gestor le pide a la entidad `CuentaTelepase` que valide el saldo: `tieneSaldo(tarifa)`.
+<br />4. La cuenta responde; si hay saldo, el gestor registra el `Transito` y ordena `levantarBarrera()`.
+<br /><br />Fijate que la validación (regla de negocio) la resuelve la entidad, no el sensor. El sensor solo detecta y muestra.
+</EjemploReal>
+
 <Callout tipo="tip">
 Casi todos los casos de uso pueden empezar con este patrón canónico. Las variaciones aparecen cuando hay múltiples entidades o controles colaborando.
 </Callout>

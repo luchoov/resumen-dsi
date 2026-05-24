@@ -53,6 +53,18 @@ Cuando se necesita mostrar cómo colaboran varios objetos para cumplir un caso d
 
 GRASP ayuda a decidir dónde ubicar responsabilidades. En análisis, esto es fundamental para evitar pantallas con demasiada lógica, controladores saturados o entidades sin comportamiento.
 
+<EjemploReal titulo="Toda la cadena en la pizzería, de punta a punta" dominio="Caso cátedra">
+Un mismo caso recorre toda la materia:
+<br />1. <strong>Requerimiento:</strong> el pizzero quiere "gestionar pedidos".
+<br />2. <strong>Caso de uso:</strong> "Registrar Pedido" (vista externa: el empleado carga y obtiene un número).
+<br />3. <strong>Realización:</strong> se abre la caja negra y aparecen las clases que colaboran.
+<br />4. <strong>Clases BCE:</strong> `PantallaRegistrarPedido` (frontera), `GestorRegistrarPedido` (control), `Pedido`/`DetallePedido`/`Pizza` (entidades).
+<br />5. <strong>Secuencia:</strong> actor → pantalla → gestor → pedido, que crea sus detalles y calcula el total.
+<br />6. <strong>Máquina de estados:</strong> el `Pedido` evoluciona PtePreparación → EnPreparación → PteFacturación → Facturado (o Cancelado).
+<br />7. <strong>GRASP:</strong> el total lo calcula el `Pedido` (Experto), él crea sus detalles (Creador) y el gestor coordina (Controlador).
+<br /><br />Si necesitás registrar cuánto tiempo estuvo en cada estado, aparece `CambioEstadoPedido` (historial). Ese es el hilo que conecta todos los temas.
+</EjemploReal>
+
 <Callout tipo="tip">
 La frase integradora: requisitos externos → modelo de análisis interno → objetos colaborando → responsabilidades distribuidas con GRASP.
 </Callout>

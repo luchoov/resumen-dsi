@@ -1,0 +1,23 @@
+---
+import { Store } from "@lucide/astro";
+
+interface Props {
+  titulo: string;
+  dominio?: string;
+}
+
+const { titulo, dominio } = Astro.props;
+---
+
+<aside class="my-6 max-w-3xl rounded-xl border border-[hsl(var(--success)/0.35)] bg-[hsl(var(--success)/0.08)] p-4">
+  <div class="mb-2 flex items-center gap-2">
+    <Store size={18} class="text-[hsl(var(--success))]" aria-hidden="true" />
+    <span class="font-semibold text-[hsl(var(--success))]">Ejemplo real: {titulo}</span>
+    {dominio && (
+      <span class="ml-auto rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-2 py-0.5 text-xs text-[hsl(var(--muted-foreground))]">{dominio}</span>
+    )}
+  </div>
+  <div class="text-[hsl(var(--foreground))]">
+    <slot />
+  </div>
+</aside>

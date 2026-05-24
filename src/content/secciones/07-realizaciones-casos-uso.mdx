@@ -98,6 +98,15 @@ Si el caso de uso tiene flujos o subflujos diferenciados, conviene crear un diag
 
 El flujo explica el escenario con lenguaje de objetos: la frontera recibe el evento, el control coordina, las entidades aportan información, comportamiento y cambios de estado.
 
+<EjemploReal titulo="Realizar 'Registrar Pedido' en la pizzería" dominio="Caso cátedra">
+El caso de uso dice apenas: "el empleado registra un pedido del cliente". La <strong>realización</strong> cuenta el cómo, en lenguaje de objetos:
+<br />1. El empleado carga datos en `PantallaRegistrarPedido` (frontera).
+<br />2. La pantalla le pasa los datos a `GestorRegistrarPedido` (control).
+<br />3. El gestor crea el `Pedido`, le agrega cada `DetallePedido` y le pide `calcularTotal()`.
+<br />4. El `Pedido` queda en estado *PtePreparación* y la pantalla muestra el número al empleado.
+<br /><br />Esa narración es el <strong>flujo de sucesos de análisis</strong>; la lista de clases que participan es la <strong>vista estática</strong> y la secuencia de mensajes, la <strong>vista dinámica</strong>.
+</EjemploReal>
+
 ### 7.6. Requisitos especiales
 
 Los <strong>requisitos especiales</strong> son requisitos no funcionales o restricciones que aparecen durante el análisis y se conservan para diseño: persistencia, concurrencia, seguridad, distribución, tolerancia a fallos, tiempos de respuesta o transacciones.
@@ -112,6 +121,10 @@ Los <strong>requisitos especiales</strong> son requisitos no funcionales o restr
   RNF --> Distribucion
   RNF --> Tolerancia[Tolerancia a fallos]
   RNF --> Diseno[Se resuelve en diseno e implementacion]`} />
+
+<EjemploReal titulo="Requisitos especiales que asoman en el análisis" dominio="Cotidiano">
+Analizando "Pagar con tarjeta" en un e-commerce, el flujo te hace notar cosas que el caso de uso no decía: el pago debe ir cifrado (<strong>seguridad</strong>), la factura debe quedar guardada (<strong>persistencia</strong>), dos personas no pueden comprar el último producto a la vez (<strong>concurrencia</strong>) y la respuesta de la pasarela no debería tardar más de unos segundos (<strong>tiempo de respuesta</strong>). Se anotan ahora y se resuelven en diseño.
+</EjemploReal>
 
 <Callout tipo="tip">
 Si una realización no muestra objetos colaborando, todavía estás en caso de uso textual, no en análisis.

@@ -93,9 +93,20 @@ Una <strong>clase de control</strong> representa coordinación, secuencia, trans
   PantallaPedido --> GestorPedido
   GestorPedido --> Pedido`} />
 
+<EjemploReal titulo="Los tres estereotipos en la pizzería" dominio="Caso cátedra">
+Imaginá registrar un pedido en el mostrador:
+<br />• <strong>Frontera (boundary):</strong> `PantallaRegistrarPedido` recibe lo que el empleado tipea (cliente, variedades, tamaños) y muestra el total. Es el punto de contacto.
+<br />• <strong>Control:</strong> `GestorRegistrarPedido` coordina el caso de uso: pide crear el pedido, agregar los detalles y calcular el total.
+<br />• <strong>Entidad:</strong> `Pedido`, `DetallePedido`, `Pizza` y `Factura` son los datos que el sistema debe recordar después de cerrar la pantalla.
+</EjemploReal>
+
 ### 6.6. Trazabilidad
 
 Las clases de análisis permiten trazar desde casos de uso hacia diseño e implementación. Una frontera suele relacionarse con una interacción externa; un control con un caso de uso; una entidad con conceptos del dominio.
+
+<EjemploReal titulo="Consultar disponibilidad de vuelos" dominio="Caso cátedra">
+En una aerolínea, el caso de uso "Consultar disponibilidad": la <strong>frontera</strong> `PantallaConsultarDisponibilidad` toma origen, destino y fecha; el <strong>control</strong> `GestorConsultarDisponibilidad` coordina la búsqueda; las <strong>entidades</strong> `Vuelo`, `Tramo` y `Asiento` aportan los datos. Fijate cómo el mismo patrón BCE se repite caso a caso: cambia el dominio, no la estructura.
+</EjemploReal>
 
 ### 6.7. Atributos, asociaciones y generalizaciones
 
@@ -112,5 +123,5 @@ Los PDFs remarcan que el ingeniero de componentes no inventa relaciones porque s
   HER --> CLASES`} />
 
 <Callout tipo="error">
-Poner reglas de negocio en boundary es un error clásico: la frontera recibe y muestra, pero no debería concentrar lógica del dominio.
+Poner reglas de negocio en boundary es un error clásico: la frontera recibe y muestra, pero no debería concentrar lógica del dominio. Concretamente: si `PantallaRegistrarPedido` calculara el total del pedido o decidiera si se puede cancelar, estaría mal. Esa lógica vive en la entidad `Pedido` (que sabe sus detalles) y la coordina el control `GestorRegistrarPedido`. La pantalla solo muestra el resultado.
 </Callout>

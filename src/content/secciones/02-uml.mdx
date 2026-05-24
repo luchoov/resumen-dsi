@@ -16,6 +16,10 @@ Un <strong>modelo</strong> es una simplificación de la realidad construida para
 
 Modelar no es dibujar por dibujar: cada modelo debe reducir complejidad y permitir razonar sobre estructura, comportamiento, relaciones, restricciones o decisiones.
 
+<EjemploReal titulo="El plano de una casa" dominio="Cotidiano">
+Un plano de arquitecto es un <strong>modelo</strong> de la casa: no es la casa real, pero alcanza para entenderla, discutirla con el cliente y guiar a los albañiles. Mostrás solo lo relevante (muros, medidas, instalaciones) y ocultás el resto (color de la pintura, marca de los muebles). Un modelo UML hace lo mismo con un sistema de software.
+</EjemploReal>
+
 <MermaidDiagram caption="Objetivos de modelar" code={`flowchart LR
   Modelo((Modelo))
   Modelo --> Visualizar
@@ -124,6 +128,10 @@ Los PDFs remarcan que UML no es solo dibujo: cada notación tiene semántica y m
   Est --> BCE[boundary / control / entity]
   Val --> Meta[metadatos del modelo]
   Res --> Regla[reglas o guardas]`} />
+
+<EjemploReal titulo="Estereotipos en la pizzería" dominio="Caso cátedra">
+La misma "caja" de clase UML cambia de significado según su <strong>estereotipo</strong>: `PantallaRegistrarPedido` lleva «boundary» (habla con el empleado), `GestorRegistrarPedido` lleva «control» (coordina el caso de uso) y `Pedido` lleva «entity» (guarda los datos). Una <strong>restricción</strong> sería `{solo se modifica si está PtePreparación}` y un <strong>valor etiquetado</strong>, `{persistente=true}` sobre `Factura`.
+</EjemploReal>
 
 ### 2.8. Diagramas UML relevantes
 

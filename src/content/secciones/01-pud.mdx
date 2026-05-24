@@ -40,6 +40,10 @@ En desarrollo de software, las entradas pueden ser necesidades, ideas, restricci
 - <strong>Personas:</strong> roles humanos que ejecutan actividades y toman decisiones.
 - <strong>Producto:</strong> software ejecutable, modelos, documentación, pruebas y entregables.
 
+<EjemploReal titulo="Sistema de la pizzería de mostrador" dominio="Caso cátedra">
+El dueño de una pizzería pide un sistema para vender en mostrador. Acá las 4 P se ven clarísimas: el <strong>proceso</strong> es la forma de trabajo del equipo de desarrollo; el <strong>proyecto</strong> es ese encargo concreto con su plazo y presupuesto; las <strong>personas</strong> son los analistas, programadores y el propio pizzero que aporta requisitos; el <strong>producto</strong> es el sistema que registra pedidos, factura y emite reportes de pizzas más pedidas.
+</EjemploReal>
+
 ### 1.3. Qué es el Proceso Unificado de Desarrollo
 
 <Definicion termino="Proceso Unificado de Desarrollo">
@@ -73,6 +77,10 @@ Una <strong>iteración</strong> es una secuencia planificada de actividades con 
   R2 --> I4["Iteración 4: transición + ajustes"]
   I4 --> ENT[Entrega]`} />
 
+<EjemploReal titulo="Construir la pizzería por incrementos" dominio="Caso cátedra">
+No se entrega todo el sistema de la pizzería de una vez. Un primer <strong>incremento</strong> permite solo registrar pedidos (lo más urgente para el mostrador); el siguiente agrega facturación y cobro; un tercero, los reportes de recaudación por período. Cada entrega ejecutable que el pizzero puede probar en el local es un <strong>release</strong>, y cada ciclo de trabajo que lo produce, una <strong>iteración</strong>.
+</EjemploReal>
+
 ### 1.6. Fases del PUD
 
 <TablaComparativa
@@ -85,6 +93,10 @@ Una <strong>iteración</strong> es una secuencia planificada de actividades con 
     ["<strong>Transición</strong>", "Entregar el producto al ambiente real.", "Validación, correcciones, despliegue."]
   ]}
 />
+
+<EjemploReal titulo="Las fases en un sistema de líneas aéreas" dominio="Caso cátedra">
+En el sistema de reservas de una aerolínea: en <strong>Inicio</strong> se entiende el negocio y se detectan actores (pasajero, agente) y casos de uso clave como "consultar disponibilidad". En <strong>Elaboración</strong> se estabiliza la arquitectura (cómo se conecta con el sistema de vuelos). En <strong>Construcción</strong> se programa y prueba la venta de pasajes. En <strong>Transición</strong> se despliega y se corrige con pasajeros reales usándolo.
+</EjemploReal>
 
 <TablaComparativa
   caption="Fases × workflows: intensidad relativa de cada workflow"

@@ -71,6 +71,10 @@ El caso de uso debe seguir describiendo qué necesita el actor. Si ya habla de c
 
 El modelo de casos de uso es una <strong>vista externa</strong>: trata al sistema como caja negra. El modelo de análisis es una <strong>vista interna</strong>: muestra clases de análisis colaborando para realizar los casos de uso.
 
+<EjemploReal titulo="El peaje de la autopista" dominio="Caso cátedra">
+Desde la <strong>vista externa</strong>, el conductor solo ve: se acerca, paga (o pasa con telepase) y se levanta la barrera. Es la caja negra. La <strong>vista interna</strong> es todo lo que pasa adentro para lograrlo: registrar el tránsito, identificar la categoría del vehículo, calcular la tarifa, validar el saldo del telepase y registrar el cobro. El análisis es justamente abrir esa caja y descubrir qué objetos colaboran.
+</EjemploReal>
+
 ### 4.6. Análisis, diseño e implementación
 
 <MermaidDiagram caption="Del análisis a la implementación" code={`flowchart LR
