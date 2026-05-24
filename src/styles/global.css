@@ -101,12 +101,14 @@ body {
   line-height: 1.7;
 }
 
-a {
+/* Base link color only for content links without their own classes,
+   so styled buttons/nav links keep their utility text colors. */
+:where(a):not([class]) {
   color: hsl(var(--primary));
   text-decoration: none;
 }
 
-a:hover {
+:where(a):not([class]):hover {
   text-decoration: underline;
   text-underline-offset: 0.18em;
 }
@@ -131,36 +133,96 @@ button {
   color: hsl(var(--foreground));
 }
 
+.prose-dsi > :first-child {
+  margin-top: 0;
+}
+
+/* Headings: clear size + weight + color steps so hierarchy is obvious */
 .prose-dsi :where(h2, h3, h4) {
   color: hsl(var(--foreground));
   line-height: 1.2;
-  letter-spacing: 0;
+  letter-spacing: -0.012em;
   scroll-margin-top: 6rem;
+  text-wrap: balance;
 }
 
 .prose-dsi h2 {
   font-size: var(--text-fluid-2xl);
-  margin: 0 0 1.5rem;
+  font-weight: 770;
+  margin: 3.5rem 0 1.4rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid hsl(var(--border));
 }
 
 .prose-dsi h3 {
   font-size: var(--text-fluid-xl);
-  margin: 2.5rem 0 0.75rem;
+  font-weight: 720;
+  margin: 3rem 0 1rem;
+}
+
+/* Section-level headings coming straight from MDX get a divider + accent */
+.prose-dsi h3:not([class]) {
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid hsl(var(--border));
 }
 
 .prose-dsi h4 {
   font-size: var(--text-fluid-lg);
-  margin: 1.75rem 0 0.5rem;
+  font-weight: 640;
+  margin: 2rem 0 0.6rem;
 }
 
-.prose-dsi p,
-.prose-dsi li {
+.prose-dsi h4:not([class]) {
+  color: hsl(var(--primary));
+}
+
+/* Body copy: real vertical rhythm */
+.prose-dsi p:not([class]) {
+  margin: 0 0 1.1rem;
   max-width: 72ch;
+  text-wrap: pretty;
+}
+
+/* Lists: restore markers + indentation that Tailwind's reset strips.
+   Scoped to class-less MDX lists so component lists keep their own layout. */
+.prose-dsi :where(ul, ol):not([class]) {
+  margin: 1.15rem 0;
+  padding-left: 1.65rem;
+  max-width: 72ch;
+}
+
+.prose-dsi ul:not([class]) {
+  list-style: disc;
+}
+
+.prose-dsi ol:not([class]) {
+  list-style: decimal;
+}
+
+.prose-dsi :where(ul, ol):not([class]) > li {
+  margin: 0.45rem 0;
+  padding-left: 0.3rem;
+}
+
+.prose-dsi :where(ul, ol):not([class]) > li::marker {
+  color: hsl(var(--primary));
+  font-weight: 600;
+}
+
+.prose-dsi :where(ul, ol):not([class]) :where(ul, ol) {
+  margin: 0.5rem 0;
+}
+
+.prose-dsi blockquote {
+  margin: 1.5rem 0;
+  padding: 0.25rem 0 0.25rem 1.1rem;
+  border-left: 3px solid hsl(var(--primary) / 0.5);
+  color: hsl(var(--muted-foreground));
 }
 
 .prose-dsi strong {
   color: hsl(var(--foreground));
-  font-weight: 650;
+  font-weight: 680;
 }
 
 .prose-dsi code {
@@ -175,6 +237,22 @@ button {
 .wide {
   width: min(100%, 78rem);
   max-width: none;
+}
+
+/* Focus mode: hide both side indices on desktop (mobile keeps its overlay menu) */
+@media (min-width: 1024px) {
+  .indices-hidden .seccion-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .indices-hidden .seccion-grid > aside {
+    display: none;
+  }
+
+  .indices-hidden .seccion-grid > main {
+    margin-inline: auto;
+    max-width: 64rem;
+  }
 }
 
 .scroll-area {

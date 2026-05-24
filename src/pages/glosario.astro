@@ -28,7 +28,7 @@ const lista = Array.from(terminos.values()).sort((a, b) => a.termino.localeCompa
   <Topbar indiceBusqueda={indiceBusqueda} />
   <main class="mx-auto max-w-5xl px-4 pb-16 pt-24 lg:px-6">
     <p class="mb-3 font-mono text-sm uppercase tracking-[0.18em] text-[hsl(var(--primary))]">Glosario</p>
-    <h1 class="text-[var(--text-fluid-3xl)] font-semibold leading-tight">Términos clave de DSI</h1>
+    <h1 class="text-[length:var(--text-fluid-3xl)] font-semibold leading-tight">Términos clave de DSI</h1>
     <p class="mt-4 max-w-3xl text-[hsl(var(--muted-foreground))]">Generado desde términos marcados en los MDX con `strong` y componentes de definición. Cada entrada enlaza a las secciones donde aparece.</p>
     <div class="mt-8 grid gap-3 sm:grid-cols-2">
       {lista.map((item) => (

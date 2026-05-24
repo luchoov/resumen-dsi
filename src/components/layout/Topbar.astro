@@ -1,5 +1,5 @@
 ---
-import { Menu, Moon, Search, Sun } from "@lucide/astro";
+import { Menu, Moon, PanelLeftClose, PanelLeftOpen, Search, Sun } from "@lucide/astro";
 
 interface Props {
   indiceBusqueda: Array<Record<string, string | number>>;
@@ -24,6 +24,10 @@ const { indiceBusqueda } = Astro.props;
       </button>
       <button id="abrir-busqueda-mobile" class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] md:hidden" aria-label="Buscar">
         <Search size={17} aria-hidden="true" />
+      </button>
+      <button id="toggle-indices" class="hidden h-10 w-10 items-center justify-center rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] lg:inline-flex" aria-label="Mostrar u ocultar índices" title="Mostrar u ocultar índices">
+        <PanelLeftClose class="block [.indices-hidden_&]:hidden" size={17} aria-hidden="true" />
+        <PanelLeftOpen class="hidden [.indices-hidden_&]:block" size={17} aria-hidden="true" />
       </button>
       <button id="theme-toggle" class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))]" aria-label="Cambiar tema">
         <Sun class="theme-sun hidden dark:block" size={17} aria-hidden="true" />
@@ -105,5 +109,10 @@ const { indiceBusqueda } = Astro.props;
 
   document.getElementById("abrir-sidebar")?.addEventListener("click", () => {
     document.documentElement.classList.add("sidebar-open");
+  });
+
+  document.getElementById("toggle-indices")?.addEventListener("click", () => {
+    const hidden = document.documentElement.classList.toggle("indices-hidden");
+    localStorage.setItem("indices", hidden ? "hidden" : "shown");
   });
 </script>
