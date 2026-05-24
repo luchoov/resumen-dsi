@@ -24,7 +24,7 @@ const icon = {
   entity: "M0 0 m-36 0 a36 36 0 1 0 72 0 a36 36 0 1 0 -72 0 M-28 46 H28"
 };
 
-function connectionPath(conexion: ConexionAnalisis, index: number) {
+function connectionPath(conexion: ConexionAnalisis) {
   const from = byId.get(conexion.from);
   const to = byId.get(conexion.to);
   if (!from || !to) return undefined;
@@ -39,7 +39,9 @@ function connectionPath(conexion: ConexionAnalisis, index: number) {
   const y1 = from.y! + uy * startPad;
   const x2 = to.x! - ux * endPad;
   const y2 = to.y! - uy * endPad;
-  const curve = modo === "comunicacion" ? ((index % 2 === 0 ? -1 : 1) * Math.min(34, length * 0.12)) : 0;
+  // Always bow along each edge's own perpendicular: opposing edges (a->b and b->a)
+  // point opposite ways, so their curves and labels separate automatically.
+  const curve = modo === "comunicacion" ? Math.min(20, length * 0.08) : 0;
   const px = -uy;
   const py = ux;
   const cx = (x1 + x2) / 2 + px * curve;
@@ -63,15 +65,15 @@ function connectionPath(conexion: ConexionAnalisis, index: number) {
     </button>
   </div>
   <div class="overflow-x-auto">
-    <svg role="img" aria-label={caption ?? "Diagrama de análisis OO"} viewBox="0 0 920 360" class="min-w-[760px]">
+    <svg role="img" aria-label={caption ?? "Diagrama de análisis OO"} viewBox="0 0 1040 420" class="min-w-[820px]">
       <defs>
         <marker id={markerId} markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
           <path d="M0,0 L0,6 L9,3 z" fill="hsl(var(--muted-foreground))"></path>
         </marker>
       </defs>
-      <rect x="0" y="0" width="920" height="360" rx="14" fill="hsl(var(--background))" />
-      {conexiones.map((conexion, index) => {
-        const path = connectionPath(conexion, index);
+      <rect x="0" y="0" width="1040" height="420" rx="14" fill="hsl(var(--background))" />
+      {conexiones.map((conexion) => {
+        const path = connectionPath(conexion);
         if (!path) return null;
         return (
           <g>
@@ -90,9 +92,9 @@ function connectionPath(conexion: ConexionAnalisis, index: number) {
       {positioned.map((node) => (
         <g transform={`translate(${node.x} ${node.y})`}>
           <path d={icon[node.tipo]} fill="none" stroke={node.tipo === "control" ? "hsl(var(--warning))" : node.tipo === "entity" ? "hsl(var(--success))" : node.tipo === "boundary" ? "hsl(var(--primary))" : "hsl(var(--foreground))"} stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
-          <rect x="-84" y="76" width="168" height="52" rx="8" fill="hsl(var(--background))" opacity="0.92" />
-          <text y="94" text-anchor="middle" fill="hsl(var(--foreground))" font-size="14" font-family="JetBrains Mono Variable" font-weight="700">{node.etiqueta}</text>
-          <text y="116" text-anchor="middle" fill="hsl(var(--muted-foreground))" font-size="12" font-family="JetBrains Mono Variable">«{node.tipo}»</text>
+          <rect x="-80" y="72" width="160" height="44" rx="8" fill="hsl(var(--background))" opacity="0.92" />
+          <text y="90" text-anchor="middle" fill="hsl(var(--foreground))" font-size="14" font-family="JetBrains Mono Variable" font-weight="700">{node.etiqueta}</text>
+          <text y="108" text-anchor="middle" fill="hsl(var(--muted-foreground))" font-size="12" font-family="JetBrains Mono Variable">«{node.tipo}»</text>
         </g>
       ))}
     </svg>

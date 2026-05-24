@@ -75,9 +75,8 @@ Un objeto reactivo depende de eventos y del estado en que se encuentra. Para mod
 Uno de los PDFs menciona el caso de un estado suspendido que debe recordar a qu√© estado volver. Para eso se usa un pseudoestado de historia.
 
 <MermaidDiagram caption="Historia: volver al estado previo luego de suspender" code={`stateDiagram-v2
+  direction LR
   [*] --> EnCurso
-  EnCurso --> EnPreparacion: preparar()
-  EnCurso --> EnTraslado: despachar()
   state EnCurso {
     [*] --> EnPreparacion
     EnPreparacion --> EnTraslado: iniciarTraslado()
@@ -85,7 +84,7 @@ Uno de los PDFs menciona el caso de un estado suspendido que debe recordar a qu√
     EsperandoConfirmacion --> [H]
   }
   EnCurso --> Suspendida: suspender()
-  Suspendida --> EnCurso: reanudar() / volverPorHistoria
+  Suspendida --> EnCurso: reanudar() [usa H]
   EnCurso --> Cerrada: cerrar()
   Cerrada --> [*]`} />
 

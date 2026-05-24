@@ -80,11 +80,11 @@ Si el caso de uso tiene flujos o subflujos diferenciados, conviene crear un diag
   modo="comunicacion"
   caption="Comunicación equivalente del mismo escenario"
   nodos={[
-    { id: "actor", tipo: "actor", etiqueta: "Actor", x: 80, y: 130 },
-    { id: "b", tipo: "boundary", etiqueta: "Pantalla", x: 270, y: 90 },
-    { id: "c", tipo: "control", etiqueta: "Gestor", x: 470, y: 150 },
-    { id: "p", tipo: "entity", etiqueta: "Pedido", x: 690, y: 90 },
-    { id: "prod", tipo: "entity", etiqueta: "Producto", x: 690, y: 230 }
+    { id: "actor", tipo: "actor", etiqueta: "Actor", x: 90, y: 200 },
+    { id: "b", tipo: "boundary", etiqueta: "Pantalla", x: 300, y: 150 },
+    { id: "c", tipo: "control", etiqueta: "Gestor", x: 540, y: 210 },
+    { id: "p", tipo: "entity", etiqueta: "Pedido", x: 840, y: 110 },
+    { id: "prod", tipo: "entity", etiqueta: "Producto", x: 840, y: 280 }
   ]}
   conexiones={[
     { from: "actor", to: "b", numero: 1, etiqueta: "solicita" },
