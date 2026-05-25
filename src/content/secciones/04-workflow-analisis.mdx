@@ -1,14 +1,14 @@
 ---
 id: "sec-04"
-numero: 4
-titulo: "Workflow de análisis dentro del PUD"
+numero: 3
+titulo: "Workflow de análisis"
 slug: "04-workflow-analisis"
 resumen: "El análisis refina requisitos y abre la caja negra del sistema con una solución lógica conceptual."
-keywords: ["análisis", "workflow", "modelo de casos de uso", "modelo de análisis", "vista externa", "vista interna"]
-relacionadas: ["01-pud", "05-modelo-analisis"]
+keywords: ["análisis", "workflow", "modelo de casos de uso", "modelo de análisis", "vista externa", "vista interna", "dominio del problema", "dominio de la solución", "modelo de requerimientos"]
+relacionadas: ["05-modelo-analisis"]
 ---
 
-### 4.1. Propósito del análisis
+### 3.1. Propósito del análisis
 
 <Definicion termino="análisis">
 El <strong>análisis</strong> toma requisitos capturados y los refina, estructura y formaliza para comprender el sistema con mayor precisión.
@@ -23,14 +23,14 @@ Su objetivo es producir una descripción mantenible y útil para dar forma al di
   CU -. qué hace .-> ANA
   MA -. cómo colaboran objetos .-> DIS`} />
 
-### 4.2. Problemas que el análisis ayuda a resolver
+### 3.2. Problemas que el análisis ayuda a resolver
 
 - <strong>Interferencia entre casos de uso:</strong> casos que compiten por recursos internos compartidos.
 - <strong>Ambigüedad del lenguaje del cliente:</strong> expresiones entendibles para usuario pero insuficientes para construir software.
 - <strong>Redundancias o inconsistencias:</strong> requisitos repetidos o contradictorios.
 - <strong>Falta de estructura interna:</strong> los casos de uso dicen qué debe hacer el sistema, no cómo se organizan los objetos.
 
-### 4.3. Precondiciones para analizar bien
+### 3.3. Precondiciones para analizar bien
 
 Los PDFs insisten en que el análisis parte de un modelo de requerimientos suficientemente ordenado. Si los casos de uso están mezclados o escritos con detalle interno, el análisis se vuelve confuso.
 
@@ -46,7 +46,7 @@ Los PDFs insisten en que el análisis parte de un modelo de requerimientos sufic
 El caso de uso debe seguir describiendo qué necesita el actor. Si ya habla de clases internas, gestores o tablas, está invadiendo el análisis.
 </Callout>
 
-### 4.4. Modelo de casos de uso versus modelo de análisis
+### 3.4. Modelo de casos de uso versus modelo de análisis
 
 <TablaComparativa
   caption="Modelo de casos de uso vs modelo de análisis"
@@ -67,7 +67,7 @@ El caso de uso debe seguir describiendo qué necesita el actor. Si ya habla de c
   RCU --> E[Entity: Pedido]
   RCU --> P[Entity: Producto]`} />
 
-### 4.5. Vista externa y vista interna
+### 3.5. Vista externa y vista interna
 
 El modelo de casos de uso es una <strong>vista externa</strong>: trata al sistema como caja negra. El modelo de análisis es una <strong>vista interna</strong>: muestra clases de análisis colaborando para realizar los casos de uso.
 
@@ -75,7 +75,7 @@ El modelo de casos de uso es una <strong>vista externa</strong>: trata al sistem
 Desde la <strong>vista externa</strong>, el conductor solo ve: se acerca, paga (o pasa con telepase) y se levanta la barrera. Es la caja negra. La <strong>vista interna</strong> es todo lo que pasa adentro para lograrlo: registrar el tránsito, identificar la categoría del vehículo, calcular la tarifa, validar el saldo del telepase y registrar el cobro. El análisis es justamente abrir esa caja y descubrir qué objetos colaboran.
 </EjemploReal>
 
-### 4.6. Análisis, diseño e implementación
+### 3.6. Análisis, diseño e implementación
 
 <MermaidDiagram caption="Del análisis a la implementación" code={`flowchart LR
   ANA[Análisis\nconceptual y lógico] --> DIS[Diseño\ntecnología y arquitectura]
@@ -87,15 +87,15 @@ Desde la <strong>vista externa</strong>, el conductor solo ve: se acerca, paga (
 - <strong>Diseño:</strong> incorpora tecnología, arquitectura, persistencia, distribución, interfaces y requisitos no funcionales.
 - <strong>Implementación:</strong> convierte el diseño en componentes ejecutables, integrables y probables.
 
-### 4.7. Importancia del análisis
+### 3.7. Importancia del análisis
 
 El análisis ayuda a distribuir responsabilidades, descubrir clases, reconocer paquetes, detectar requisitos especiales y preservar una visión conceptual común aunque luego existan tecnologías distintas.
 
-### 4.8. Cuándo conviene hacer análisis
+### 3.8. Cuándo conviene hacer análisis
 
-Conviene cuando se planifican incrementos, se incorporan nuevos miembros, existen implementaciones alternativas o se integra un sistema heredado.
+Conviene cuando se planifican nuevas funcionalidades, se incorporan nuevos miembros al equipo, existen implementaciones alternativas o se integra un sistema heredado.
 
-### 4.9. Papel del análisis en el ciclo de vida
+### 3.9. Papel del análisis en el ciclo de vida
 
 <TablaComparativa
   caption="Opciones de permanencia del modelo de análisis"
@@ -109,4 +109,45 @@ Conviene cuando se planifican incrementos, se incorporan nuevos miembros, existe
 
 <Callout tipo="tip">
 El análisis es la bisagra entre “lo que el usuario necesita” y “cómo los objetos colaboran para resolverlo”.
+</Callout>
+
+### 3.10. Dominio del problema y dominio de la solución
+
+Una forma de ubicarse en el proceso es preguntarse en qué <strong>dominio</strong> se está trabajando.
+
+<Definicion termino="dominio del problema">
+Es la instancia donde el foco está en <strong>analizar y comprender el negocio y los requerimientos</strong>: qué debe hacer el sistema y qué no debe hacer. Sus workflows son los de <strong>negocio</strong> y <strong>requerimientos</strong>.
+</Definicion>
+
+<Definicion termino="dominio de la solución">
+Es la instancia donde el foco está en <strong>refinar los requerimientos y construir la solución</strong> a los problemas planteados. Sus workflows son los de <strong>análisis</strong>, <strong>diseño</strong>, <strong>implementación</strong> y <strong>pruebas</strong>.
+</Definicion>
+
+<MermaidDiagram caption="Los dos dominios y sus workflows" code={`flowchart LR
+  subgraph P[Dominio del problema]
+    N[Negocio] --> R[Requerimientos]
+  end
+  subgraph S[Dominio de la solución]
+    A[Análisis] --> D[Diseño]
+    D --> I[Implementación]
+    I --> T[Pruebas]
+  end
+  R --> A`} />
+
+El paso de un dominio al otro se nota al comparar el <strong>modelo de requerimientos</strong> (frontera del problema) con el <strong>modelo de análisis</strong> (primer artefacto de la solución).
+
+<TablaComparativa
+  caption="Modelo de requerimientos vs modelo de análisis"
+  columnas={["Modelo de requerimientos", "Modelo de análisis"]}
+  filas={[
+    ["Es una vista <strong>externa</strong> del sistema.", "Es una vista <strong>interna</strong> del sistema."],
+    ["Está en el <strong>lenguaje del cliente</strong>.", "Está en el <strong>lenguaje del desarrollador</strong>."],
+    ["Puede tener redundancias e inconsistencias.", "No debería tener redundancias ni inconsistencias."],
+    ["Se estructura con diagramas de casos de uso.", "Se estructura con diagramas de clase y paquetes estereotipados."],
+    ["Es un <strong>contrato</strong> con el cliente de qué debe y qué no debe hacer el sistema.", "<strong>Refina</strong> los requerimientos y describe el cómo resolverlos de forma conceptual."]
+  ]}
+/>
+
+<Callout tipo="tip">
+La diferencia clave: el modelo de requerimientos vive en el <strong>dominio del problema</strong> (qué necesita el cliente, en su lenguaje); el modelo de análisis ya está en el <strong>dominio de la solución</strong> (cómo colaboran los objetos, en lenguaje del desarrollador), aunque todavía sin comprometerse con tecnología.
 </Callout>

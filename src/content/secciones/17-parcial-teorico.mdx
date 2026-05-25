@@ -1,0 +1,251 @@
+---
+id: "sec-17"
+numero: 16
+titulo: "Parcial teórico: preguntas frecuentes y respuestas modelo"
+slug: "17-parcial-teorico"
+resumen: "Método para responder las preguntas teóricas recurrentes del parcial, con respuestas modelo y diagramas."
+keywords: ["parcial teórico", "consistencia entre vistas", "responsabilidades del hacer", "creador", "experto", "bajo acoplamiento", "dominio del problema", "dominio de la solución", "inconsistencias", "contraejemplo"]
+relacionadas: ["14-guia-repaso", "12-grasp", "10-maquina-estados", "11-secuencia-comunicacion", "04-workflow-analisis"]
+---
+
+### 16.1. Cómo se evalúa el parcial teórico
+
+El parcial teórico tiene un formato estable que conviene conocer antes de sentarse a responder.
+
+- Se presentan **4 preguntas** y se piden responder **3**, una de ellas **obligatoria** (suele ser la de responsabilidades del *hacer*).
+- Cada respuesta vale **10 puntos**; el total de la parte teórica es **30**, con mínimos de aprobación.
+- En el encabezado aparece siempre la consigna: *"la interpretación es parte de lo que se evalúa"*.
+
+<Callout tipo="atencion" titulo="Lo que casi siempre se pide">
+- Un <strong>ejemplo propio</strong> (no el de la cátedra) en casi todas las preguntas.
+- A veces, además, un <strong>contraejemplo</strong> (mostrar el caso hecho mal).
+- Apoyar la respuesta con <strong>diagramas UML</strong> cuando el concepto lo permite (clases, secuencia, máquina de estados).
+- <strong>Coherencia de nombres</strong> entre los diagramas: la misma clase y el mismo método se escriben igual en todas las vistas.
+</Callout>
+
+Las cuatro preguntas se repiten parcial a parcial: **consistencia entre vistas**, **responsabilidades del hacer**, **GRASP (Creador/Experto y bajo acoplamiento)** y **dominio del problema vs solución**. En parciales recientes se sumó **identificar inconsistencias** sobre artefactos dados. Las secciones siguientes dan una respuesta modelo de cada una.
+
+### 16.2. Consistencia entre vistas
+
+**Por qué importa.** Cada vista representa un aspecto del sistema, pero si no son consistentes entre sí aparecen ambigüedades y contradicciones que afectan tanto el desarrollo como la mantenibilidad. La consistencia es lo que permite leer las tres vistas como una única solución.
+
+**Ejemplo (caso *Reparar Vehículo*).** Un mecánico registra la reparación de un vehículo. Mostramos las tres vistas y luego dónde se evidencia que son consistentes.
+
+<MermaidDiagram caption="Vista de máquina de estados: ReparaciónVehículo" code={`stateDiagram-v2
+  [*] --> Iniciada: new()
+  Iniciada --> Finalizada: finalizarReparación()
+  Finalizada --> [*]`} />
+
+<MermaidDiagram caption="Vista de secuencia: registrar una reparación" code={`sequenceDiagram
+  actor M as Mecánico
+  participant P as PantallaRepararVehículo
+  participant G as GestorRepararVehículo
+  participant V as Vehículo
+  participant E as Estado
+  participant R as nueva ReparaciónVehículo
+
+  M->>P: opciónRegistrarReparación()
+  P->>G: registrarReparación()
+  G->>P: pedirDatos()
+  M->>P: tomarFechaInicio()
+  M->>P: tomarPatente()
+  P->>G: tomarDatos()
+  G->>G: getHora()
+  G->>G: buscarVehículo()
+  G->>V: esConPatente()
+  G->>G: buscarEstadoInicial()
+  G->>E: esInicial()
+  G->>G: ingresarReparación()
+  G->>R: new()`} />
+
+<MermaidDiagram caption="Vista de estructura de clases" code={`classDiagram
+  class PantallaRepararVehículo {
+    <<boundary>>
+    - fechaInicio
+    - patente
+    + opciónRegistrarReparación()
+    + pedirDatos()
+    + tomarFechaInicio()
+    + tomarPatente()
+  }
+  class GestorRepararVehículo {
+    <<control>>
+    - fechaHoraInicio
+    - patente
+    + buscarEstadoInicial()
+    + buscarVehículo()
+    + getHora()
+    + ingresarReparación()
+    + registrarReparación()
+    + tomarDatos()
+  }
+  class ReparaciónVehículo {
+    <<entity>>
+    - fechaHoraInicio
+    - fechaHoraFin
+    + finalizarReparación()
+    + new()
+    + getFechaHoraInicio()
+    + setFechaHoraInicio()
+  }
+  class Estado {
+    <<entity>>
+    - esInicial
+    - nombre
+    + esInicial()
+    + getNombre()
+    + new()
+  }
+  class Vehículo {
+    <<entity>>
+    - patente
+    + esConPatente()
+    + getPatente()
+    + new()
+  }
+  PantallaRepararVehículo ..> GestorRepararVehículo
+  GestorRepararVehículo --> ReparaciónVehículo
+  ReparaciónVehículo "1" --> "1" Estado
+  ReparaciónVehículo "1" --> "1" Vehículo`} />
+
+**Dónde se evidencia la consistencia:**
+
+- Las **clases** que aparecen en la vista de secuencia (`PantallaRepararVehículo`, `GestorRepararVehículo`, `Vehículo`, `Estado`, `ReparaciónVehículo`) son exactamente las de la vista de clases.
+- Los **métodos** se escriben igual en las tres vistas: `finalizarReparación()` y `new()` están en la máquina de estados, en la secuencia y como operaciones de la clase.
+- Las **relaciones** entre clases (`ReparaciónVehículo` con `Estado` y `Vehículo`) se evidencian en la secuencia como paso de mensajes (`esInicial()` hacia `Estado`, `esConPatente()` hacia `Vehículo`).
+- Las **transiciones** de la máquina (`new()`, `finalizarReparación()`) corresponden a métodos de la clase que cambia de estado (`ReparaciónVehículo`).
+
+<Callout tipo="tip">
+Para responder esta pregunta no hace falta un caso grande: alcanza con un caso chico donde se vea que los nombres y los mensajes coinciden entre las tres vistas. La conexión teórica de fondo está en <strong>[Relaciones clave](/seccion/13-relaciones-clave)</strong> y la trazabilidad de <strong>[Caso resuelto](/seccion/16-caso-resuelto)</strong>.
+</Callout>
+
+### 16.3. Responsabilidades del *hacer* (pregunta obligatoria)
+
+Las responsabilidades de un objeto se dividen en **conocer** y **hacer**. El *hacer* se subdivide en tres formas (ver el desglose conceptual en **[GRASP 11.2](/seccion/12-grasp)**):
+
+<Definicion termino="responsabilidades del hacer">
+Obligaciones del objeto relacionadas con la acción: <strong>hacer algo en uno mismo</strong>, <strong>iniciar una acción en otros objetos</strong> y <strong>controlar y coordinar actividades en otros objetos</strong>.
+</Definicion>
+
+**Ejemplo (caso *Registrar Producto*).** Un gestor registra un producto validando que no exista otro con el mismo nombre.
+
+<MermaidDiagram caption="Secuencia anotada: los tres tipos de hacer" code={`sequenceDiagram
+  participant P as PantallaRegistrarProducto
+  participant G as GestorRegistrarProducto
+  participant Pr as Producto
+
+  G->>P: pedirDatosProducto()
+  P->>P: tomarNombre()
+  P->>P: tomarMarca()
+  P->>P: tomarDescripción()
+  P->>G: tomarDatos()
+  G->>G: getFechaHora()
+  G->>G: validarQueNoExistaProducto()
+  G->>Pr: tieneNombre()`} />
+
+<TablaComparativa
+  caption="Los tres tipos de hacer en el ejemplo (con contraejemplo)"
+  columnas={["Tipo", "Dónde se ve en el diagrama", "Contraejemplo (mal hecho)"]}
+  filas={[
+    ["<strong>Hacer algo en uno mismo</strong>", "La <code>Pantalla</code> en <code>tomarNombre()</code>/<code>tomarMarca()</code> asigna esos valores a sus propios atributos (mensaje reflexivo).", "Que la <code>Pantalla</code> calcule o decida reglas de negocio: eso no es operar sobre sus datos, es lógica que no le corresponde."],
+    ["<strong>Iniciar una acción en otros objetos</strong>", "El <code>Gestor</code> consulta a <code>Producto.tieneNombre()</code> para saber si ya existe.", "Que el <code>Gestor</code> lea directamente los atributos del <code>Producto</code> en vez de pedirle que responda: rompe el encapsulamiento."],
+    ["<strong>Controlar y coordinar actividades en otros objetos</strong>", "El <code>Gestor</code> orquesta todo el flujo: pide datos, los toma, valida y consulta al producto, en orden.", "Que la <code>Pantalla</code> coordine el caso de uso hablando con todas las entidades: la coordinación es del control, no de la frontera."]
+  ]}
+/>
+
+<Callout tipo="atencion">
+Aclaración típica de la respuesta modelo: el ejemplo se simplifica (se corta el inicio/fin del caso de uso y se toma "marca" como string en lugar de una clase de soporte). Aclararlo en el parcial demuestra interpretación, que es parte de lo que se evalúa.
+</Callout>
+
+### 16.4. GRASP: Creador vs Experto y bajo acoplamiento
+
+Esta pregunta pide relacionar **Creador** y **Experto**, dar un ejemplo propio y, a veces, explicar cómo **Experto favorece el bajo acoplamiento**. La teoría de ambos patrones está en **[GRASP 11.4–11.5](/seccion/12-grasp)** y la comparación lado a lado en **[GRASP 11.5.1](/seccion/12-grasp)**.
+
+**Cómo se relacionan.** Ambos asignan responsabilidades mirando qué tiene la clase, pero responden preguntas distintas: Experto, *¿quién hace/conoce algo?* → quien tiene la información; Creador, *¿quién instancia un objeto?* → quien lo contiene, agrega, registra o usa.
+
+**Ejemplo propio (caso *Reparar Vehículo*).**
+
+- **Experto:** validar que un vehículo corresponde a una patente es responsabilidad del propio `Vehículo`, porque es quien conoce su patente: `Vehículo.esConPatente()`. No lo hace el `Gestor` leyendo el atributo.
+- **Creador:** el `Gestor` crea la `ReparaciónVehículo` (`new()`) porque tiene los datos de inicialización (fecha/hora, patente tomada por pantalla) y la usa para el caso de uso.
+
+**Bajo acoplamiento al aplicar Experto.** Al poner la responsabilidad donde está la información, las demás clases **no necesitan conocer los datos internos** del experto: el `Gestor` no guarda ni manipula la patente del `Vehículo`, solo le pregunta `esConPatente()`. Así, si cambia cómo el vehículo representa su patente, el gestor no se entera: hay **menos dependencias** y los cambios tienen radio de impacto chico.
+
+<MermaidDiagram caption="Experto reduce el acoplamiento del gestor" code={`classDiagram
+  class GestorRepararVehículo {
+    <<control>>
+  }
+  class Vehículo {
+    <<entity>>
+    - patente
+    + esConPatente()
+  }
+  GestorRepararVehículo --> Vehículo : pregunta esConPatente()`} />
+
+### 16.5. Dominio del problema vs dominio de la solución
+
+Esta pregunta pide definir ambos dominios y relacionarlos con las diferencias entre el modelo de **requerimientos** y el modelo de **análisis**. La base conceptual completa (con definiciones y el mapeo a workflows) está en **[Workflow de análisis 3.10](/seccion/04-workflow-analisis)**.
+
+**Respuesta modelo.**
+
+- **Dominio del problema:** instancia donde el foco es analizar y comprender el negocio y los requerimientos (qué debe y qué no debe hacer el sistema). Workflows: **negocio** y **requerimientos**.
+- **Dominio de la solución:** instancia donde el foco es refinar los requerimientos y construir la solución. Workflows: **análisis**, **diseño**, **implementación** y **pruebas**.
+
+<TablaComparativa
+  caption="Modelo de requerimientos vs modelo de análisis"
+  columnas={["Modelo de requerimientos", "Modelo de análisis"]}
+  filas={[
+    ["Vista <strong>externa</strong> del sistema.", "Vista <strong>interna</strong> del sistema."],
+    ["Lenguaje del <strong>cliente</strong>.", "Lenguaje del <strong>desarrollador</strong>."],
+    ["Puede tener redundancias e inconsistencias.", "No debería tener redundancias ni inconsistencias."],
+    ["Se estructura con diagramas de casos de uso.", "Se estructura con diagramas de clase y paquetes estereotipados."],
+    ["Es un <strong>contrato</strong> de qué debe y no hacer el sistema.", "<strong>Refina</strong> los requerimientos y describe el cómo de forma conceptual."]
+  ]}
+/>
+
+El modelo de requerimientos pertenece al **dominio del problema**; el modelo de análisis es el primer artefacto del **dominio de la solución**.
+
+### 16.6. Identificar inconsistencias en artefactos dados
+
+En parciales recientes aparece un fragmento de análisis (vista dinámica + vista estática + máquina de estados) y se pide **detectar inconsistencias** y explicar qué problemas conllevan. Es la pregunta de consistencia entre vistas, pero al revés: en vez de construir, hay que auditar.
+
+**Método de detección.** Recorrer las vistas cruzándolas y buscar:
+
+- Mensajes en la secuencia **sin método correspondiente** en la clase receptora.
+- Métodos en la vista de clases que **no aparecen** en ninguna interacción.
+- Transiciones de la máquina de estados **sin método** en la clase que cambia, o métodos de transición que no figuran como mensajes.
+- **Nombres distintos** para el mismo concepto entre vistas (clase/método/estado).
+- **Multiplicidades o navegabilidades** incoherentes con los mensajes enviados.
+- Estados nombrados en la máquina que **no se reflejan** en la clase `Estado` ni en sus métodos.
+
+**Ejemplo (fragmento *Importar Grilla de Canal*).** Sobre un fragmento con la vista dinámica (`crearGrilla()/new()`, `crearEmisionesPrograma()`), la vista estática (`GrillaDeCanal`, `Emisión`, `Canal`, `Estado`) y la máquina de estados de `Emisión` (`InformadaPorCanal → IncluidaEnProgramación` vía `programar()`):
+
+<EjemploClase titulo="Inconsistencias detectadas y su problema">
+- **Método de transición ausente:** la máquina de estados de `Emisión` usa `programar()` para pasar a `IncluidaEnProgramación`, pero si ese método no aparece como operación de `Emisión` ni como mensaje en la secuencia, las vistas quedan **desconectadas** (no se puede trazar el cambio de estado).
+- **Estado sin soporte estructural:** los estados `InformadaPorCanal`/`IncluidaEnProgramación` deben corresponderse con instancias/valores de la clase `Estado`; si la clase `Estado` no los contempla, la máquina describe algo que la estructura no puede representar.
+- **Mensaje sin método receptor:** un mensaje como `crearEmisionesPrograma()` o `new()` dirigido a `Emisión` exige que `Emisión` tenga ese método; si falta, la dinámica invoca algo inexistente.
+- **Nombres incoherentes entre vistas:** si la clase que se crea en la secuencia (`nueva: GrillaDeCanal`) no coincide en nombre con la de la vista de clases, se pierde la trazabilidad.
+</EjemploClase>
+
+**Qué problema conlleva.** Toda inconsistencia entre vistas genera **ambigüedad**: el equipo no sabe cuál vista es la correcta, se programan métodos que no existen o estados que no se pueden alcanzar, y el modelo deja de ser confiable para guiar el diseño. Por eso el modelo de análisis no debería tener redundancias ni inconsistencias (a diferencia del de requerimientos).
+
+### 16.7. Cómo redactar una respuesta que sume puntos
+
+<ChecklistRepaso
+  id="parcial-teorico"
+  preguntas={[
+    "¿Definí el concepto antes de dar el ejemplo?",
+    "¿El ejemplo es propio y no el de la cátedra?",
+    "¿Agregué un contraejemplo cuando la consigna lo pide?",
+    "¿Apoyé la respuesta con un diagrama UML cuando aplica?",
+    "¿Usé los mismos nombres de clases y métodos en todas las vistas?",
+    "¿Respondí las 3 preguntas e incluí la obligatoria?",
+    "¿Aclaré las simplificaciones que hice (cortar inicio/fin del CU, usar string en vez de clase)?",
+    "¿Relacioné los conceptos pedidos en vez de definirlos por separado?",
+    "¿En consistencia/inconsistencias, crucé las tres vistas explícitamente?",
+    "¿Mostré, no solo afirmé, dónde se evidencia cada cosa en el diagrama?"
+  ]}
+/>
+
+<Callout tipo="tip" titulo="Forma de estudiar">
+Tomá cada una de las 4 preguntas y escribila de memoria con un caso chico propio. Si podés dibujar las tres vistas coherentes para tu caso, ya tenés resuelta la 1, la 2 y la 6 a la vez, porque todas se apoyan en la trazabilidad entre máquina de estados, secuencia y clases.
+</Callout>

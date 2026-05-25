@@ -1,14 +1,14 @@
 ---
 id: "sec-12"
-numero: 12
+numero: 11
 titulo: "Patrones GRASP para análisis"
 slug: "12-grasp"
 resumen: "GRASP ayuda a decidir dónde ubicar responsabilidades en objetos para lograr bajo acoplamiento, alta cohesión y diseños más flexibles."
-keywords: ["GRASP", "responsabilidad", "experto", "creador", "controlador", "bajo acoplamiento", "alta cohesión", "fabricación pura", "polimorfismo", "indirección", "variaciones protegidas"]
+keywords: ["GRASP", "responsabilidad", "experto", "creador", "controlador", "bajo acoplamiento", "alta cohesión"]
 relacionadas: ["06-clases-analisis", "13-relaciones-clave"]
 ---
 
-### 12.1. Qué son los patrones GRASP
+### 11.1. Qué son los patrones GRASP
 
 <Definicion termino="GRASP">
 <strong>GRASP</strong> significa Patrones Generales de Asignación de Responsabilidades en Software.
@@ -27,7 +27,9 @@ Ayudan a decidir qué objeto debe asumir cada responsabilidad en un diseño orie
   Mantener --> Bajo[Bajo acoplamiento]
   Mantener --> Alta[Alta cohesion]`} />
 
-### 12.2. Responsabilidades de hacer y conocer
+### 11.2. Responsabilidades de hacer y conocer
+
+Las responsabilidades que asignamos a un objeto (definidas en su clase) caen en dos grandes categorías: <strong>conocer</strong> y <strong>hacer</strong>.
 
 <TablaComparativa
   caption="Tipos de responsabilidad"
@@ -38,7 +40,25 @@ Ayudan a decidir qué objeto debe asumir cada responsabilidad en un diseño orie
   ]}
 />
 
-### 12.3. Responsabilidad versus método
+#### 11.2.1. Los tres tipos de responsabilidad del *hacer*
+
+El <strong>hacer</strong> no es uno solo: se subdivide en tres formas, y distinguirlas es una pregunta clásica de parcial.
+
+<TablaComparativa
+  caption="Subtipos de la responsabilidad de hacer"
+  columnas={["Subtipo", "Qué implica", "Ejemplo", "GRASP afín"]}
+  filas={[
+    ["<strong>Hacer algo en uno mismo</strong>", "Crear un objeto, hacer un cálculo o modificar el propio estado usando los datos que la clase ya conoce.", "<code>Pedido.calcularTotal()</code> suma sus detalles; <code>Pantalla</code> asigna a sus atributos lo que el actor tipea.", "Experto / Creador"],
+    ["<strong>Iniciar una acción en otros objetos</strong>", "Enviar un mensaje a otro objeto para que haga algo o responda por su información.", "El <code>Gestor</code> consulta <code>Producto.tieneNombre()</code> o le pide a <code>Vehículo.esConPatente()</code>.", "Experto (en el receptor)"],
+    ["<strong>Controlar y coordinar actividades en otros objetos</strong>", "Orquestar la secuencia de mensajes entre varios objetos para cumplir un caso de uso.", "El <code>Gestor</code> coordina el flujo: pide datos, valida, crea entidades y notifica, en orden.", "Controlador"]
+  ]}
+/>
+
+<Callout tipo="tip">
+Truco de lectura del diagrama de secuencia: un mensaje de un objeto <strong>a sí mismo</strong> (reflexivo) suele ser "hacer algo en uno mismo"; un mensaje <strong>hacia otro objeto</strong> es "iniciar una acción en otros"; y el objeto que <strong>envía y recibe la mayoría de los mensajes en orden</strong> (típicamente el gestor) es el que "controla y coordina".
+</Callout>
+
+### 11.3. Responsabilidad versus método
 
 Una <strong>responsabilidad</strong> es una obligación conceptual del objeto. Un <strong>método</strong> es una operación concreta que implementa una responsabilidad.
 
@@ -51,7 +71,7 @@ En análisis se habla más de responsabilidades que de métodos con firma comple
   RESP --> GRASP[Patrones GRASP]
   GRASP --> CLASES[Clases mas cohesivas y menos acopladas]`} />
 
-### 12.4. Patrón Experto en Información
+### 11.4. Patrón Experto en Información
 
 <PatronGRASP
   nombre="Experto en Información"
@@ -82,7 +102,7 @@ En análisis se habla más de responsabilidades que de métodos con firma comple
   </EjemploReal>
 </PatronGRASP>
 
-### 12.5. Patrón Creador
+### 11.5. Patrón Creador
 
 <PatronGRASP
   nombre="Creador"
@@ -112,11 +132,26 @@ En análisis se habla más de responsabilidades que de métodos con firma comple
   </EjemploReal>
 </PatronGRASP>
 
-<Callout tipo="atencion" titulo="Creador → Factoría">
-Los resúmenes aclaran que cuando la creación es <strong>compleja</strong> (instancias recicladas por rendimiento, o elegir condicionalmente entre una familia de clases según una propiedad), conviene <strong>delegar la creación a una clase auxiliar Factoría</strong> en vez de cargar al contenedor. Es el puente del Creador (análisis) hacia el patrón de diseño <em>Factory</em> (Unidad 2).
+#### 11.5.1. Creador vs Experto: en qué se parecen y en qué difieren
+
+Ambos patrones son de asignación de responsabilidades y suelen confundirse porque los dos miran "qué tiene la clase". La diferencia está en <strong>qué tipo</strong> de responsabilidad asignan.
+
+<TablaComparativa
+  caption="Creador vs Experto en Información"
+  columnas={["Aspecto", "Experto en Información", "Creador"]}
+  filas={[
+    ["Pregunta que responde", "¿Quién debe hacer/conocer/calcular algo?", "¿Quién debe instanciar (crear) un objeto?"],
+    ["Criterio de asignación", "La clase que tiene la <strong>información</strong> necesaria para cumplir la responsabilidad.", "La clase que <strong>contiene, agrega, registra, usa</strong> o tiene los datos de inicialización del objeto a crear."],
+    ["Tipo de responsabilidad", "De conocer o de hacer un cálculo/validación.", "De hacer: específicamente, crear una instancia."],
+    ["Ejemplo", "<code>Pedido.calcularTotal()</code> porque conoce sus detalles.", "<code>Pedido</code> crea sus <code>DetallePedido</code> porque los contiene."]
+  ]}
+/>
+
+<Callout tipo="tip" titulo="Lo que comparten">
+Los dos buscan <strong>bajo acoplamiento</strong>: asignan la responsabilidad a la clase que ya tiene la información o la relación, evitando que otras clases necesiten conocer datos internos ajenos. Muchas veces la misma clase es Experto <em>y</em> Creador (el <code>Pedido</code> conoce sus detalles y por eso los crea y los suma).
 </Callout>
 
-### 12.6. Patrón Controlador
+### 11.6. Patrón Controlador
 
 <PatronGRASP
   nombre="Controlador"
@@ -160,7 +195,7 @@ Un beneficio clave del Controlador: permite <strong>razonar sobre el estado del 
   ]}
 />
 
-### 12.7. Patrón Bajo Acoplamiento
+### 11.7. Patrón Bajo Acoplamiento
 
 <PatronGRASP
   nombre="Bajo Acoplamiento"
@@ -181,7 +216,7 @@ Un beneficio clave del Controlador: permite <strong>razonar sobre el estado del 
     CatalogoProductos --> ServicioPrecio`} />
 </PatronGRASP>
 
-### 12.8. Patrón Alta Cohesión
+### 11.8. Patrón Alta Cohesión
 
 <PatronGRASP
   nombre="Alta Cohesión"
@@ -227,7 +262,7 @@ La cohesión no es "todo o nada": los resúmenes describen una escala de <strong
   ]}
 />
 
-### 12.9. GRASP aplicado a clases de análisis
+### 11.9. GRASP aplicado a clases de análisis
 
 - <strong>Boundary:</strong> recibe eventos del actor y muestra respuestas.
 - <strong>Control:</strong> coordina el caso de uso y administra la secuencia.
@@ -243,7 +278,7 @@ La cohesión no es "todo o nada": los resúmenes describen una escala de <strong
   Experto --> BA[Bajo acoplamiento]
   Creador --> AC[Alta cohesión]`} />
 
-### 12.10. Cómo elegir el patrón en un ejercicio
+### 11.10. Cómo elegir el patrón en un ejercicio
 
 <TablaComparativa
   caption="Preguntas rápidas para asignar responsabilidades"
@@ -261,72 +296,6 @@ La cohesión no es "todo o nada": los resúmenes describen una escala de <strong
 En los diagramas, GRASP se ve en los mensajes: cada flecha debería poder defenderse con una responsabilidad razonable.
 </Callout>
 
-### 12.11. Otros GRASP que pueden aparecer
+### 11.11. GRASP versus patrones de diseño
 
-Además de los cinco patrones más usados en análisis, los PDFs y la bibliografía suelen nombrar otros GRASP. Conviene reconocerlos para no confundirlos con patrones de diseño de Unidad 2.
-
-<TablaComparativa
-  caption="GRASP complementarios"
-  columnas={["Patrón", "Problema que resuelve", "Idea central"]}
-  filas={[
-    ["Fabricación Pura", "La responsabilidad no encaja bien en una clase del dominio.", "Crear una clase artificial para mantener cohesión y bajo acoplamiento."],
-    ["Polimorfismo", "El comportamiento varía según el tipo.", "Asignar la responsabilidad a las variantes, no llenar el control de condicionales."],
-    ["Indirección", "Dos elementos quedan demasiado acoplados.", "Interponer un objeto mediador para desacoplar."],
-    ["Variaciones Protegidas", "Hay puntos del sistema que cambian o pueden cambiar.", "Encapsular la variación detrás de una interfaz estable."]
-  ]}
-/>
-
-<MermaidDiagram caption="Fabricación pura como clase artificial de coordinación" code={`classDiagram
-  class GestorNotificaciones {
-    <<control>>
-    +notificarInteresados(evento)
-  }
-  class Orden
-  class Interesado
-  class PantallaOrden {
-    <<boundary>>
-  }
-  PantallaOrden --> GestorNotificaciones : delega
-  GestorNotificaciones --> Orden : obtiene evento
-  GestorNotificaciones --> Interesado : avisa`} />
-
-<Callout tipo="atencion">
-Fabricación pura no significa inventar clases sin motivo. Se usa cuando poner la responsabilidad en una entidad, frontera o control existente dañaría la cohesión o aumentaría demasiado el acoplamiento.
-</Callout>
-
-<EjemploReal titulo="Boundary y control SON Fabricación Pura" dominio="Caso cátedra">
-Un dato que el resumen de cátedra remarca: las clases <strong>boundary</strong> y <strong>control</strong> son <em>clases de Fabricación Pura</em>. No salen del dominio del problema (a un cliente no le importa que exista una `PantallaRegistrarPedido` ni un `GestorRegistrarPedido`): se inventan para no cargar de lógica de interacción ni de coordinación a las entidades. Solo las <strong>entidades</strong> (`Pedido`, `Vuelo`) se derivan del dominio. Por eso BCE es, en el fondo, una aplicación sistemática de Fabricación Pura + Alta Cohesión.
-</EjemploReal>
-
-<EjemploReal titulo="Polimorfismo y Variaciones Protegidas en la Estrella de la Muerte" dominio="Caso cátedra">
-El informe de cumplimiento de Órdenes de Reubicación se puede calcular con <em>distintos métodos</em> (% ejecución satisfactoria, % ejecutadas, % no ejecutadas). En vez de un `if/switch` en el `GestorInformeCumplimientoOR`, cada método es una estrategia que implementa `calcularEjecucionesOR()` (<strong>Polimorfismo</strong>: el comportamiento vive en las variantes). La variación queda encapsulada tras la interfaz estable `IEstrategiaEjecucionOR` (<strong>Variaciones Protegidas</strong>): agregar un método nuevo no toca al gestor.
-</EjemploReal>
-
-### 12.12. GRASP versus patrones de diseño
-
-GRASP son criterios para asignar responsabilidades. Los patrones de diseño, como Observer o State, son soluciones de diseño más específicas. En Unidad 1 puede aparecer la mención como puente, pero el foco es justificar responsabilidades en el modelo de análisis.
-
-<TablaComparativa
-  caption="GRASP vs patrones de diseño"
-  columnas={["Aspecto", "GRASP", "Patrones de diseño"]}
-  filas={[
-    ["Nivel", "Principios de asignación de responsabilidades.", "Soluciones reutilizables para problemas de diseño."],
-    ["Pregunta típica", "¿Quién debería hacer o conocer esto?", "¿Qué estructura de clases resuelve esta variación?"],
-    ["Uso en Unidad 1", "Central para análisis y diagramas de interacción.", "Solo como referencia o puente hacia diseño."],
-    ["Ejemplos", "Experto, Creador, Controlador.", "Observer, State, Strategy, Adapter."]
-  ]}
-/>
-
-<TablaComparativa
-  caption="Del GRASP de análisis al patrón de diseño (caso Estrella de la Muerte)"
-  columnas={["Necesidad de diseño", "GRASP de base", "Patrón de diseño (Unidad 2)"]}
-  filas={[
-    ["El cálculo de cumplimiento de OR varía según el método elegido por el actor.", "Polimorfismo + Variaciones Protegidas", "<strong>Strategy</strong> (IEstrategiaEjecucionOR + estrategias concretas)."],
-    ["El informe debe construirse en varios formatos (PDF, Excel, impreso, holográfico).", "Alta Cohesión (separar la construcción)", "<strong>Builder</strong>."],
-    ["Notificar a varias pantallas/interesados cuando algo cambia.", "Indirección / Fabricación Pura", "<strong>Observer</strong>."]
-  ]}
-/>
-
-<Callout tipo="tip">
-La idea del puente: en <strong>análisis</strong> detectás <em>qué</em> responsabilidad varía y la aislás (Polimorfismo, Variaciones Protegidas); en <strong>diseño</strong> elegís la <em>estructura</em> concreta que lo resuelve (Strategy, Builder, Observer). El GRASP justifica el porqué; el patrón de diseño da el cómo.
-</Callout>
+En esta unidad solo se usan los <strong>cinco GRASP</strong> de análisis (Experto, Creador, Controlador, Bajo Acoplamiento, Alta Cohesión). GRASP son criterios para <strong>asignar responsabilidades</strong>; los patrones de diseño (Observer, State, Strategy, etc.) son soluciones estructurales más específicas que recién se ven en Unidad 2. En el parcial el foco es justificar responsabilidades sobre el modelo de análisis, no aplicar patrones de diseño.

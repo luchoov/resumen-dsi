@@ -3,15 +3,11 @@ import MermaidDiagram from "./MermaidDiagram.astro";
 
 const code = `flowchart LR
   DSI((Diseno de Sistemas))
-  DSI --> PUD
   DSI --> UML[UML 2.0]
   DSI --> Req[Requerimientos]
   DSI --> Analisis[Analisis]
   DSI --> Comp[Comportamiento]
   DSI --> Resp[Responsabilidades]
-  PUD --> Fases
-  PUD --> Iteraciones
-  PUD --> Workflows
   UML --> Estructurales
   UML --> Interaccion[Interaccion]
   Req --> CU[Casos de uso]

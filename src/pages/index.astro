@@ -9,7 +9,7 @@ const secciones = ordenarSecciones(await getCollection("secciones"));
 const indiceBusqueda = crearIndiceBusqueda(secciones);
 ---
 
-<BaseLayout titulo="Resumen DSI · Microsite de estudio" descripcion="Resumen visual de Diseño de Sistemas para repasar PUD, UML, análisis, diagramas y GRASP.">
+<BaseLayout titulo="Resumen DSI · Microsite de estudio" descripcion="Resumen visual de Diseño de Sistemas para repasar UML, análisis OO, diagramas y GRASP (Unidad 1).">
   <Topbar indiceBusqueda={indiceBusqueda} />
   <main class="mx-auto max-w-[96rem] px-4 pb-16 pt-24 lg:px-6">
     <section class="grid gap-10 border-b border-[hsl(var(--border))] pb-12 lg:grid-cols-[1.05fr_0.95fr]">
@@ -21,7 +21,7 @@ const indiceBusqueda = crearIndiceBusqueda(secciones);
         </p>
         <div class="mt-8 flex flex-wrap gap-3">
           <a href={seccionUrl(secciones[0])} class="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[hsl(var(--primary))] px-4 py-2 font-medium text-[hsl(var(--primary-foreground))] hover:no-underline">
-            Empezar por PUD <ArrowRight size={17} />
+            Empezar por UML <ArrowRight size={17} />
           </a>
           <a href="/banco-preguntas" class="inline-flex min-h-11 items-center rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-2 font-medium text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] hover:no-underline">
             Banco de preguntas

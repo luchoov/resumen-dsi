@@ -1,6 +1,6 @@
 ---
 id: "sec-09"
-numero: 9
+numero: 8
 titulo: "Actividades y roles del workflow de análisis"
 slug: "09-actividades-roles"
 resumen: "El workflow de análisis distribuye responsabilidades entre arquitecto, ingeniero de casos de uso e ingeniero de componentes."
@@ -8,7 +8,7 @@ keywords: ["roles", "actividades", "arquitecto", "ingeniero de casos de uso", "i
 relacionadas: ["04-workflow-analisis", "08-paquetes-arquitectura"]
 ---
 
-### 9.1. Roles principales
+### 8.1. Roles principales
 
 - <strong>Arquitecto:</strong> inicia el modelo de análisis, identifica paquetes principales, clases de entidad evidentes y requisitos especiales comunes.
 - <strong>Ingeniero de casos de uso:</strong> realiza cada caso de uso en términos de clases de análisis participantes.
@@ -32,7 +32,7 @@ Imaginá tres personas trabajando el sistema de un frigorífico:
 <br /><br />Son sombreros, no necesariamente tres personas distintas.
 </EjemploReal>
 
-### 9.2. Flujo general de trabajo
+### 8.2. Flujo general de trabajo
 
 <MermaidDiagram caption="Actividades del workflow de análisis" code={`flowchart TB
   A[Analizar arquitectura] --> B[Analizar casos de uso]
@@ -55,7 +55,7 @@ Imaginá tres personas trabajando el sistema de un frigorífico:
   RCU --> MODELO
   CA --> MODELO`} />
 
-### 9.3. Analizar la arquitectura
+### 8.3. Analizar la arquitectura
 
 Implica identificar paquetes principales, clases de entidad evidentes, mecanismos conceptuales comunes y requisitos especiales que afecten a varias partes del sistema.
 
@@ -69,7 +69,7 @@ Implica identificar paquetes principales, clases de entidad evidentes, mecanismo
   ]}
 />
 
-### 9.4. Analizar un caso de uso
+### 8.4. Analizar un caso de uso
 
 Consiste en describir una realización: qué clases participan, cómo colaboran y qué requisitos especiales aparecen.
 
@@ -79,11 +79,11 @@ Consiste en describir una realización: qué clases participan, cómo colaboran 
   MSG --> RESP[Responsabilidades]
   RESP --> AJUSTE[Ajuste de clases y paquetes]`} />
 
-### 9.5. Analizar una clase
+### 8.5. Analizar una clase
 
 Analizar una clase implica precisar responsabilidades, atributos relevantes, relaciones y requisitos especiales asociados. Si su comportamiento depende del estado, puede necesitar máquina de estados.
 
-### 9.6. Analizar un paquete
+### 8.6. Analizar un paquete
 
 Analizar un paquete implica verificar que sus clases estén relacionadas, sus dependencias externas sean mínimas y su propósito sea reconocible.
 

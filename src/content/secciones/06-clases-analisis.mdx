@@ -1,6 +1,6 @@
 ---
 id: "sec-06"
-numero: 6
+numero: 5
 titulo: "Clases de análisis: entidad, frontera y control"
 slug: "06-clases-analisis"
 resumen: "Las clases de análisis se clasifican en entidad, frontera y control para separar datos duraderos, interacción y coordinación."
@@ -8,7 +8,7 @@ keywords: ["clase de análisis", "entidad", "frontera", "boundary", "control", "
 relacionadas: ["03-orientacion-objetos", "12-grasp"]
 ---
 
-### 6.1. Qué es una clase de análisis
+### 5.1. Qué es una clase de análisis
 
 <Definicion termino="clase de análisis">
 Una <strong>clase de análisis</strong> representa una abstracción de una o varias clases o subsistemas del futuro diseño.
@@ -51,19 +51,19 @@ Es más conceptual que una clase de diseño y se centra principalmente en requis
   ]}
 />
 
-### 6.2. Clase de entidad
+### 5.2. Clase de entidad
 
 Una <strong>clase de entidad</strong> modela información de larga vida, usualmente persistente. Representa conceptos relevantes del dominio que el sistema necesita recordar, consultar o modificar.
 
-### 6.3. Clase límite, frontera o boundary
+### 5.3. Clase límite, frontera o boundary
 
 Una <strong>clase de frontera</strong> modela la interacción entre el sistema y sus actores: pantallas, formularios, paneles, interfaces de comunicación, sensores, impresoras, servicios externos o puntos de contacto.
 
-### 6.4. Clase de control
+### 5.4. Clase de control
 
 Una <strong>clase de control</strong> representa coordinación, secuencia, transacciones y control de otros objetos. Suele encapsular la lógica de un caso de uso o flujo específico.
 
-### 6.5. Diferencias entre los tres estereotipos
+### 5.5. Diferencias entre los tres estereotipos
 
 <TablaComparativa
   caption="Estereotipos de clases de análisis"
@@ -100,7 +100,7 @@ Imaginá registrar un pedido en el mostrador:
 <br />• <strong>Entidad:</strong> `Pedido`, `DetallePedido`, `Pizza` y `Factura` son los datos que el sistema debe recordar después de cerrar la pantalla.
 </EjemploReal>
 
-### 6.6. Trazabilidad
+### 5.6. Trazabilidad
 
 Las clases de análisis permiten trazar desde casos de uso hacia diseño e implementación. Una frontera suele relacionarse con una interacción externa; un control con un caso de uso; una entidad con conceptos del dominio.
 
@@ -108,7 +108,7 @@ Las clases de análisis permiten trazar desde casos de uso hacia diseño e imple
 En una aerolínea, el caso de uso "Consultar disponibilidad": la <strong>frontera</strong> `PantallaConsultarDisponibilidad` toma origen, destino y fecha; el <strong>control</strong> `GestorConsultarDisponibilidad` coordina la búsqueda; las <strong>entidades</strong> `Vuelo`, `Tramo` y `Asiento` aportan los datos. Fijate cómo el mismo patrón BCE se repite caso a caso: cambia el dominio, no la estructura.
 </EjemploReal>
 
-### 6.7. Atributos, asociaciones y generalizaciones
+### 5.7. Atributos, asociaciones y generalizaciones
 
 Los PDFs remarcan que el ingeniero de componentes no inventa relaciones porque sí: estudia los enlaces usados en diagramas de interacción para decidir qué asociaciones, agregaciones, multiplicidades o generalizaciones hacen falta.
 

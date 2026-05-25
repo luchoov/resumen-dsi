@@ -11,38 +11,11 @@ type QA = { c: string; q: string; a: string };
 
 // Banco de preguntas y respuestas. Las respuestas admiten <strong> y <code>.
 const preguntas: QA[] = [
-  // ── PUD ───────────────────────────────────────────────────────────────
-  {
-    c: "PUD",
-    q: "¿Qué es el Proceso Unificado de Desarrollo (PUD)?",
-    a: "Es un marco de trabajo para construir software de forma <strong>iterativa, incremental, dirigida por casos de uso y centrada en la arquitectura</strong>. Organiza el desarrollo en fases y workflows, y produce el sistema mediante incrementos evaluables en lugar de una sola entrega final."
-  },
-  {
-    c: "PUD",
-    q: "¿Cuáles son las cuatro fases del PUD y su propósito?",
-    a: "<strong>Inicio</strong>: definir alcance, entender el negocio e identificar actores y casos de uso principales. <strong>Elaboración</strong>: planificar con más precisión y estabilizar la arquitectura. <strong>Construcción</strong>: desarrollar el producto mediante incrementos. <strong>Transición</strong>: entregar el producto al ambiente real (validación, correcciones, despliegue)."
-  },
-  {
-    c: "PUD",
-    q: "¿Qué diferencia hay entre iteración, incremento y release?",
-    a: "Una <strong>iteración</strong> es una secuencia planificada de actividades con criterio de evaluación. Un <strong>incremento</strong> es la porción nueva de funcionalidad o calidad agregada. Un <strong>release</strong> es una versión ejecutable o entregable que permite validar el avance."
-  },
-  {
-    c: "PUD",
-    q: "¿Qué es un workflow o disciplina en el PUD?",
-    a: "Es una agrupación de actividades relacionadas que producen modelos o artefactos (por ejemplo: modelado de negocio, requerimientos, análisis, diseño, implementación, prueba, despliegue). La intensidad de cada workflow varía según la fase."
-  },
-  {
-    c: "PUD",
-    q: "¿Por qué se dice que el PUD está 'dirigido por casos de uso'?",
-    a: "Porque los casos de uso guían todo el proceso: capturan los requisitos funcionales, sirven para planificar iteraciones, se realizan en análisis y diseño, y se usan como base para las pruebas. El sistema se construye para satisfacer sus casos de uso."
-  },
-
   // ── UML ───────────────────────────────────────────────────────────────
   {
     c: "UML",
     q: "¿Qué es UML y para qué se usa?",
-    a: "UML (Unified Modeling Language) es un <strong>lenguaje de modelado</strong> estándar para especificar, visualizar y documentar sistemas de software. No es una metodología: es una notación que distintos procesos (como el PUD) pueden usar."
+    a: "UML (Unified Modeling Language) es un <strong>lenguaje de modelado</strong> estándar para especificar, visualizar y documentar sistemas de software. No es una metodología: es una notación que distintos procesos de desarrollo pueden usar."
   },
   {
     c: "UML",
@@ -203,7 +176,7 @@ const preguntas: QA[] = [
   {
     c: "GRASP",
     q: "¿Qué es GRASP?",
-    a: "Son patrones generales para asignar responsabilidades a objetos: <strong>Experto</strong>, <strong>Creador</strong>, <strong>Controlador</strong>, <strong>Bajo Acoplamiento</strong>, <strong>Alta Cohesión</strong>, y los avanzados Polimorfismo, Indirección, Fabricación Pura y Variaciones Protegidas."
+    a: "Son patrones generales para asignar responsabilidades a objetos. En esta unidad se usan los <strong>cinco</strong>: <strong>Experto en Información</strong>, <strong>Creador</strong>, <strong>Controlador</strong>, <strong>Bajo Acoplamiento</strong> y <strong>Alta Cohesión</strong>."
   },
   {
     c: "GRASP",
@@ -298,6 +271,43 @@ const preguntas: QA[] = [
     c: "Práctica / Parcial",
     q: "¿Cuándo aparece Sesion/Usuario en la dinámica?",
     a: "Cuando el flujo necesita usuario logueado, validar un rol o permisos, o registrar un responsable. El gestor pide el usuario logueado a la <code>Sesion</code> y valida su rol antes de continuar el caso de uso."
+  },
+
+  // ── Parcial teórico ────────────────────────────────────────────────────
+  {
+    c: "Parcial teórico",
+    q: "¿Por qué importa la consistencia entre las vistas y dónde se evidencia?",
+    a: "Porque cada vista representa un aspecto del sistema; si no son consistentes aparecen <strong>ambigüedades y contradicciones</strong> que afectan el desarrollo y la mantenibilidad. Se evidencia en que las <strong>mismas clases</strong> aparecen en secuencia y en clases, los <strong>métodos</strong> se escriben igual en las tres vistas, las <strong>relaciones</strong> de la vista de clases se ven como paso de mensajes, y las <strong>transiciones</strong> de la máquina coinciden con métodos de la clase que cambia de estado."
+  },
+  {
+    c: "Parcial teórico",
+    q: "¿Cuáles son los tres tipos de responsabilidad del hacer?",
+    a: "<strong>Hacer algo en uno mismo</strong> (crear un objeto, calcular o modificar el propio estado, p. ej. <code>Pedido.calcularTotal()</code>); <strong>iniciar una acción en otros objetos</strong> (enviar un mensaje a otro, p. ej. el gestor consulta <code>Producto.tieneNombre()</code>); y <strong>controlar y coordinar actividades en otros objetos</strong> (orquestar la secuencia de mensajes, típicamente el gestor del caso de uso)."
+  },
+  {
+    c: "Parcial teórico",
+    q: "¿Qué diferencia y qué comparten los patrones Creador y Experto?",
+    a: "<strong>Experto</strong> responde '¿quién hace o conoce algo?' → la clase con la información. <strong>Creador</strong> responde '¿quién instancia un objeto?' → la clase que lo contiene, agrega, registra o usa. <strong>Comparten</strong> que ambos asignan responsabilidades mirando qué tiene la clase y ambos favorecen el <strong>bajo acoplamiento</strong>; muchas veces la misma clase es Experto y Creador."
+  },
+  {
+    c: "Parcial teórico",
+    q: "¿Cómo favorece el patrón Experto el bajo acoplamiento?",
+    a: "Al poner la responsabilidad donde está la información, las demás clases <strong>no necesitan conocer los datos internos</strong> del experto: le piden que responda en vez de leer sus atributos. Así hay menos dependencias y un cambio en cómo el experto representa sus datos no se propaga (radio de impacto chico)."
+  },
+  {
+    c: "Parcial teórico",
+    q: "¿Qué es el dominio del problema y el dominio de la solución?",
+    a: "El <strong>dominio del problema</strong> es la instancia centrada en comprender el negocio y los requerimientos (qué debe y no debe hacer el sistema); sus workflows son <strong>negocio</strong> y <strong>requerimientos</strong>. El <strong>dominio de la solución</strong> se centra en refinar requerimientos y construir la solución; sus workflows son <strong>análisis, diseño, implementación y pruebas</strong>."
+  },
+  {
+    c: "Parcial teórico",
+    q: "¿En qué se diferencia el modelo de requerimientos del modelo de análisis?",
+    a: "El de <strong>requerimientos</strong> es vista externa, en lenguaje del cliente, puede tener redundancias/inconsistencias, se estructura con casos de uso y es un contrato de qué hace el sistema. El de <strong>análisis</strong> es vista interna, en lenguaje del desarrollador, no debería tener inconsistencias, se estructura con clases y paquetes estereotipados y refina el cómo de forma conceptual."
+  },
+  {
+    c: "Parcial teórico",
+    q: "¿Cómo detecto inconsistencias entre artefactos de análisis?",
+    a: "Cruzando las vistas: mensajes en la secuencia <strong>sin método</strong> en la clase receptora; métodos de clase que no aparecen en ninguna interacción; transiciones de la máquina <strong>sin método</strong> en la clase que cambia; <strong>nombres distintos</strong> para el mismo concepto entre vistas; multiplicidades/navegabilidades incoherentes con los mensajes; y estados de la máquina que la clase <code>Estado</code> no contempla. Cada inconsistencia genera ambigüedad y vuelve el modelo poco confiable."
   }
 ];
 

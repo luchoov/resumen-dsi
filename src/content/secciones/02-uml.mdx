@@ -1,6 +1,6 @@
 ---
 id: "sec-02"
-numero: 2
+numero: 1
 titulo: "UML 2.0 como lenguaje de modelado"
 slug: "02-uml"
 resumen: "UML aporta notación, semántica y reglas para visualizar, especificar, construir y documentar modelos."
@@ -8,7 +8,7 @@ keywords: ["UML", "modelo", "diagrama", "relaciones", "paquete", "clase", "secue
 relacionadas: ["03-orientacion-objetos", "11-secuencia-comunicacion"]
 ---
 
-### 2.1. Qué es un modelo
+### 1.1. Qué es un modelo
 
 <Definicion termino="modelo">
 Un <strong>modelo</strong> es una simplificación de la realidad construida para comprender, comunicar, especificar y guiar la construcción de un sistema.
@@ -34,23 +34,23 @@ Un plano de arquitecto es un <strong>modelo</strong> de la casa: no es la casa r
   Construir --> Guia[Guia de implementacion]
   Documentar --> Decisiones[Decisiones importantes]`} />
 
-### 2.2. Qué es UML
+### 1.2. Qué es UML
 
 <Definicion termino="UML">
 <strong>UML</strong>, Lenguaje Unificado de Modelado, es un lenguaje de modelado visual de propósito general usado para visualizar, especificar, construir y documentar sistemas orientados a objetos.
 </Definicion>
 
-UML no es una metodología. No dice por sí solo qué modelos crear, en qué orden ni con qué propósito de proceso. Esa decisión corresponde al proceso de desarrollo, por ejemplo el PUD.
+UML no es una metodología. No dice por sí solo qué modelos crear, en qué orden ni con qué propósito de proceso. Esa decisión corresponde al proceso de desarrollo que se utilice.
 
 <Callout tipo="atencion">
-La diferencia típica de parcial: PUD define el proceso; UML define la notación y semántica de los modelos.
+La diferencia típica de parcial: UML define la <strong>notación y semántica</strong> de los modelos; no define el proceso de desarrollo.
 </Callout>
 
-### 2.3. Por qué UML es “unificado”
+### 1.3. Por qué UML es “unificado”
 
 UML unifica notaciones previas, ofrece un vocabulario común y permite representar distintos puntos de vista del sistema con reglas compartidas.
 
-### 2.4. Modelo conceptual de UML
+### 1.4. Modelo conceptual de UML
 
 <MermaidDiagram caption="Modelo conceptual de UML" code={`graph LR
   UML[UML]
@@ -66,7 +66,7 @@ UML unifica notaciones previas, ofrece un vocabulario común y permite represent
   RG --> IN[Integridad]
   RG --> EJ[Ejecución]`} />
 
-### 2.5. Elementos de UML
+### 1.5. Elementos de UML
 
 <TablaComparativa
   caption="Elementos principales de UML"
@@ -79,7 +79,7 @@ UML unifica notaciones previas, ofrece un vocabulario común y permite represent
   ]}
 />
 
-### 2.6. Relaciones en UML
+### 1.6. Relaciones en UML
 
 <TablaComparativa
   caption="Relaciones básicas de UML"
@@ -107,7 +107,7 @@ UML unifica notaciones previas, ofrece un vocabulario común y permite represent
   Pedido ..> MedioPago : dependencia
   PagoTarjeta --|> MedioPago : generalización`} />
 
-### 2.7. Mecanismos de extensibilidad
+### 1.7. Mecanismos de extensibilidad
 
 Los PDFs remarcan que UML no es solo dibujo: cada notación tiene semántica y mecanismos comunes. Para análisis, los más visibles son los mecanismos de extensibilidad.
 
@@ -133,7 +133,7 @@ Los PDFs remarcan que UML no es solo dibujo: cada notación tiene semántica y m
 La misma "caja" de clase UML cambia de significado según su <strong>estereotipo</strong>: `PantallaRegistrarPedido` lleva «boundary» (habla con el empleado), `GestorRegistrarPedido` lleva «control» (coordina el caso de uso) y `Pedido` lleva «entity» (guarda los datos). Una <strong>restricción</strong> sería `{solo se modifica si está PtePreparación}` y un <strong>valor etiquetado</strong>, `{persistente=true}` sobre `Factura`.
 </EjemploReal>
 
-### 2.8. Diagramas UML relevantes
+### 1.8. Diagramas UML relevantes
 
 <MermaidDiagram caption="Vistas estructurales vs dinámicas de UML" code={`flowchart TB
   UML[Diagramas UML usados en análisis]

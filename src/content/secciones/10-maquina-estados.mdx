@@ -1,6 +1,6 @@
 ---
 id: "sec-10"
-numero: 10
+numero: 9
 titulo: "Modelado de comportamiento con máquina de estados"
 slug: "10-maquina-estados"
 resumen: "Una máquina de estados modela el ciclo de vida de un objeto reactivo según estados, eventos, guardas y efectos."
@@ -8,7 +8,7 @@ keywords: ["máquina de estados", "estado", "transición", "evento", "guarda", "
 relacionadas: ["03-orientacion-objetos", "11-secuencia-comunicacion"]
 ---
 
-### 10.1. Qué es un diagrama de máquina de estados
+### 9.1. Qué es un diagrama de máquina de estados
 
 <Definicion termino="diagrama de máquina de estados">
 Un <strong>diagrama de máquina de estados</strong> muestra la secuencia de estados por los que pasa un objeto, los eventos que provocan transiciones, las condiciones que las habilitan y las acciones que ocurren.
@@ -16,11 +16,11 @@ Un <strong>diagrama de máquina de estados</strong> muestra la secuencia de esta
 
 Se usa para modelar comportamiento dinámico de elementos cuyos objetos cambian su comportamiento según el estado.
 
-### 10.2. Clasificación y uso
+### 9.2. Clasificación y uso
 
 Es un diagrama de comportamiento, dinámico y lógico. Sirve para explorar clases, actores, subsistemas o componentes con ciclos de vida claros, especialmente en sistemas de tiempo real o entidades reactivas.
 
-### 10.3. Elementos principales
+### 9.3. Elementos principales
 
 - <strong>Estado inicial</strong> y <strong>estado final</strong>.
 - <strong>Estado:</strong> condición estable durante un período identificable.
@@ -32,7 +32,7 @@ Es un diagrama de comportamiento, dinámico y lógico. Sirve para explorar clase
 <MermaidDiagram caption="Elementos de una transición" code={`flowchart LR
   O[Estado origen] -->|"evento [guarda] / efecto"| D[Estado destino]`} />
 
-#### 10.3.1. Anatomía completa de un estado
+#### 9.3.1. Anatomía completa de un estado
 
 Un estado no es solo un nombre: UML permite adornarlo con acciones internas. Los resúmenes teóricos describen estas partes (aunque en los parciales de análisis casi no se usen).
 
@@ -60,7 +60,7 @@ Un estado no es solo un nombre: UML permite adornarlo con acciones internas. Los
 En los parciales de análisis la cátedra rara vez usa <code>entry/exit/do</code>: modela las acciones como <strong>efectos de transición</strong> (`/ metodo()`). Conviene reconocer la notación, pero al resolver seguí el estilo `Nº CU. Nombre [guarda] / metodo()`.
 </Callout>
 
-### 10.4. Sintaxis conceptual de una transición
+### 9.4. Sintaxis conceptual de una transición
 
 <EjemploClase titulo="Sintaxis">
 estado origen -- evento [condición] / efecto -- estado destino
@@ -83,7 +83,7 @@ Ejemplo: <strong>Creada -- confirmarOrden() [hayContenedoresDisponibles] / asign
 En los ejercicios, los eventos de la máquina suelen transformarse en métodos de la clase de análisis. Por eso no alcanza con dibujar estados: las transiciones deben tener nombres operativos.
 </Callout>
 
-### 10.5. Objeto reactivo
+### 9.5. Objeto reactivo
 
 Un objeto reactivo depende de eventos y del estado en que se encuentra. Para modelarlo se identifican estados relevantes, eventos, guardas, acciones, estado inicial y finales.
 
@@ -103,7 +103,7 @@ El `Pedido` es un objeto reactivo clásico: lo que se le permite hacer depende d
   Entregada --> [*]
   Cancelada --> [*]`} />
 
-#### 10.5.1. Patrones de transición que usa la cátedra
+#### 9.5.1. Patrones de transición que usa la cátedra
 
 En las soluciones de los prácticos aparecen tres patrones recurrentes que conviene tener listos para el parcial.
 
@@ -133,7 +133,7 @@ En las soluciones de los prácticos aparecen tres patrones recurrentes que convi
   EnDistribucion --> EnReparto: 25 Actualizar estado / iniciarReparto()
   EnReparto --> [*]`} />
 
-### 10.6. Buenas prácticas
+### 9.6. Buenas prácticas
 
 - Elegir una clase cuyo comportamiento realmente dependa del estado.
 - No modelar como estado algo que solo es un dato sin impacto.
@@ -151,7 +151,7 @@ En las soluciones de los prácticos aparecen tres patrones recurrentes que convi
   C -->|Sí| D[Identificar estados estables]
   D --> E[Definir transiciones con evento, guarda y efecto]`} />
 
-### 10.7. Cómo derivar métodos y reglas
+### 9.7. Cómo derivar métodos y reglas
 
 Una máquina de estados no queda aislada: debe impactar en la clase modelada y en la vista de clases de análisis.
 
@@ -179,7 +179,7 @@ Una máquina de estados no queda aislada: debe impactar en la clase modelada y e
   ]}
 />
 
-### 10.8. Pseudoestado de historia y estado suspendido
+### 9.8. Pseudoestado de historia y estado suspendido
 
 Uno de los PDFs menciona el caso de un estado suspendido que debe recordar a qué estado volver. Para eso se usa un pseudoestado de historia.
 
@@ -201,7 +201,7 @@ Uno de los PDFs menciona el caso de un estado suspendido que debe recordar a qu�
 El pseudoestado de historia sirve cuando “reanudar” debe volver al subestado anterior, no a un inicio fijo.
 </Callout>
 
-#### 10.8.1. Subestados, concurrencia y submáquinas (vocabulario UML)
+#### 9.8.1. Subestados, concurrencia y submáquinas (vocabulario UML)
 
 Los resúmenes teóricos describen formas avanzadas de estructurar una máquina. Conviene reconocerlas aunque el parcial de análisis casi siempre use solo las dos primeras.
 
@@ -251,7 +251,7 @@ Convención de cátedra: el <strong>estado de historia (`H`)</strong> rara vez s
   OrdenMedica "1" --> "1..*" CambioEstadoOM : actual / anterior
   CambioEstadoOM "*" --> "1" Estado`} />
 
-### 10.9. Diferencia con diagramas de interacción
+### 9.9. Diferencia con diagramas de interacción
 
 La máquina de estados se concentra en el ciclo de vida de un objeto o clase. Secuencia y comunicación muestran colaboración entre varios objetos durante un escenario.
 

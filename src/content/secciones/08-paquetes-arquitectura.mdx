@@ -1,6 +1,6 @@
 ---
 id: "sec-08"
-numero: 8
+numero: 7
 titulo: "Paquetes de análisis y descripción de arquitectura"
 slug: "08-paquetes-arquitectura"
 resumen: "Los paquetes organizan el modelo de análisis en partes cohesivas y con dependencias controladas."
@@ -8,7 +8,7 @@ keywords: ["paquete", "arquitectura", "cohesión", "acoplamiento", "dependencias
 relacionadas: ["05-modelo-analisis", "12-grasp"]
 ---
 
-### 8.1. Paquetes de análisis
+### 7.1. Paquetes de análisis
 
 <Definicion termino="paquete de análisis">
 Un <strong>paquete de análisis</strong> organiza el modelo en piezas manejables que pueden contener clases, realizaciones de casos de uso y otros paquetes.
@@ -44,7 +44,7 @@ El modelo de la pizzería se vuelve grande, así que se agrupa en paquetes segú
 <br /><br />Ventas <em>depende de</em> Productos (un detalle necesita una pizza) y de Facturación, pero el corte sigue al negocio, no a la tecnología.
 </EjemploReal>
 
-### 8.2. Criterios para identificar paquetes
+### 7.2. Criterios para identificar paquetes
 
 - Agrupar clases y realizaciones fuertemente relacionadas.
 - Separar áreas del dominio reconocibles.
@@ -68,7 +68,7 @@ El modelo de la pizzería se vuelve grande, así que se agrupa en paquetes segú
   Escala --> Tamano[Tamano manejable]
   Escala --> Evolucion[Evolucion incremental]`} />
 
-### 8.3. Paquetes de servicio
+### 7.3. Paquetes de servicio
 
 Un <strong>paquete de servicio</strong> es una subcategoría de paquete de análisis. Agrupa un conjunto coherente de acciones relacionadas funcionalmente que puede ser usado por varios casos de uso.
 
@@ -103,7 +103,7 @@ En una tienda online, "cobrar" aparece en varios casos de uso: comprar un produc
 Si una funcionalidad aparece como soporte de varios casos de uso, puede convenir pensarla como paquete de servicio. Si solo es una clase técnica, todavía no justifica ese nombre.
 </Callout>
 
-### 8.4. Dependencias entre paquetes
+### 7.4. Dependencias entre paquetes
 
 Una dependencia entre paquetes significa que elementos de un paquete usan elementos de otro. No hay que llenar el modelo de flechas: cada dependencia debería poder explicarse con una colaboración, una realización de caso de uso o una necesidad del dominio.
 
@@ -122,7 +122,7 @@ Una dependencia entre paquetes significa que elementos de un paquete usan elemen
 Un error frecuente es crear paquetes por capas técnicas, como UI, BaseDeDatos o Framework, dentro del análisis. En Unidad 1 el corte debe ser conceptual y funcional.
 </Callout>
 
-### 8.5. Descripción de arquitectura en análisis
+### 7.5. Descripción de arquitectura en análisis
 
 La descripción de arquitectura en análisis resalta paquetes, clases y realizaciones significativas para entender la estructura lógica del sistema.
 
