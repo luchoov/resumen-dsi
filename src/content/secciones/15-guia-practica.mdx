@@ -19,7 +19,7 @@ Los tres diagramas se corrigen juntos:
 - El <strong>diagrama de clases de análisis</strong> consolida las clases, atributos, métodos, relaciones, multiplicidades y navegabilidad que aparecieron en la dinámica.
 
 <Callout tipo="info" titulo="Fuentes prácticas revisadas">
-Los patrones salen de los PDFs y `.mmd` de `docs/fuente/practico`: FIA F1 - Orden de Traslado, Líneas Aéreas - Vuelo, Guía 2026 de Máquina de Estados, PPA Peaje, Publicidad Multipunto, Frigorífico, Administración de Campos, Crustáceo Cascarudo, Estrella de la Muerte y casos de requerimientos. Se priorizan ejemplos donde aparecen soluciones oficiales o diagramas ya resueltos.
+Los patrones salen de los PDFs y `.mmd` de `docs/fuente/practico` y de los tips de construcción de artefactos del Modelo de Análisis: FIA F1 - Orden de Traslado, Líneas Aéreas - Vuelo, Guía 2026 de Máquina de Estados, PPA Peaje, Festival + DiaFestival, Publicidad Multipunto, Frigorífico, Administración de Campos, Crustáceo Cascarudo, Estrella de la Muerte y casos de requerimientos. Se priorizan ejemplos donde aparecen soluciones oficiales o diagramas ya resueltos.
 </Callout>
 
 ### 14.2. Método general para encarar un ejercicio
@@ -251,6 +251,10 @@ El diagrama de secuencia muestra cómo colaboran objetos para ejecutar un escena
 
 No modeles todos los casos de uso juntos. Elegí el flujo pedido: curso normal, flujo alternativo, cancelación, creación con detalles, procesamiento de lote o actualización de estado.
 
+<Callout tipo="info" titulo="Patrones de parcial, no patrones GoF">
+En esta sección "patrón" significa forma recurrente de resolver realizaciones de análisis en los ejercicios de la cátedra. No son patrones GoF de diseño; sirven para reconocer el enunciado y reproducir una secuencia parecida a las soluciones oficiales.
+</Callout>
+
 #### 14.4.1. Participantes típicos
 
 La estructura más repetida es:
@@ -448,40 +452,267 @@ Ejemplo basado en Líneas Aéreas - CU Cancelar Vuelo:
 Ejemplo basado en PPA Peaje - Cuenta:
 
 <MermaidDiagram caption="Cambio de estado con historial - Cuenta" code={`sequenceDiagram
-  participant Cuenta
-  participant EstadoActual
-  participant Historial as HistorialEstadoCuenta
-  participant Estado
-
-  Cuenta->>EstadoActual: marcarNoCobrado()
-  EstadoActual->>Historial: setFechaFinEstado()
-  EstadoActual->>Estado: crearProximoEstado()
-  EstadoActual->>Historial: crearHistorialEstadoCuenta()
-  Cuenta->>Cuenta: agregarHistorial()
-  Cuenta->>Cuenta: setEstadoActual()`} />
-
-#### 14.4.9. Patrón de creación con detalles
-
-FIA F1 - CU Generar Orden de Traslado muestra una creación con cabecera, detalles, estado inicial y asignación de objetos parte:
-
-<MermaidDiagram caption="Creación con cabecera, detalle y estado inicial" code={`sequenceDiagram
   participant Gestor
-  participant OT as OrdenTraslado
-  participant CambioEstado
-  participant DetalleOT
-  participant Contenedor
+  participant Cuenta
+  participant Actual as estadoActual:HistorialEstadoCuenta
+  participant Nuevo as nuevoEstado:HistorialEstadoCuenta
+  participant Estado as Estado no cobrada
+  participant Motivo
 
-  Gestor->>OT: new()
-  OT->>CambioEstado: crearCambioEstado()
-  OT->>OT: crearDetallesOT()
-  loop contenedores
-    OT->>DetalleOT: new()
-    DetalleOT->>Contenedor: asignarAOT()
+  Gestor->>Estado: esNoCobrada()
+  Gestor->>Motivo: esMotivoDebitoNoIngresado()
+  Gestor->>Cuenta: marcarNoCobrado()
+  Cuenta->>Cuenta: buscarEstadoActual()
+  Cuenta->>Actual: esEstadoActual()
+  Cuenta->>Actual: setFechaFinEstado()
+  Cuenta->>Nuevo: new(Estado, Motivo)
+  Cuenta->>Cuenta: agregarHistorial(Nuevo)`} />
+
+#### 14.4.9. Patrón de creación con cabecera y partes
+
+Este patrón aparece cuando un caso de uso registra un objeto principal y, junto con él, varios objetos dependientes o componentes. En los tips de construcción de artefactos del Modelo de Análisis aparece como creación de objetos de más de una clase con estructura Todo-Parte: `Festival` y al menos un `DiaFestival`. También aparece en ejercicios con `Prestamo + Cuota`, `PlanPago + DetallePlanPago` u `Orden + DetalleOrden`.
+
+Cómo detectarlo en el enunciado:
+
+- "registrar X y sus Y";
+- "para cada día...";
+- "para cada cuota...";
+- "se registra el objeto principal y cada uno de sus detalles";
+- "el sistema solicita datos generales y luego datos repetidos para cada parte".
+
+Patrón conceptual:
+
+1. El gestor reúne datos de cabecera.
+2. El gestor reúne datos de partes.
+3. El gestor valida existencia, consistencia y reglas de negocio.
+4. El gestor pide confirmación.
+5. El gestor crea la cabecera.
+6. En un loop, se crea cada parte.
+7. Cada parte queda asociada a la cabecera.
+
+<MermaidDiagram caption="Patrón conceptual - cabecera y partes" code={`sequenceDiagram
+  actor A as Actor
+  participant Pantalla
+  participant Gestor
+  participant Cabecera
+  participant Parte
+
+  Pantalla->>Gestor: tomarDatosCabecera()
+  loop por cada parte ingresada
+    Pantalla->>Gestor: tomarDatosParte()
+  end
+  Gestor->>Gestor: validarDatos()
+  Gestor->>Pantalla: pedirConfirmacion()
+  Pantalla->>Gestor: tomarConfirmacion()
+  Gestor->>Cabecera: new()
+  loop por cada parte
+    Cabecera->>Parte: new()
+    Cabecera->>Cabecera: agregarParte(Parte)
   end`} />
 
-Regla práctica: el gestor reúne datos y coordina; la entidad principal puede crear o asociar detalles si es el todo que los contiene.
+Patrón estilo cátedra, basado en `Festival` + `DiaFestival`: el gestor coordina la obtención y validación, pero la creación de partes se delega al Todo cuando la estructura muestra composición/agregación. Por eso el loop de creación no queda solo como "el gestor crea detalles", sino como `Festival` creando o incorporando sus `DiaFestival`.
 
-#### 14.4.10. Patrón de consulta con filtros
+<MermaidDiagram caption="Patrón estilo cátedra - CU Registrar Festival" code={`sequenceDiagram
+  actor RF as ResponsableFestival
+  participant Pantalla as PantallaRegistrarFestival
+  participant Gestor as GestorRegistrarFestival
+  participant FestivalClass as ":Festival"
+  participant NuevoFestival as "nuevo:Festival"
+  participant NuevoDia as "nuevo:DiaFestival"
+
+  RF->>Pantalla: opcionRegistrarFestival()
+  Pantalla->>Pantalla: habilitarVentana()
+  Pantalla->>Gestor: registrarFestival()
+
+  Gestor->>Pantalla: solicitarDatosFestival()
+  RF->>Pantalla: ingresarDatosFestival()
+  Pantalla->>Gestor: tomarDatosFestival(nombre, fechaInicio, anioEdicion)
+
+  Gestor->>Gestor: validarFestival()
+  Gestor->>FestivalClass: existeFestival(nombre, fechaInicio, anioEdicion)
+
+  alt existe festival con esos datos
+    Gestor->>Pantalla: informarFestivalExistente()
+  else no existe festival
+    Gestor->>Pantalla: solicitarDatosComplementarios()
+    RF->>Pantalla: ingresarDatosComplementarios()
+    Pantalla->>Gestor: tomarDatosComplementarios(descuentoAnticipada, porcentajeDevolucion)
+
+    loop por cada dia del festival
+      Gestor->>Pantalla: solicitarDatosDiaFestival()
+      RF->>Pantalla: ingresarDatosDiaFestival()
+      Pantalla->>Gestor: tomarDatosDiaFestival(fecha, horaInicio, fechaLimiteAnulacion, fechaVtoVentaAnticipada)
+    end
+
+    Gestor->>Gestor: validarSuperposicionFechas()
+
+    alt hay superposicion de fechas
+      Gestor->>Pantalla: informarSuperposicionFechas()
+    else no hay superposicion
+      Gestor->>Pantalla: pedirConfirmacionRegistroFestival()
+      RF->>Pantalla: confirmarRegistro()
+      Pantalla->>Gestor: tomarConfirmacion()
+
+      Gestor->>Gestor: registrarFestival()
+      Gestor->>NuevoFestival: new(nombre, fechaInicio, anioEdicion, descuentoAnticipada, porcentajeDevolucion)
+
+      opt el enunciado indica que nace no vigente
+        Gestor->>NuevoFestival: setNoVigente()
+      end
+
+      Gestor->>NuevoFestival: crearDiasFestival(datosDiasFestival)
+      loop por cada dia ingresado
+        NuevoFestival->>NuevoDia: new(fecha, horaInicio, fechaLimiteAnulacion, fechaVtoVentaAnticipada)
+        NuevoFestival->>NuevoFestival: agregarDiaFestival(nuevoDia)
+      end
+
+      Gestor->>Pantalla: informarFestivalRegistrado()
+      Gestor->>Pantalla: finCU()
+    end
+  end`} />
+
+<Callout tipo="error" titulo="Errores comunes">
+- Resolverlo como un `new Festival()` aislado y olvidar el loop de `DiaFestival`.
+- Hacer que la pantalla valide existencia o superposición de fechas.
+- Crear `DiaFestival` antes de validar y confirmar el registro.
+- No distinguir datos de cabecera (`Festival`) de datos repetidos por parte (`DiaFestival`).
+- Ignorar la regla de Creador: si `Festival` agrega/contiene `DiaFestival`, es razonable delegarle la creación o asociación de sus partes.
+</Callout>
+
+#### 14.4.10. Patrón de proceso masivo con validaciones, filtros y actualización histórica
+
+PPA Peaje - CU Registrar cobros por débito automático muestra un proceso batch, no solo un cambio de estado con historial. La secuencia valida el contexto general, filtra cuentas por tarjeta y habilitación, calcula cobros pendientes, busca estado y motivo, y recién después recorre las cuentas impagas para cerrar el historial actual y crear un nuevo `HistorialEstadoCuenta`.
+
+Estructura del patrón:
+
+```text
+Gestor valida contexto general.
+Gestor busca una colección inicial.
+loop colección inicial
+    objeto principal valida condición propia
+    objeto principal consulta objetos asociados
+end
+Gestor arma subconjunto procesable.
+Gestor busca Estado destino y Motivo.
+loop objetos procesables
+    objeto principal busca historial actual
+    historial actual se cierra
+    se crea nuevo historial con estado destino
+end
+```
+
+<MermaidDiagram caption="Proceso masivo con historial - PPA Peaje" code={`sequenceDiagram
+  actor ATC
+  participant Interfaz as InterfazDA
+  participant Gestor as GestorDA
+  participant Periodo as ":PeriodoLiquidacion"
+  participant Marca as ":MarcaTarjetaCredito"
+  participant Cuenta as ":Cuenta"
+  participant Cliente as ":Cliente"
+  participant Tarjeta as ":TarjetaCredito"
+  participant Pasada as ":PasadaPeaje"
+  participant Estado as ":Estado"
+  participant Motivo as ":Motivo"
+  participant Actual as "estadoActual:HistorialEstadoCuenta"
+  participant Nuevo as "nuevoEstado:HistorialEstadoCuenta"
+  participant Cobro as ":Cobro"
+
+  ATC->>Interfaz: nuevoLoteCobrosDA()
+  Interfaz->>Gestor: nuevoLoteCobrosDA()
+  Gestor->>Gestor: obtenerFechaActual()
+  Gestor->>Gestor: validarPeriodo()
+  Gestor->>Periodo: *esPeriodoVigente()
+  Gestor->>Gestor: validarMarca()
+  Gestor->>Marca: *esMarcaDeTC()
+  Gestor->>Gestor: buscarCuentasDeTC()
+
+  loop cuentas de TC
+    Gestor->>Cuenta: esCuentaDeTC()
+    Cuenta->>Cliente: tieneEstaTC()
+    Cliente->>Tarjeta: *esMarcaTC()
+  end
+
+  Gestor->>Gestor: validarHabilitacionDeTC()
+  loop cuentas de TC de marca
+    Gestor->>Cuenta: esTCHabilitada()
+    Cuenta->>Cliente: esTCHabilitada()
+    Cliente->>Tarjeta: *esTCHabilitada()
+  end
+
+  Gestor->>Gestor: validarCobros()
+  loop cobros pendientes
+    Gestor->>Cuenta: sumarCobrosPendientes()
+    Cuenta->>Pasada: *estaPendienteDeCobro()
+    Cuenta->>Pasada: *getImportePasada()
+  end
+
+  Gestor->>Gestor: marcarCuentasComoNoCobrada()
+  Gestor->>Estado: *esNoCobrada()
+  Gestor->>Motivo: *esMotivoDebitoNoIngresado()
+
+  loop cuentas con cobros impagos
+    Gestor->>Cuenta: marcarNoCobrado()
+    Cuenta->>Cuenta: buscarEstadoActual()
+    Cuenta->>Actual: *esEstadoActual()
+    Cuenta->>Actual: setFechaFinEstado()
+    Cuenta->>Cuenta: crearHistorial()
+    Cuenta->>Nuevo: new()
+  end
+
+  Gestor->>Gestor: crearCobros()
+  loop cuentas con cobro procesado
+    Gestor->>Cuenta: crearCobro()
+    Cuenta->>Cobro: new()
+    Cuenta->>Pasada: *actualizarComoCobrada()
+  end
+
+  Gestor->>Interfaz: informarProcesamientoExitosoLoteCobros()
+  Interfaz->>ATC: loteCobrosProcesadoExitosamente()
+  Gestor->>Gestor: finCU()`} />
+
+<Callout tipo="error" titulo="Errores comunes">
+- Reducirlo a "Cuenta cambia de estado" y omitir las validaciones de período, marca, tarjeta y cobros.
+- No modelar los loops de filtrado: cuentas de tarjeta, cuentas de marca, cobros pendientes y cuentas impagas.
+- Crear el nuevo historial sin cerrar el `estadoActual:HistorialEstadoCuenta`.
+- Buscar `Estado` y `Motivo` dentro de cada iteración cuando la solución los busca una vez antes del loop procesable.
+- Confundir el proceso automático o externo con una pantalla humana: en Peaje el disparador es `ATC` por `InterfazDA`.
+</Callout>
+
+#### 14.4.11. Patrón de buscar objetos factibles según estado actual
+
+En Líneas Aéreas - CU Cancelar Vuelo, la cátedra no muestra simplemente "buscar vuelos". El gestor busca vuelos factibles y delega la condición al objeto principal; `Vuelo` obtiene su cambio actual y consulta el `Estado` asociado para saber si permite la operación.
+
+<MermaidDiagram caption="Buscar objetos factibles según estado actual - Cancelar Vuelo" code={`sequenceDiagram
+  participant Gestor as GestorCancelacionVuelo
+  participant Vuelo as ":Vuelo"
+  participant CambioClase as ":CambioEstadoVuelo"
+  participant Actual as "actual:CambioEstadoVuelo"
+  participant Estado as ":Estado"
+
+  Gestor->>Gestor: buscarVueloFactibleCancelar()
+  loop mientras haya vuelos
+    Gestor->>Vuelo: *esFactibleCancelar()
+    Vuelo->>Vuelo: obtenerEstadoActual()
+    Vuelo->>CambioClase: *esEstadoActual()
+    Vuelo->>Actual: esCancelable()
+    Actual->>Estado: permiteCancelacion()
+  end`} />
+
+Diferencias que suelen corregirse:
+
+- Consultar catálogo de estados: el gestor va directo a `:Estado`, por ejemplo `buscarEstadoCancelacion()` y `*esCancelado()`.
+- Consultar estado actual de un objeto: se navega por `ClasePrincipal -> CambioEstado actual -> Estado`, por ejemplo `Vuelo -> actual:CambioEstadoVuelo -> Estado`.
+- Cambiar de estado: se cierra el cambio actual y se crea un nuevo `CambioEstado...`, por ejemplo `actual.setFechaHoraFin()` y `cancelado:CambioEstadoVuelo.new()`.
+
+<Callout tipo="error" titulo="Errores comunes">
+- Preguntarle directamente a `Estado` si un vuelo es cancelable sin pasar por el `CambioEstadoVuelo` actual.
+- Tratar `Estado` como atributo simple cuando el ejercicio pide historial.
+- Omitir el `*esEstadoActual()` que filtra cuál cambio está vigente.
+- Mezclar búsqueda de estados de catálogo con consulta del estado actual de una instancia.
+- Cambiar de estado sin cerrar el historial actual ni crear el nuevo cambio.
+</Callout>
+
+#### 14.4.12. Patrón de consulta con filtros
 
 Líneas Aéreas - CU Consultar Disponibilidad es el caso típico:
 
@@ -495,7 +726,7 @@ Líneas Aéreas - CU Consultar Disponibilidad es el caso típico:
 
 No es un CRUD: hay selección incremental, validación, cálculo y consulta sobre varias entidades relacionadas.
 
-#### 14.4.11. Patrón de notificación
+#### 14.4.13. Patrón de notificación
 
 Hay dos niveles:
 
@@ -819,11 +1050,11 @@ Ejemplos: Vuelo, Cuenta, Orden de Traslado cuando se pide historia.
   Nuevo->>Estado: asociar estado destino
   Entidad->>Entidad: agregarCambioEstado()`} />
 
-#### 14.7.5. Patrón 5: creación con detalles
+#### 14.7.5. Patrón 5: creación con cabecera y partes
 
-Ejemplo: FIA F1 - CU Generar Orden de Traslado.
+Ejemplo principal: Festival de Folklore - CU Registrar Festival.
 
-Recolectar datos, validar, crear cabecera, crear cambio de estado inicial, crear detalles y asociar partes. Si hay contenedores o elementos, aparece loop.
+Recolectar datos de cabecera, recolectar datos repetidos de partes, validar existencia y consistencia, pedir confirmación, crear el Todo y crear/asociar sus partes en loop. Si la estructura muestra composición/agregación, el Todo puede crear o incorporar las partes: `Festival -> DiaFestival`.
 
 #### 14.7.6. Patrón 6: revisión con resultado alternativo
 
@@ -839,7 +1070,7 @@ La condición no es decoración: explica por qué el mismo evento no siempre lle
 
 Ejemplos: FIA F1 - procesar OT no analizadas; Publicidad Multipunto - verificar conexión/actualización; Peaje - procesamiento de lote.
 
-La diferencia con un flujo manual es que el actor puede ser tiempo, sistema externo o proceso. Igual se modela con caso de uso, transición y método.
+La diferencia con un flujo manual es que el actor puede ser tiempo, sistema externo o proceso. Igual se modela con caso de uso, transición y método. En Peaje, además, no alcanza con dibujar un cambio de estado: hay validaciones generales, filtros sobre colecciones, armado de subconjuntos procesables y actualización histórica.
 
 #### 14.7.8. Patrón 8: notificación a interesados
 
@@ -853,6 +1084,12 @@ Ejemplos: Líneas Aéreas y Publicidad Multipunto. En análisis puede aparecer c
   loop mientras existan interesados
     Gestor->>PantallaInteresada: actualizar()
   end`} />
+
+#### 14.7.9. Patrón 9: búsqueda de objetos factibles
+
+Ejemplo: Líneas Aéreas - CU Cancelar Vuelo.
+
+El gestor no decide solo si el objeto puede participar del caso de uso. Recorre candidatos y pregunta a la entidad principal; la entidad obtiene su estado actual mediante `CambioEstado...` y recién ahí consulta a `Estado` si la operación está permitida.
 
 ### 14.8. Errores típicos de parcial
 
