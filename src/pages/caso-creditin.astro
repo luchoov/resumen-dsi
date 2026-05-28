@@ -1,0 +1,479 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Topbar from "@/components/layout/Topbar.astro";
+import MermaidDiagram from "@/components/diagramas/MermaidDiagram.astro";
+import TablaComparativa from "@/components/contenido/TablaComparativa.astro";
+import Callout from "@/components/contenido/Callout.astro";
+import EjemploClase from "@/components/contenido/EjemploClase.astro";
+import { crearIndiceBusqueda, ordenarSecciones } from "@/lib/secciones";
+
+const secciones = ordenarSecciones(await getCollection("secciones"));
+const indiceBusqueda = crearIndiceBusqueda(secciones);
+
+const dominioCode = `classDiagram
+
+class Cliente:::clientes {
+  apellido
+  correoElectronico
+  documento
+  nombre
+  telefono
+  getNombreCompleto()
+  getDocumento()
+  getCorreoElectronico()
+  getTelefono()
+  obtenerPrestamos()
+  solicitarPrestamo()
+}
+
+class CuentaBancaria:::clientes {
+  banco
+  cbu
+  numero
+  getBanco()
+  getCbu()
+  acreditar()
+}
+
+class Prestamo:::prestamo {
+  fechaAcreditacion
+  fechaSolicitud
+  monto
+  tasaInteres
+  new()
+  acreditar()
+  generarCuotas()
+  getCuotas()
+  obtenerCuotasVencidas()
+  calcularDeudaTotal()
+  estaEnMora()
+  obtenerEstadoActual()
+  crearCambioEstado()
+  proponerPlanPago()
+  getTipoPrestamo()
+}
+
+class TipoPrestamo:::prestamo {
+  descripcion
+  nombre
+  getNombre()
+  getDefinicionMora()
+  calcularRecargo()
+}
+
+class DefinicionMora:::prestamo {
+  descripcion
+  calcularRecargo()
+  getDescripcion()
+}
+
+class MoraPorcentual:::prestamo {
+  porcentajeDiario
+  calcularRecargo()
+}
+
+class MoraFija:::prestamo {
+  importeDiario
+  calcularRecargo()
+}
+
+class Cuota:::cobranza {
+  diasAtraso
+  fechaVencimiento
+  monto
+  numero
+  new()
+  estaPagada()
+  estaVencida()
+  estaEnMora()
+  registrarDiasAtraso()
+  calcularRecargo()
+  getRecargo()
+  getMonto()
+  getMontoTotal()
+  registrarPago()
+}
+
+class Recargo:::cobranza {
+  fecha
+  monto
+  new()
+  getMonto()
+}
+
+class Pago:::cobranza {
+  fechaHora
+  monto
+  new()
+  getMonto()
+  esEnHorarioHabil()
+  getMedioDePago()
+}
+
+class MedioDePago:::cobranza {
+  nombre
+  getNombre()
+}
+
+class PlanDePago:::planes {
+  fechaAcuerdo
+  montoAcordado
+  porcentajeCondonado
+  new()
+  calcularMontoConCondonamiento()
+  getCuotas()
+  getMontoAcordado()
+}
+
+class DetallePlanPago:::planes {
+  fechaLimite
+  montoAAbonar
+  new()
+  getFechaLimite()
+  getMonto()
+}
+
+class Estado:::estado {
+  descripcion
+  nombre
+  esSolicitado()
+  esEnEvaluacion()
+  esRechazado()
+  esVigente()
+  esEnMora()
+  esEnPlanPago()
+  esCancelado()
+  getNombre()
+}
+
+class CambioEstadoPrestamo:::estado {
+  fechaHoraFin
+  fechaHoraInicio
+  new()
+  esEstadoActual()
+  getEstado()
+  getFechaHoraInicio()
+  setFechaHoraFin()
+}
+
+Cliente --> "0..*" Prestamo : prestamo
+Cliente --> "0..*" CuentaBancaria : cuenta
+
+Prestamo --> "1" TipoPrestamo : tipoPrestamo
+TipoPrestamo --> "1" DefinicionMora : definicionMora
+DefinicionMora <|-- MoraPorcentual
+DefinicionMora <|-- MoraFija
+
+Prestamo --> "1" CuentaBancaria : acreditacion
+Prestamo --> "1..*" Cuota : cuota
+Prestamo --> "0..*" PlanDePago : planDePago
+Prestamo --> "1..*" CambioEstadoPrestamo : cambioEstado
+
+Cuota --> "0..1" Recargo : recargo
+Cuota --> "0..*" Pago : pago
+Pago --> "1" MedioDePago : medioDePago
+
+PlanDePago --> "1..*" DetallePlanPago : detalle
+DetallePlanPago --> "1..*" Cuota : cuota
+
+CambioEstadoPrestamo --> "1" Estado : estado
+
+classDef clientes fill:#0369a1,stroke:#06b6d4,stroke-width:2px,color:#ffffff
+classDef prestamo fill:#059669,stroke:#10b981,stroke-width:2px,color:#ffffff
+classDef cobranza fill:#d97706,stroke:#f59e0b,stroke-width:2px,color:#ffffff
+classDef planes fill:#be185d,stroke:#ec4899,stroke-width:2px,color:#ffffff
+classDef estado fill:#7c3aed,stroke:#a78bfa,stroke-width:2px,color:#ffffff`;
+---
+
+<BaseLayout
+  titulo="Caso CreditIn · Resumen DSI"
+  descripcion="Caso de estudio CreditIn (Gestión de Préstamos): modelo de dominio y propuesta de parcial con 3 casos de uso y 2 máquinas de estado, al estilo de la cátedra."
+>
+  <Topbar indiceBusqueda={indiceBusqueda} />
+  <main class="mx-auto max-w-4xl px-4 pb-20 pt-24 lg:px-6">
+    <header class="border-b border-[hsl(var(--border))] pb-7">
+      <p class="mb-3 font-mono text-sm font-semibold uppercase tracking-[0.18em] text-[hsl(var(--primary))]">Caso de estudio · Práctica parcial</p>
+      <h1 class="max-w-3xl text-[length:var(--text-fluid-3xl)] font-bold leading-[1.05] tracking-[-0.02em]">CreditIn — Gestión de Préstamos</h1>
+      <p class="mt-5 max-w-2xl text-[length:var(--text-fluid-lg)] text-[hsl(var(--muted-foreground))]">
+        Modelo de dominio preparado para el Primer Parcial (DSI 2026) y una propuesta de enunciado completo —con 3 casos de uso y 2 clases con máquina de estado— para practicar la resolución al estilo de la cátedra.
+      </p>
+    </header>
+
+    <article class="prose-dsi mt-10 min-w-0">
+      <Callout tipo="info" titulo="Lo que te dan vs. lo que construís">
+        El día del parcial te entregan el <strong>glosario</strong>, la <strong>descripción del dominio</strong>, las <strong>reglas de negocio</strong>, la <strong>lista de casos de uso</strong> y la <strong>especificación del CU</strong>. Vos llevás preparado el <strong>modelo de dominio</strong> (de abajo), lo <strong>acotás al CU</strong> que te toque y construís la <strong>máquina de estados</strong>, el <strong>diagrama de secuencia</strong> y la <strong>vista de análisis</strong>.
+      </Callout>
+
+      <h2>1. Modelo de dominio (diagrama de clases)</h2>
+      <p>
+        Diagrama de clases del dominio completo. Sigue la nomenclatura de la cátedra: atributos y métodos por clase, <code>Estado</code> modelado como objeto con historial vía <code>CambioEstadoPrestamo</code>, jerarquía polimórfica de <code>DefinicionMora</code>, y asociaciones nombradas con multiplicidades. Es la base que luego se acota a cada caso de uso.
+      </p>
+
+      <MermaidDiagram caption="Modelo de dominio — CreditIn (Gestión de Préstamos)" code={dominioCode} tipo="Diagrama de clases" />
+
+      <Callout tipo="atencion" titulo="Estilo de relaciones (cátedra)">
+        Las asociaciones son <strong>unidireccionales</strong> (flecha de navegabilidad) y la <strong>multiplicidad se indica solo en la clase destino</strong> (la que recibe la flecha). El sentido se decide por quién necesita mandar mensajes a quién: el agregado apunta a sus detalles y el detalle apunta a las entidades de catálogo que referencia.
+      </Callout>
+
+      <TablaComparativa
+        caption="Relaciones del diagrama (navegabilidad y multiplicidad)"
+        columnas={["Relación (origen → destino)", "Mult. (destino)", "Por qué ese sentido"]}
+        filas={[
+          ["<code>Cliente → Prestamo</code>", "0..*", "El cliente conoce sus préstamos (<code>obtenerPrestamos()</code>); el flujo arranca desde el cliente."],
+          ["<code>Cliente → CuentaBancaria</code>", "0..*", "El cliente posee sus cuentas."],
+          ["<code>Prestamo → TipoPrestamo</code>", "1", "El préstamo consulta su tipo para condiciones y mora (<code>getTipoPrestamo()</code>)."],
+          ["<code>TipoPrestamo → DefinicionMora</code>", "1", "El tipo conoce su regla de mora (<code>getDefinicionMora()</code>)."],
+          ["<code>DefinicionMora ◁ MoraPorcentual / MoraFija</code>", "—", "<strong>Generalización</strong> (herencia): polimorfismo de <code>calcularRecargo()</code>."],
+          ["<code>Prestamo → CuentaBancaria</code>", "1", "El préstamo se acredita en una cuenta (<code>acreditar()</code>)."],
+          ["<code>Prestamo → Cuota</code>", "1..*", "El préstamo genera y conoce sus cuotas (<code>generarCuotas()</code>, <code>getCuotas()</code>)."],
+          ["<code>Prestamo → PlanDePago</code>", "0..*", "El préstamo propone y conoce sus planes (<code>proponerPlanPago()</code>)."],
+          ["<code>Prestamo → CambioEstadoPrestamo</code>", "1..*", "El préstamo administra su historial de estados (<code>crearCambioEstado()</code>)."],
+          ["<code>Cuota → Recargo</code>", "0..1", "La cuota calcula y conoce su recargo (<code>calcularRecargo()</code>, <code>getRecargo()</code>)."],
+          ["<code>Cuota → Pago</code>", "0..*", "La cuota registra y conoce sus pagos (<code>registrarPago()</code>)."],
+          ["<code>Pago → MedioDePago</code>", "1", "El pago usa un medio de pago del catálogo (<code>getMedioDePago()</code>)."],
+          ["<code>PlanDePago → DetallePlanPago</code>", "1..*", "El plan contiene sus detalles (agrupaciones de cuotas)."],
+          ["<code>DetallePlanPago → Cuota</code>", "1..*", "El detalle referencia las cuotas que agrupa."],
+          ["<code>CambioEstadoPrestamo → Estado</code>", "1", "El cambio referencia un Estado del catálogo (<code>getEstado()</code>)."]
+        ]}
+      />
+
+      <TablaComparativa
+        caption="Decisiones de modelado (justificación según el enunciado)"
+        columnas={["Elemento", "Justificación (texto del caso)"]}
+        filas={[
+          ["<strong>Cliente 1 — 0..* Préstamo</strong>", "\"Un mismo cliente puede poseer múltiples préstamos asociados a lo largo del tiempo y de manera simultánea.\""],
+          ["<strong>TipoPrestamo</strong>", "\"Existen distintos tipos de préstamos… cada tipo define un conjunto de características generales\" (personal, hipotecario, prendario, corto/largo plazo)."],
+          ["<strong>DefinicionMora</strong> abstracta → <code>MoraPorcentual</code> / <code>MoraFija</code>", "\"Según el tipo de préstamo, existe una definición de mora… las reglas mediante las cuales se calcularán los recargos.\" Los dos ejemplos (2% diario vs $500 fijo) son subtipos con distinto <code>calcularRecargo()</code> → polimorfismo."],
+          ["<strong>Cuota</strong> con <code>diasAtraso</code>", "\"Para aquellas cuotas que no hayan sido abonadas en término se registra la cantidad de días de atraso.\""],
+          ["<strong>Recargo</strong> (0..1 por Cuota)", "\"El recargo representa el resultado concreto de aplicar las reglas definidas por la definición de mora sobre una cuota determinada.\""],
+          ["<strong>Pago → 1 MedioDePago</strong>", "\"Cada pago corresponde a una cuota específica y se realiza mediante un único medio de pago.\" <code>esEnHorarioHabil()</code> refleja \"días hábiles, de 9 a 20 hs\"."],
+          ["<strong>PlanDePago</strong> + <strong>DetallePlanPago</strong>", "\"El plan establece qué cuotas forman parte del acuerdo, el monto a abonar y las fechas límite… puede establecer que en una fecha se cancelen dos cuotas en conjunto.\" Condonamiento = reducción de intereses."],
+          ["<strong>Estado</strong> + <strong>CambioEstadoPrestamo</strong>", "Patrón de la cátedra (como <code>CambioEstadoVuelo</code> en Líneas Aéreas): el préstamo recorre Solicitado → En Evaluación → Vigente/Rechazado → En Mora → En Plan de Pago → Finalizado, conservando el historial."],
+          ["<strong>CuentaBancaria</strong>", "\"En caso positivo, el préstamo será acreditado en la cuenta bancaria del cliente\" + glosario <em>Acreditación</em>."]
+        ]}
+      />
+
+      <Callout tipo="atencion" titulo="Supuestos a confirmar el día del parcial">
+        <ul>
+          <li>El <strong>equipo financiero</strong> que evalúa el historial crediticio se tomó como <strong>actor</strong> (rol externo), no como clase. Si el CU pide registrar la evaluación, se agregaría <code>EvaluacionCrediticia &#123; fecha, resultado, factible &#125;</code> asociada a <code>Prestamo 1 — 0..1</code>.</li>
+          <li>La <strong>máquina de estados</strong> probablemente sea de <code>Prestamo</code> o <code>Cuota</code>: el modelo soporta ambas.</li>
+          <li><code>tasaInteres</code> se ubicó en <code>Prestamo</code> (podría moverse a <code>TipoPrestamo</code> si se trata como condición general del tipo).</li>
+        </ul>
+      </Callout>
+
+      <h2>2. Propuesta de enunciado de parcial</h2>
+      <p>
+        Mismo formato y nivel de exigencia que el <em>Ejercicio tipo Parcial 1 — FIA Fórmula 1</em>. El glosario y la descripción del dominio son los del caso entregado por la cátedra; el resto es la parte que se completaría el día del parcial.
+      </p>
+
+      <h3>Se pide al Estudiante</h3>
+      <p>Lea y analice atentamente la situación planteada y, en base a ello:</p>
+      <ol>
+        <li>Construya la <strong>máquina de estados</strong> de la clase <code>Préstamo</code>, especificando para las transiciones los métodos correspondientes y las condiciones de control cuando apliquen.</li>
+      </ol>
+      <p>Modele la <strong>realización de caso de uso de análisis</strong> para el escenario del <strong>CU "Registrar Pago de Cuota"</strong>, aplicando los <strong>patrones GRASP</strong>. Para ello:</p>
+      <ol start="2">
+        <li>Construya la <strong>vista de análisis</strong> que da soporte al escenario descripto y a la máquina de estados del punto 1.</li>
+        <li>Modele el escenario descripto en el caso de uso, utilizando un <strong>diagrama de secuencia</strong>.</li>
+      </ol>
+
+      <Callout tipo="tip" titulo="Práctica adicional (opcional)">
+        Este enunciado describe <strong>tres casos de uso</strong> (<em>Registrar Pago de Cuota</em>, <em>Solicitar Préstamo</em> y <em>Generar Plan de Pago</em>) y propone <strong>dos clases con máquina de estados</strong> (<code>Préstamo</code> y <code>Cuota</code>). Para ejercitar más, repetí las consignas: máquina de estados de <code>Cuota</code>, o vista de análisis y secuencia de los otros dos casos de uso.
+      </Callout>
+
+      <h3>Glosario</h3>
+      <TablaComparativa
+        caption="Glosario — CreditIn"
+        columnas={["Concepto", "Definición"]}
+        filas={[
+          ["<strong>Acreditación</strong>", "Momento en el cual el cliente puede disponer de los fondos otorgados por el préstamo."],
+          ["<strong>Cliente</strong>", "Persona que solicita y/o posee uno o más préstamos otorgados por la empresa."],
+          ["<strong>Condonamiento</strong>", "Reducción o eliminación parcial o total de una deuda, generalmente aplicada sobre los intereses, como parte de un acuerdo entre la empresa y el cliente."],
+          ["<strong>Cuota</strong>", "Obligación de pago en la que se divide un préstamo."],
+          ["<strong>Mora</strong>", "Situación en la que se encuentra un préstamo cuando alguna de sus cuotas no ha sido abonada en término."],
+          ["<strong>Plan de Pago</strong>", "Acuerdo de cancelación asociado a un préstamo que establece condiciones particulares para el pago de una o más cuotas."],
+          ["<strong>Préstamo</strong>", "Otorgamiento de una suma de dinero a un cliente, quien se compromete a devolverla en cuotas bajo ciertas condiciones financieras."],
+          ["<strong>Recargo</strong>", "Importe adicional que se genera sobre una cuota vencida."],
+          ["<strong>Tasa de interés</strong>", "Porcentaje que se aplica sobre el dinero prestado como costo por utilizarlo durante un período."],
+          ["<strong>Tipo de Préstamo</strong>", "Modalidad de préstamo ofrecida por la empresa que define sus condiciones generales."]
+        ]}
+      />
+
+      <h3>Descripción del dominio</h3>
+      <p>Una empresa financiera denominada <strong>CreditIn</strong> se dedica al otorgamiento de préstamos. La operatoria se basa en la relación con clientes previamente registrados en el sistema.</p>
+      <p><strong>Clientes.</strong> Un mismo cliente puede poseer múltiples préstamos simultáneamente. Los clientes se registran en la web; deben estar registrados para operar. Se almacenan nombre, apellido, documento, correo electrónico y teléfono.</p>
+      <p><strong>Préstamos.</strong> Un préstamo es el otorgamiento de una suma de dinero que el cliente devuelve en cuotas. Un equipo financiero contratado evalúa el historial crediticio del cliente para determinar si es factible prestarle; en caso positivo el préstamo se acredita en su cuenta bancaria. Existen distintos tipos (personales, hipotecarios, prendarios, de corto o largo plazo); cada tipo define características generales.</p>
+      <p><strong>Cuotas.</strong> Las cuotas son las obligaciones de pago en que se divide un préstamo; para las no abonadas en término se registra la cantidad de días de atraso. El incumplimiento provoca recargos por mora. Según el tipo de préstamo, una <em>definición de mora</em> establece las reglas del recargo (p. ej. 2% diario sobre la cuota, o $500 fijos por día de atraso).</p>
+      <p><strong>Pago de cuotas.</strong> Solo en días hábiles, de 9 a 20 hs. Cada pago corresponde a una cuota específica y un único medio de pago (transferencia, tarjeta). El monto abonado puede incluir los recargos.</p>
+      <p><strong>Planes de pago.</strong> Cuando un préstamo en mora representa riesgo de incobrabilidad, la empresa puede proponer un acuerdo que condone un porcentaje de los intereses a cambio de un monto convenido. El plan define qué cuotas incluye, el monto a abonar y las fechas límite, pudiendo agrupar varias cuotas en una misma fecha.</p>
+
+      <h3>Definición del Producto de Software</h3>
+      <p><strong>Objetivo:</strong> gestionar el otorgamiento y seguimiento de préstamos —solicitud y acreditación, división en cuotas, registro de pagos y recargos por mora, y generación de planes de pago con condonamiento—, generando información sobre el estado de la deuda y la cobranza.</p>
+      <p><strong>Alcances:</strong></p>
+      <ul>
+        <li>Registro y administración de clientes</li>
+        <li>Administración de tipos de préstamo y definiciones de mora</li>
+        <li>Solicitud, evaluación y acreditación de préstamos</li>
+        <li>Generación y seguimiento de cuotas</li>
+        <li>Registro de pagos y cálculo de recargos por mora</li>
+        <li>Gestión de planes de pago y condonamientos</li>
+        <li>Administración de medios de pago</li>
+        <li>Generación de reportes de morosidad y cobranzas</li>
+      </ul>
+      <p><strong>No contempla:</strong></p>
+      <ul>
+        <li>La integración con el sistema bancario para la acreditación de fondos (se asume externa)</li>
+        <li>El scoring crediticio detallado y la gestión interna del equipo financiero</li>
+        <li>La gestión contable e impositiva de la empresa</li>
+      </ul>
+
+      <h3>Reglas de Negocio</h3>
+      <TablaComparativa
+        caption="Reglas de Negocio — CreditIn"
+        columnas={["Nro.", "Nombre", "Descripción"]}
+        filas={[
+          ["<strong>1</strong>", "Registro de clientes", "Para operar (solicitar préstamos o pagar cuotas), el cliente debe estar registrado. Se almacenan nombre, apellido, documento, correo y teléfono."],
+          ["<strong>2</strong>", "Evaluación y acreditación", "Un préstamo solo se acredita si el equipo financiero evalúa favorablemente el historial crediticio del cliente. Si la evaluación es negativa, el préstamo se rechaza."],
+          ["<strong>3</strong>", "Cálculo de recargos por mora", "Según el tipo de préstamo se aplica su definición de mora sobre las cuotas vencidas, proporcional a los días de atraso: <strong>porcentual diaria</strong> (% sobre la cuota por día) o <strong>fija</strong> (importe fijo por día)."],
+          ["<strong>4</strong>", "Horario de pago", "Los pagos solo pueden registrarse en días hábiles, de 9:00 a 20:00 hs. Fuera de ese horario no se aceptan."],
+          ["<strong>5</strong>", "Pago de una cuota", "Cada pago corresponde a una única cuota y un único medio de pago. El monto abonado puede incluir los recargos al momento del pago."],
+          ["<strong>6</strong>", "Mora del préstamo", "Un préstamo entra en mora cuando alguna de sus cuotas no se abona en término. Al regularizarse todas las cuotas vencidas, vuelve a estar vigente."],
+          ["<strong>7</strong>", "Plan de pago y condonamiento", "Cuando un préstamo en mora representa riesgo de incobrabilidad, la empresa puede proponer un plan que condone un porcentaje de los intereses a cambio de un monto convenido, redefiniendo cuotas, montos y fechas límite."],
+          ["<strong>8</strong>", "Finalización del préstamo", "Un préstamo se considera finalizado cuando todas sus cuotas (o las acordadas en el plan vigente) están pagadas."],
+          ["<strong>9</strong>", "Notificaciones", "Al registrarse un pago se notifica al cliente por correo con el comprobante. Al proponerse un plan de pago, se notifica al cliente para su aceptación."]
+        ]}
+      />
+
+      <h3>Lista de Casos de Uso</h3>
+      <TablaComparativa
+        caption="Casos de uso del parcial"
+        columnas={["ID", "Caso de Uso", "Actor Principal", "Complejidad"]}
+        filas={[
+          ["1", "Solicitar Préstamo", "Cliente", "Mediano"],
+          ["7", "Registrar Pago de Cuota", "Cliente", "Mediano"],
+          ["12", "Generar Plan de Pago", "Analista de Cobranzas", "Mediano"],
+          ["—", "Registrar Cliente", "Cliente", "Simple"],
+          ["—", "Administrar Tipos de Préstamo", "Analista de Productos", "Simple"],
+          ["—", "Generar Reporte de Morosidad", "Analista de Cobranzas", "Mediano"]
+        ]}
+      />
+
+      <h3>CU 7 — Registrar Pago de Cuota</h3>
+      <EjemploClase titulo="CU 7 · Registrar Pago de Cuota">
+        <strong>Prioridad:</strong> Esencial &nbsp;·&nbsp; <strong>Categoría:</strong> Esencial &nbsp;·&nbsp; <strong>Complejidad:</strong> Mediano &nbsp;·&nbsp; <strong>Tipo:</strong> Concreto<br />
+        <strong>Actor Principal:</strong> Cliente &nbsp;·&nbsp; <strong>Actor Secundario:</strong> Servidor de Correo<br />
+        <strong>Objetivo:</strong> Registrar el pago de una cuota de un préstamo, contemplando los recargos por mora cuando la cuota está vencida.<br />
+        <strong>Flujo:</strong> pago de una cuota vencida (con recargo) por transferencia, en horario hábil, con notificación por correo.
+      </EjemploClase>
+      <ol>
+        <li><strong>Cliente:</strong> Selecciona la opción de registrar el pago de una cuota.</li>
+        <li><strong>Sistema:</strong> Valida que la fecha y hora actuales correspondan a un día hábil entre las 9:00 y las 20:00 hs y lo cumplen. (RN 4)</li>
+        <li><strong>Sistema:</strong> Busca y muestra los préstamos del cliente con cuotas impagas. Solicita seleccionar un préstamo.</li>
+        <li><strong>Cliente:</strong> Selecciona el préstamo.</li>
+        <li><strong>Sistema:</strong> Busca y muestra las cuotas impagas (número, monto, fecha de vencimiento, días de atraso). Solicita seleccionar la cuota a pagar.</li>
+        <li><strong>Cliente:</strong> Selecciona la cuota a pagar.</li>
+        <li><strong>Sistema:</strong> Determina que la cuota está vencida y calcula el recargo aplicando la definición de mora del tipo de préstamo sobre los días de atraso. Calcula el monto total (cuota + recargo). (RN 3, Obs. 1 y 2)</li>
+        <li><strong>Sistema:</strong> Busca y muestra los medios de pago disponibles. Solicita seleccionar el medio de pago.</li>
+        <li><strong>Cliente:</strong> Selecciona el medio de pago (transferencia bancaria).</li>
+        <li><strong>Sistema:</strong> Solicita la confirmación del pago, mostrando el monto total.</li>
+        <li><strong>Cliente:</strong> Confirma el pago.</li>
+        <li><strong>Sistema:</strong> Registra el pago (fecha y hora, monto, medio de pago) asociándolo a la cuota. Marca la cuota como <em>Pagada</em>. (RN 5)</li>
+        <li><strong>Sistema:</strong> Verifica si el préstamo conserva cuotas vencidas. Si ya no quedan, actualiza el préstamo a <em>Vigente</em>; si era la última cuota pendiente, lo actualiza a <em>Finalizado</em>. (RN 6 y RN 8)</li>
+        <li><strong>Sistema:</strong> Envía una notificación por correo al cliente con el comprobante. Fin del caso de uso. (RN 9)</li>
+      </ol>
+      <p><strong>Flujos alternativos:</strong></p>
+      <ul>
+        <li><strong>A1.</strong> (Paso 2) Fuera del horario hábil: el sistema lo informa y finaliza.</li>
+        <li><strong>A2.</strong> (Paso 3) El cliente no posee préstamos con cuotas impagas.</li>
+        <li><strong>A3.</strong> (Paso 7) La cuota no está vencida: no se aplica recargo; el monto total es el de la cuota.</li>
+        <li><strong>A4.</strong> (Paso 11) El cliente no confirma el pago.</li>
+        <li><strong>A5.</strong> (Paso 13) La cuota pagada es la última: el préstamo se marca como <em>Finalizado</em>.</li>
+      </ul>
+      <p><strong>Observaciones:</strong></p>
+      <ol>
+        <li>El recargo se calcula según la definición de mora del tipo de préstamo: porcentual diaria o fija por día.</li>
+        <li>El monto abonado puede incluir los recargos asociados a la cuota al momento del pago.</li>
+        <li>Los días hábiles excluyen sábados, domingos y feriados.</li>
+        <li>El Cliente debe estar previamente registrado y autenticado.</li>
+        <li>Un préstamo entra en mora automáticamente cuando una cuota supera su vencimiento sin abonarse.</li>
+      </ol>
+
+      <h3>CU 1 — Solicitar Préstamo</h3>
+      <EjemploClase titulo="CU 1 · Solicitar Préstamo">
+        <strong>Prioridad:</strong> Esencial &nbsp;·&nbsp; <strong>Categoría:</strong> Esencial &nbsp;·&nbsp; <strong>Complejidad:</strong> Mediano &nbsp;·&nbsp; <strong>Tipo:</strong> Concreto<br />
+        <strong>Actor Principal:</strong> Cliente &nbsp;·&nbsp; <strong>Actor Secundario:</strong> Equipo Financiero · Servidor de Correo<br />
+        <strong>Objetivo:</strong> Registrar la solicitud de un préstamo y, tras una evaluación crediticia favorable, acreditarlo generando sus cuotas.<br />
+        <strong>Flujo:</strong> solicitud de un préstamo personal con evaluación favorable y acreditación, con notificación por correo.
+      </EjemploClase>
+      <ol>
+        <li><strong>Cliente:</strong> Selecciona la opción de solicitar un préstamo.</li>
+        <li><strong>Sistema:</strong> Busca y muestra los tipos de préstamo ofrecidos. Solicita seleccionar el tipo, el monto y la cantidad de cuotas.</li>
+        <li><strong>Cliente:</strong> Selecciona el tipo de préstamo, ingresa el monto y la cantidad de cuotas.</li>
+        <li><strong>Sistema:</strong> Valida que monto y cuotas estén dentro de las condiciones del tipo y lo están. Calcula la tasa de interés y el valor de las cuotas. Solicita confirmación. (Obs. 1)</li>
+        <li><strong>Cliente:</strong> Confirma la solicitud.</li>
+        <li><strong>Sistema:</strong> Genera el préstamo en estado <em>Solicitado</em>, registrando cliente, tipo, monto, tasa y fecha de solicitud. (RN 1)</li>
+        <li><strong>Sistema:</strong> Solicita al equipo financiero la evaluación del historial crediticio. El préstamo pasa a <em>En Evaluación</em>. (RN 2)</li>
+        <li><strong>Equipo Financiero:</strong> Evalúa el historial y determina que es factible otorgar el préstamo.</li>
+        <li><strong>Sistema:</strong> Acredita el préstamo en la cuenta bancaria del cliente, genera las cuotas con sus fechas y montos, registra la fecha de acreditación y actualiza el estado a <em>Vigente</em>. (Obs. 2)</li>
+        <li><strong>Sistema:</strong> Envía una notificación por correo al cliente informando la acreditación. Fin del caso de uso. (RN 9)</li>
+      </ol>
+      <p><strong>Flujos alternativos:</strong></p>
+      <ul>
+        <li><strong>A1.</strong> (Paso 4) El monto o las cuotas no cumplen las condiciones del tipo: el sistema solicita reingresar los datos.</li>
+        <li><strong>A2.</strong> (Paso 5) El cliente no confirma la solicitud.</li>
+        <li><strong>A3.</strong> (Paso 8) La evaluación es desfavorable: el préstamo pasa a <em>Rechazado</em> y se notifica al cliente. (RN 2)</li>
+      </ul>
+      <p><strong>Observaciones:</strong></p>
+      <ol>
+        <li>La tasa de interés y las condiciones (monto máximo, plazos) dependen del tipo de préstamo.</li>
+        <li>La acreditación de fondos en la cuenta bancaria se realiza por el sistema bancario externo (fuera del alcance).</li>
+      </ol>
+
+      <h3>CU 12 — Generar Plan de Pago</h3>
+      <EjemploClase titulo="CU 12 · Generar Plan de Pago">
+        <strong>Prioridad:</strong> Esencial &nbsp;·&nbsp; <strong>Categoría:</strong> Esencial &nbsp;·&nbsp; <strong>Complejidad:</strong> Mediano &nbsp;·&nbsp; <strong>Tipo:</strong> Concreto<br />
+        <strong>Actor Principal:</strong> Analista de Cobranzas &nbsp;·&nbsp; <strong>Actor Secundario:</strong> Servidor de Correo<br />
+        <strong>Objetivo:</strong> Proponer a un cliente un plan de pago para un préstamo en mora con riesgo de incobrabilidad, condonando un porcentaje de los intereses.<br />
+        <strong>Flujo:</strong> plan que agrupa varias cuotas vencidas con condonamiento parcial de intereses y notificación al cliente.
+      </EjemploClase>
+      <ol>
+        <li><strong>Analista de Cobranzas:</strong> Selecciona la opción de generar un plan de pago.</li>
+        <li><strong>Sistema:</strong> Busca y muestra los préstamos en mora con riesgo de incobrabilidad. Solicita seleccionar un préstamo. (RN 6 y RN 7)</li>
+        <li><strong>Analista de Cobranzas:</strong> Selecciona el préstamo.</li>
+        <li><strong>Sistema:</strong> Busca y muestra las cuotas vencidas con su monto original y recargo acumulado. Solicita seleccionar las cuotas a incluir.</li>
+        <li><strong>Analista de Cobranzas:</strong> Selecciona las cuotas a incluir en el plan.</li>
+        <li><strong>Sistema:</strong> Solicita el porcentaje de intereses a condonar, el monto convenido y las fechas límite de las agrupaciones de cuotas.</li>
+        <li><strong>Analista de Cobranzas:</strong> Ingresa el porcentaje de condonamiento, el monto y las fechas límite.</li>
+        <li><strong>Sistema:</strong> Calcula el monto a abonar aplicando el condonamiento sobre los intereses. Solicita confirmación. (Obs. 1)</li>
+        <li><strong>Analista de Cobranzas:</strong> Confirma el plan de pago.</li>
+        <li><strong>Sistema:</strong> Genera el plan asociado al préstamo, con sus detalles (cuotas agrupadas, monto y fecha límite). Actualiza el préstamo a <em>En Plan de Pago</em>. (RN 7, Obs. 2)</li>
+        <li><strong>Sistema:</strong> Envía una notificación al cliente con la propuesta del plan para su aceptación. Fin del caso de uso. (RN 9)</li>
+      </ol>
+      <p><strong>Flujos alternativos:</strong></p>
+      <ul>
+        <li><strong>A1.</strong> (Paso 2) No hay préstamos en mora con riesgo de incobrabilidad.</li>
+        <li><strong>A2.</strong> (Paso 9) El analista no confirma el plan.</li>
+      </ul>
+      <p><strong>Observaciones:</strong></p>
+      <ol>
+        <li>El condonamiento se aplica sobre los intereses y recargos adeudados, no sobre el capital.</li>
+        <li>Un plan puede establecer que varias cuotas se cancelen en conjunto en una misma fecha.</li>
+      </ol>
+
+      <h2>3. Notas para resolver (no forman parte del enunciado)</h2>
+      <ul>
+        <li><strong>Máquina de estados de <code>Préstamo</code>:</strong> <em>Solicitado</em> → <em>En Evaluación</em> → (<em>Rechazado</em> | <em>Vigente</em>) → <em>En Mora</em> ⇄ <em>Vigente</em> → <em>En Plan de Pago</em> → <em>Finalizado</em>. Transiciones por <code>acreditar()</code>, <code>registrarPago()</code>, <code>proponerPlanPago()</code>, con guardas <code>[no quedan cuotas vencidas]</code>, <code>[última cuota]</code>.</li>
+        <li><strong>Máquina de estados de <code>Cuota</code> (opcional):</strong> <em>Pendiente</em> → <em>Vencida</em> → <em>Pagada</em>, con rama <em>En Plan de Pago</em>. Transiciones por <code>vencer()</code> <code>[fecha actual &gt; vencimiento]</code>, <code>registrarPago()</code>, <code>incluirEnPlan()</code>.</li>
+        <li><strong>Vista de análisis (GRASP)</strong> — clases por CU:
+          <ul>
+            <li><em>Registrar Pago de Cuota:</em> <code>Cliente</code>, <code>Préstamo</code>, <code>Cuota</code>, <code>Recargo</code>, <code>Pago</code>, <code>MedioDePago</code>, <code>TipoPrestamo</code>, <code>DefinicionMora</code>/<code>MoraPorcentual</code>/<code>MoraFija</code>, <code>Estado</code>/<code>CambioEstadoPrestamo</code>.</li>
+            <li><em>Solicitar Préstamo:</em> <code>Cliente</code>, <code>TipoPrestamo</code>, <code>Préstamo</code>, <code>Cuota</code>, <code>CuentaBancaria</code>, <code>Estado</code>/<code>CambioEstadoPrestamo</code>.</li>
+            <li><em>Generar Plan de Pago:</em> <code>Préstamo</code>, <code>Cuota</code>, <code>Recargo</code>, <code>PlanDePago</code>, <code>DetallePlanPago</code>, <code>Estado</code>/<code>CambioEstadoPrestamo</code>.</li>
+          </ul>
+        </li>
+        <li>Todas las vistas se construyen <strong>acotando el modelo de dominio</strong> de la sección 1.</li>
+      </ul>
+    </article>
+  </main>
+</BaseLayout>
