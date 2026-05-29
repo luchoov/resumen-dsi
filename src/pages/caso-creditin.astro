@@ -184,6 +184,220 @@ classDef prestamo fill:#059669,stroke:#10b981,stroke-width:2px,color:#ffffff
 classDef cobranza fill:#d97706,stroke:#f59e0b,stroke-width:2px,color:#ffffff
 classDef planes fill:#be185d,stroke:#ec4899,stroke-width:2px,color:#ffffff
 classDef estado fill:#7c3aed,stroke:#a78bfa,stroke-width:2px,color:#ffffff`;
+
+const estadosPrestamoCode = `stateDiagram-v2
+  direction LR
+
+  [*] --> Solicitado : 1 Solicitar Préstamo /new()
+  Solicitado --> EnEvaluacion : 1 Solicitar Préstamo /solicitarEvaluacion()
+  EnEvaluacion --> Rechazado : 1 Solicitar Préstamo [evaluación desfavorable] /rechazar()
+  EnEvaluacion --> Vigente : 1 Solicitar Préstamo [evaluación favorable] /acreditar()
+
+  Vigente --> EnMora : Vencimiento de cuota [cuota impaga supera su vencimiento] /registrarMora()
+  EnMora --> EnMora : 7 Registrar Pago de Cuota [quedan cuotas vencidas] /actualizarEstado()
+  EnMora --> Vigente : 7 Registrar Pago de Cuota [no quedan cuotas vencidas] /actualizarEstado()
+  EnMora --> EnPlanPago : 12 Generar Plan de Pago /proponerPlanPago()
+  EnPlanPago --> EnMora : Incumplimiento del plan [vence una fecha límite impaga] /registrarMora()
+
+  Vigente --> Finalizado : 7 Registrar Pago de Cuota [última cuota] /actualizarEstado()
+  EnPlanPago --> Finalizado : 7 Registrar Pago de Cuota [última cuota del plan] /actualizarEstado()
+
+  Rechazado --> [*]
+  Finalizado --> [*]
+
+  Solicitado : Solicitado
+  EnEvaluacion : En Evaluación
+  Rechazado : Rechazado
+  Vigente : Vigente
+  EnMora : En Mora
+  EnPlanPago : En Plan de Pago
+  Finalizado : Finalizado`;
+
+const vistaAnalisisCU7Code = `classDiagram
+
+class PantallaRegistrarPago:::boundary {
+  <<boundary>>
+  habilitarVentana()
+  pedirSeleccionPrestamo()
+  pedirSeleccionCuota()
+  pedirSeleccionMedioDePago()
+  pedirConfirmacion()
+  mostrarComprobante()
+}
+
+class GestorRegistrarPago:::control {
+  <<control>>
+  registrarPago()
+  tomarSeleccionPrestamo()
+  tomarSeleccionCuota()
+  tomarSeleccionMedioDePago()
+  confirmarPago()
+  validarHorarioHabil()
+}
+
+class Sesion:::entity {
+  <<entity>>
+  getCliente()
+}
+
+class Cliente:::entity {
+  <<entity>>
+  obtenerPrestamosConCuotasImpagas()
+}
+
+class Prestamo:::entity {
+  <<entity>>
+  obtenerCuotasImpagas()
+  calcularRecargo()
+  actualizarEstado()
+  obtenerCuotasVencidas()
+  buscarEstadoActual()
+  crearCambioEstado()
+}
+
+class TipoPrestamo:::entity {
+  <<entity>>
+  calcularRecargo()
+  getDefinicionMora()
+}
+
+class DefinicionMora:::entity {
+  <<entity>>
+  calcularRecargo()
+}
+
+class MoraPorcentual:::entity {
+  <<entity>>
+  calcularRecargo()
+}
+
+class MoraFija:::entity {
+  <<entity>>
+  calcularRecargo()
+}
+
+class Cuota:::entity {
+  <<entity>>
+  estaPagada()
+  estaVencida()
+  calcularRecargo()
+  getMontoTotal()
+  registrarPago()
+  mostrarDatos()
+}
+
+class Recargo:::entity {
+  <<entity>>
+  new()
+  getMonto()
+}
+
+class Pago:::entity {
+  <<entity>>
+  new()
+  getMonto()
+}
+
+class MedioDePago:::entity {
+  <<entity>>
+  getNombre()
+}
+
+class CambioEstadoPrestamo:::entity {
+  <<entity>>
+  new()
+  esEstadoActual()
+  setFechaHoraFin()
+}
+
+class Estado:::entity {
+  <<entity>>
+  esVigente()
+  getNombre()
+}
+
+PantallaRegistrarPago ..> GestorRegistrarPago
+GestorRegistrarPago ..> Sesion
+GestorRegistrarPago ..> Cliente
+GestorRegistrarPago ..> Prestamo
+GestorRegistrarPago ..> Cuota
+GestorRegistrarPago ..> MedioDePago
+GestorRegistrarPago ..> Pago
+
+Sesion --> "1" Cliente : cliente
+Cliente --> "0..*" Prestamo : prestamo
+Prestamo --> "1" TipoPrestamo : tipoPrestamo
+TipoPrestamo --> "1" DefinicionMora : definicionMora
+DefinicionMora <|-- MoraPorcentual
+DefinicionMora <|-- MoraFija
+Prestamo --> "1..*" Cuota : cuota
+Prestamo --> "1..*" CambioEstadoPrestamo : cambioEstado
+Cuota --> "0..1" Recargo : recargo
+Cuota --> "0..*" Pago : pago
+Pago --> "1" MedioDePago : medioDePago
+CambioEstadoPrestamo --> "1" Estado : estado
+
+classDef boundary fill:#0369a1,stroke:#06b6d4,stroke-width:2px,color:#ffffff
+classDef control fill:#be185d,stroke:#ec4899,stroke-width:2px,color:#ffffff
+classDef entity fill:#059669,stroke:#10b981,stroke-width:2px,color:#ffffff`;
+
+const secuenciaCU7Code = `sequenceDiagram
+  actor Cli as :Cliente
+  participant P as :PantallaRegistrarPago
+  participant G as :GestorRegistrarPago
+  participant Se as :Sesion
+  participant C as cliente:Cliente
+  participant Pr as prestamo:Prestamo
+  participant TP as :TipoPrestamo
+  participant DM as :DefinicionMora
+  participant Cu as cuota:Cuota
+  participant R as :Recargo
+  participant Pa as :Pago
+  participant MP as :MedioDePago
+  participant CA as actual:CambioEstadoPrestamo
+  participant CN as nuevo:CambioEstadoPrestamo
+  participant SC as :Servidor de Correo
+
+  Cli->>P: opcionRegistrarPago()
+  P->>P: habilitarVentana()
+  P->>G: registrarPago()
+  G->>G: validarHorarioHabil()
+  G->>Se: getCliente()
+  G->>C: obtenerPrestamosConCuotasImpagas()
+  G->>Pr: *mostrarDatos()
+  G->>P: pedirSeleccionPrestamo()
+  Cli->>P: tomarSeleccionPrestamo()
+  P->>G: tomarSeleccionPrestamo(prestamo)
+  G->>Pr: obtenerCuotasImpagas()
+  G->>Cu: *mostrarDatos()
+  G->>P: pedirSeleccionCuota()
+  Cli->>P: tomarSeleccionCuota()
+  P->>G: tomarSeleccionCuota(cuota)
+  G->>Cu: estaVencida()
+  G->>Cu: calcularRecargo()
+  Cu->>Pr: calcularRecargo(diasAtraso)
+  Pr->>TP: calcularRecargo(diasAtraso)
+  TP->>DM: calcularRecargo(diasAtraso)
+  Cu->>R: new(montoRecargo)
+  G->>Cu: getMontoTotal()
+  G->>G: obtenerMediosDePago()
+  G->>MP: *getNombre()
+  G->>P: pedirSeleccionMedioDePago()
+  Cli->>P: tomarSeleccionMedioDePago()
+  P->>G: tomarSeleccionMedioDePago(medioDePago)
+  G->>P: pedirConfirmacion()
+  Cli->>P: confirmarPago()
+  P->>G: confirmarPago()
+  G->>Pa: new(fechaHora, monto, medioDePago)
+  G->>Cu: registrarPago(pago)
+  G->>Pr: actualizarEstado()
+  Pr->>Pr: obtenerCuotasVencidas()
+  Pr->>Pr: buscarEstadoActual()
+  Pr->>CA: *esEstadoActual()
+  Pr->>CA: setFechaHoraFin(fechaHora)
+  Pr->>Pr: crearCambioEstado()
+  Pr->>CN: new(fechaHora, estado)
+  G->>SC: enviarComprobante(cliente)`;
 ---
 
 <BaseLayout
@@ -461,19 +675,90 @@ classDef estado fill:#7c3aed,stroke:#a78bfa,stroke-width:2px,color:#ffffff`;
         <li>Un plan puede establecer que varias cuotas se cancelen en conjunto en una misma fecha.</li>
       </ol>
 
-      <h2>3. Notas para resolver (no forman parte del enunciado)</h2>
-      <ul>
-        <li><strong>Máquina de estados de <code>Préstamo</code>:</strong> <em>Solicitado</em> → <em>En Evaluación</em> → (<em>Rechazado</em> | <em>Vigente</em>) → <em>En Mora</em> ⇄ <em>Vigente</em> → <em>En Plan de Pago</em> → <em>Finalizado</em>. Transiciones por <code>acreditar()</code>, <code>registrarPago()</code>, <code>proponerPlanPago()</code>, con guardas <code>[no quedan cuotas vencidas]</code>, <code>[última cuota]</code>.</li>
-        <li><strong>Máquina de estados de <code>Cuota</code> (opcional):</strong> <em>Pendiente</em> → <em>Vencida</em> → <em>Pagada</em>, con rama <em>En Plan de Pago</em>. Transiciones por <code>vencer()</code> <code>[fecha actual &gt; vencimiento]</code>, <code>registrarPago()</code>, <code>incluirEnPlan()</code>.</li>
-        <li><strong>Vista de análisis (GRASP)</strong> — clases por CU:
-          <ul>
-            <li><em>Registrar Pago de Cuota:</em> <code>Cliente</code>, <code>Préstamo</code>, <code>Cuota</code>, <code>Recargo</code>, <code>Pago</code>, <code>MedioDePago</code>, <code>TipoPrestamo</code>, <code>DefinicionMora</code>/<code>MoraPorcentual</code>/<code>MoraFija</code>, <code>Estado</code>/<code>CambioEstadoPrestamo</code>.</li>
-            <li><em>Solicitar Préstamo:</em> <code>Cliente</code>, <code>TipoPrestamo</code>, <code>Préstamo</code>, <code>Cuota</code>, <code>CuentaBancaria</code>, <code>Estado</code>/<code>CambioEstadoPrestamo</code>.</li>
-            <li><em>Generar Plan de Pago:</em> <code>Préstamo</code>, <code>Cuota</code>, <code>Recargo</code>, <code>PlanDePago</code>, <code>DetallePlanPago</code>, <code>Estado</code>/<code>CambioEstadoPrestamo</code>.</li>
-          </ul>
-        </li>
-        <li>Todas las vistas se construyen <strong>acotando el modelo de dominio</strong> de la sección 1.</li>
-      </ul>
+      <h2>3. Solución propuesta</h2>
+      <p>
+        Resolución de las tres consignas tomando como escenario el <strong>CU 7 — Registrar Pago de Cuota</strong> (pago de una cuota vencida, con recargo). Todo se construye <strong>acotando el modelo de dominio</strong> de la sección 1 y siguiendo la nomenclatura de la cátedra.
+      </p>
+
+      <h3>3.1 Máquina de estados de <code>Préstamo</code></h3>
+      <p>
+        El préstamo nace <em>Solicitado</em>, pasa por la evaluación crediticia y, si es favorable, se acredita quedando <em>Vigente</em>. Cuando una cuota vence sin pagarse entra <em>En Mora</em>; al regularizar todas las cuotas vencidas vuelve a <em>Vigente</em>, o si era la última, queda <em>Finalizado</em>. Desde la mora puede negociarse un plan (<em>En Plan de Pago</em>).
+      </p>
+      <MermaidDiagram caption="Máquina de estados de la clase Préstamo" code={estadosPrestamoCode} tipo="Máquina de estados" />
+      <Callout tipo="tip" titulo="Sintaxis de las transiciones (cátedra)">
+        Cada transición se rotula <code>Nº NombreCU [guarda] /método()</code> (sin punto tras el número, igual que la cátedra: <em>“10 Registrar Pedido /new()”</em>): el <strong>evento</strong> que la dispara (normalmente un caso de uso), la <strong>condición de guarda</strong> entre corchetes cuando el mismo evento puede llevar a estados distintos, y el <strong>método</strong> que se ejecuta. Notá que <code>7 Registrar Pago de Cuota</code> tiene tres salidas desde <em>En Mora</em>/<em>Vigente</em> según la guarda (<code>[quedan cuotas vencidas]</code>, <code>[no quedan cuotas vencidas]</code>, <code>[última cuota]</code>) — es el patrón <em>“mismo evento, distinta guarda, distinto estado destino”</em>.
+      </Callout>
+      <Callout tipo="atencion" titulo="Cómo leer esta máquina de estados (paso a paso)">
+        <ul>
+          <li><strong>Inicio.</strong> El círculo negro es el pseudoestado inicial: con <code>1 Solicitar Préstamo /new()</code> el préstamo nace en <em>Solicitado</em>.</li>
+          <li><strong>Evaluación.</strong> <em>Solicitado</em> → <em>En Evaluación</em>; de ahí, el mismo CU bifurca por guarda a <em>Rechazado</em> (<code>[evaluación desfavorable] /rechazar()</code>) o <em>Vigente</em> (<code>[evaluación favorable] /acreditar()</code>).</li>
+          <li><strong>Mora.</strong> <em>Vigente</em> → <em>En Mora</em> por <code>Vencimiento de cuota</code> (evento <strong>temporal/automático</strong>, no un CU: cuando una cuota impaga supera su vencimiento).</li>
+          <li><strong>Regularización.</strong> Desde <em>En Mora</em>, <code>7 Registrar Pago de Cuota</code> tiene tres caminos según la guarda: sigue <em>En Mora</em> (self) si quedan vencidas, vuelve a <em>Vigente</em> si no quedan, o salta a <em>Finalizado</em> si era la última.</li>
+          <li><strong>Plan de pago.</strong> <em>En Mora</em> → <em>En Plan de Pago</em> con <code>12 Generar Plan de Pago /proponerPlanPago()</code>; si se incumple vuelve a <em>En Mora</em>, y si se completa va a <em>Finalizado</em>.</li>
+          <li><strong>Fin.</strong> <em>Rechazado</em> y <em>Finalizado</em> son estados finales (llevan al pseudoestado final).</li>
+        </ul>
+        El método de las transiciones de pago es <code>actualizarEstado()</code> —el préstamo decide su estado destino según sus propias guardas (cuántas cuotas vencidas le quedan)—. La cátedra suele usar verbos específicos por transición (<code>/acreditar()</code>, <code>/rechazar()</code>, <code>/proponerPlanPago()</code>); ambos estilos son válidos.
+      </Callout>
+
+      <h3>3.2 Vista de análisis del CU 7 (diagrama de clases)</h3>
+      <p>
+        Realización del caso de uso aplicando <strong>GRASP</strong> con la estructura <strong>BCE</strong>: una clase <code>&laquo;boundary&raquo;</code> (la pantalla), una <code>&laquo;control&raquo;</code> (el gestor del CU) y las <code>&laquo;entity&raquo;</code> del dominio acotadas a este escenario. El control depende (línea punteada) de las entidades a las que envía mensajes; las entidades mantienen sus asociaciones dirigidas con multiplicidad en el destino.
+      </p>
+      <MermaidDiagram caption="Vista de análisis (BCE) — CU 7 Registrar Pago de Cuota" code={vistaAnalisisCU7Code} tipo="Diagrama de clases" />
+
+      <h3>3.3 Diagrama de secuencia del CU 7</h3>
+      <p>
+        Escenario principal: pago de una <strong>cuota vencida</strong> por transferencia, en horario hábil, con notificación por correo. La <strong>iteración</strong> sobre colecciones se marca con un <strong>asterisco</strong> delante del mensaje (<code>*mostrarDatos()</code>, estilo cátedra/Peaje), enviado desde el gestor a cada entidad; el filtrado queda encapsulado en los <code>obtener…()</code> (se confía en el Experto). El recargo se resuelve <strong>polimórficamente</strong> delegando <code>calcularRecargo()</code> de <code>Prestamo</code> → <code>TipoPrestamo</code> → <code>DefinicionMora</code>, y el cambio de estado usa el patrón de <strong>historial</strong> (<code>setFechaHoraFin()</code> sobre el cambio actual + <code>new()</code> del nuevo).
+      </p>
+      <MermaidDiagram caption="Diagrama de secuencia — CU 7 Registrar Pago de Cuota (escenario principal)" code={secuenciaCU7Code} tipo="Diagrama de secuencia" />
+      <Callout tipo="atencion" titulo="Por qué no aparecen los cursos alternativos">
+        El día del parcial se modela <strong>un único escenario</strong> (el principal). Los flujos alternativos del CU (fuera de horario, cuota no vencida, no confirma, etc.) <strong>no</strong> se dibujan. Para repetir un mensaje sobre cada elemento de una colección se usa el <strong>asterisco</strong> (<code>*mensaje()</code>) desde el gestor hacia la entidad. La selección se resuelve con <code>pedirSelecciónX()</code> / <code>tomarSelecciónX()</code> entre pantalla y gestor.
+      </Callout>
+
+      <h3>3.4 Explicación paso a paso del diagrama de secuencia</h3>
+      <p>
+        El diagrama de la sección 3.3 cuenta, mensaje a mensaje, qué pasa adentro del sistema cuando un cliente paga una cuota vencida. Leelo de arriba hacia abajo prestando atención a <strong>quién le habla a quién</strong>.
+      </p>
+      <p><strong>1) Arranque.</strong> El <strong>Cliente</strong> dispara el caso de uso con <code>opcionRegistrarPago()</code> sobre la <code>:PantallaRegistrarPago</code>. La pantalla se prepara a sí misma con <code>habilitarVentana()</code> (<em>self</em>: abrir su ventana es asunto propio) y le pasa la operación al <code>:GestorRegistrarPago</code> con <code>registrarPago()</code>. El gestor controla la regla de horario con <code>validarHorarioHabil()</code> (<em>self</em>: usa la fecha y hora del sistema, no se las pide a ninguna entidad).</p>
+      <p><strong>2) Elegir el préstamo.</strong> El gestor pregunta a la <code>:Sesion</code> quién opera con <code>getCliente()</code>, y al <code>:Cliente</code> sus préstamos con deuda mediante <code>obtenerPrestamosConCuotasImpagas()</code> (el cliente es el Experto: conoce sus préstamos). Con la lista, le pide a cada préstamo que se muestre con <code>*mostrarDatos()</code> (el asterisco = <em>para cada uno</em>). Después coordina la selección: <code>pedirSeleccionPrestamo()</code> a la pantalla, el cliente elige con <code>tomarSeleccionPrestamo()</code>, y la pantalla lo reenvía con <code>tomarSeleccionPrestamo(prestamo)</code>.</p>
+      <p><strong>3) Elegir la cuota.</strong> Mismo patrón: <code>obtenerCuotasImpagas()</code> al <code>:Prestamo</code>, <code>*mostrarDatos()</code> a cada <code>:Cuota</code>, y la terna <code>pedirSeleccionCuota()</code> / <code>tomarSeleccionCuota()</code> / <code>tomarSeleccionCuota(cuota)</code>.</p>
+      <p><strong>4) Calcular el recargo.</strong> El gestor confirma con <code>estaVencida()</code> y pide <code>calcularRecargo()</code> a la cuota. Como la cuota no conoce la fórmula, la delega hacia arriba —<code>Cuota → Prestamo → TipoPrestamo → DefinicionMora</code>, todos con <code>calcularRecargo(diasAtraso)</code>— hasta llegar a la <code>:DefinicionMora</code>, que es la única que calcula (polimórficamente: porcentual o fija). Con el resultado, la cuota crea su recargo con <code>new(montoRecargo)</code> sobre <code>:Recargo</code>. Luego el gestor pide el total con <code>getMontoTotal()</code>.</p>
+      <p><strong>5) Medio de pago y confirmación.</strong> El gestor arma la lista de medios con <code>obtenerMediosDePago()</code> (<em>self</em>: es un catálogo sin dueño en el modelo) y le pide el nombre a cada uno con <code>*getNombre()</code>. Sigue la selección (<code>pedirSeleccionMedioDePago()</code> / <code>tomarSeleccionMedioDePago(medioDePago)</code>) y la confirmación (<code>pedirConfirmacion()</code> / <code>confirmarPago()</code>).</p>
+      <p><strong>6) Registrar el pago.</strong> El gestor crea el pago con <code>new(fechaHora, monto, medioDePago)</code> sobre <code>:Pago</code> —el medio elegido viaja como <strong>parámetro</strong>— y se lo entrega a la cuota con <code>registrarPago(pago)</code>.</p>
+      <p><strong>7) Actualizar el estado del préstamo.</strong> El gestor avisa al préstamo con <code>actualizarEstado()</code>. El préstamo revisa por su cuenta si le quedan vencidas con <code>obtenerCuotasVencidas()</code> (<em>self</em>) y busca su cambio de estado vigente con <code>buscarEstadoActual()</code> (<em>self</em>). Esa búsqueda <strong>itera</strong> sus cambios preguntándole a cada uno <code>*esEstadoActual()</code> (el actual es el único <strong>sin <code>fechaHoraFin</code></strong>). Cierra ese cambio con <code>setFechaHoraFin(fechaHora)</code> sobre <code>actual:CambioEstadoPrestamo</code> y, mediante <code>crearCambioEstado()</code> (<em>self</em>), crea el nuevo con <code>new(fechaHora, estado)</code> sobre <code>nuevo:CambioEstadoPrestamo</code> (el estado destino también viaja como parámetro).</p>
+      <p><strong>8) Notificar.</strong> El gestor le pide al <code>:Servidor de Correo</code> el comprobante con <code>enviarComprobante(cliente)</code>. Esa es la última flecha: no hay ningún mensaje de vuelta.</p>
+
+      <h3>3.5 Decisiones de modelado y dudas frecuentes</h3>
+      <p>
+        Estas reglas explican <em>por qué</em> cada flecha está donde está. Son las que más cuestan al arrancar y las que la cátedra evalúa.
+      </p>
+      <TablaComparativa
+        caption="Reglas de oro del diagrama de secuencia (cátedra)"
+        columnas={["Regla", "Qué significa", "Dónde se ve en el CU 7"]}
+        filas={[
+          ["<strong>Sin retornos</strong>", "No se dibujan flechas de vuelta ni mensajes tipo <em>ok / resultado / datos</em>: el resultado de una consulta queda implícito.", "Tras <code>getCliente()</code> u <code>obtenerCuotasImpagas()</code> no hay flecha de regreso."],
+          ["<strong>Self válido</strong>", "Un objeto se manda un mensaje a sí mismo solo si <strong>ya recibió uno</strong> y resuelve algo con lo suyo.", "<code>habilitarVentana()</code> (pantalla); <code>validarHorarioHabil()</code> (gestor); <code>obtenerCuotasVencidas()</code> / <code>buscarEstadoActual()</code> (préstamo)."],
+          ["<strong>Self por catálogo sin dueño</strong>", "Si una colección no tiene dueño en el modelo, la consigue el gestor como self.", "<code>obtenerMediosDePago()</code>."],
+          ["<strong>Iteración con asterisco</strong>", "Para repetir sobre cada elemento: <code>*mensaje()</code> del gestor <strong>hacia</strong> la entidad. Nunca un self suelto en la entidad ni un frame <code>loop</code>.", "<code>*mostrarDatos()</code>, <code>*getNombre()</code>."],
+          ["<strong>Filtrado encapsulado</strong>", "El <code>obtener…()</code> ya devuelve la colección filtrada; no se expanden los <code>estaPagada()</code> / <code>estaVencida()</code> (se confía en el Experto).", "<code>obtenerPrestamosConCuotasImpagas()</code>, <code>obtenerCuotasImpagas()</code>."],
+          ["<strong>Mensaje al Experto</strong>", "Se le pide el dato a quien lo posee según las asociaciones del dominio.", "préstamos al <code>:Cliente</code>; cuotas al <code>:Prestamo</code>."],
+          ["<strong>Asociar = navegabilidad</strong>", "La referencia la guarda el <strong>receptor</strong>; el otro objeto viaja como <strong>parámetro</strong> (en el <code>new()</code> o un <code>setX()</code>).", "<code>new(fechaHora, monto, medioDePago)</code>; <code>new(fechaHora, estado)</code>."],
+          ["<strong>Selección</strong>", "Elegir de una lista = <code>pedirSeleccionX()</code> (gestor → pantalla) + <code>tomarSeleccionX()</code> (actor → pantalla → gestor).", "préstamo, cuota y medio de pago."]
+        ]}
+      />
+
+      <Callout tipo="tip" titulo="Por qué calcularRecargo() aparece en varias clases">
+        No es el mismo trabajo repetido: es una <strong>cadena de delegación</strong>. La <code>Cuota</code> sabe que le toca recargo pero <strong>no conoce la fórmula</strong>, así que la pide hacia arriba (<code>Prestamo → TipoPrestamo → DefinicionMora</code>) hasta la <code>DefinicionMora</code>, que es la única que calcula. Y como <code>DefinicionMora</code> es abstracta con subtipos <code>MoraPorcentual</code> / <code>MoraFija</code>, cada uno calcula distinto: eso es <strong>polimorfismo</strong>. Solo el último de la cadena hace la cuenta; los demás reenvían (<strong>bajo acoplamiento</strong>).
+      </Callout>
+
+      <Callout tipo="info" titulo="Por qué el Préstamo recibe actualizarEstado() y no registrarPago()">
+        Pagar una cuota toca <strong>dos objetos con responsabilidades distintas</strong>: la <code>Cuota</code> guarda su pago (<code>registrarPago(pago)</code>) y el <code>Prestamo</code> <strong>re-evalúa su propio estado</strong> (puede pasar de <em>En Mora</em> a <em>Vigente</em>, o a <em>Finalizado</em>). Como el dueño del estado es el préstamo, el gestor le avisa. Ese mensaje antes se llamaba <code>registrarPago()</code> también en el préstamo, lo que confundía (mismo nombre, distinto significado); lo renombramos a <code>actualizarEstado()</code>, que dice lo que realmente hace. La cátedra nombra el método del agregado por <strong>su responsabilidad</strong> y deja adentro la maquinaria de estados (buscar el actual, cerrarlo, crear el nuevo).
+      </Callout>
+
+      <Callout tipo="atencion" titulo="El cambio de estado (patrón historial)">
+        El préstamo busca su cambio vigente con <code>buscarEstadoActual()</code> —<em>self</em>, porque él es el dueño de su colección de <code>CambioEstadoPrestamo</code>—. Esa búsqueda <strong>itera</strong> los cambios preguntándole a cada uno <code>*esEstadoActual()</code>: el actual es el único <strong>sin <code>fechaHoraFin</code></strong>. Para no perder el historial, no se pisa el estado: se <strong>cierra</strong> el actual con <code>setFechaHoraFin(fechaHora)</code> y, vía <code>crearCambioEstado()</code> (<em>self</em>), se <strong>crea</strong> uno nuevo con <code>new(fechaHora, estado)</code> apuntando al <code>Estado</code> destino. Importante: <code>setFechaHoraFin()</code> es una <strong>orden del préstamo</strong> al cambio actual, <strong>no</strong> un self del cambio —el que coordina la transición es el préstamo (Experto en su propio historial)—. Este patrón es idéntico al que usa la cátedra (Peaje: <code>buscarEstadoActual()</code> → <code>*esEstadoActual()</code> → <code>setFechaFinEstado()</code> → <code>crearHistorial()</code> → <code>new()</code>).
+      </Callout>
+
     </article>
   </main>
 </BaseLayout>
