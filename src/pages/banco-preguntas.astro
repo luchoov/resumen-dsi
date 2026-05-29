@@ -308,6 +308,94 @@ const preguntas: QA[] = [
     c: "Parcial teórico",
     q: "¿Cómo detecto inconsistencias entre artefactos de análisis?",
     a: "Cruzando las vistas: mensajes en la secuencia <strong>sin método</strong> en la clase receptora; métodos de clase que no aparecen en ninguna interacción; transiciones de la máquina <strong>sin método</strong> en la clase que cambia; <strong>nombres distintos</strong> para el mismo concepto entre vistas; multiplicidades/navegabilidades incoherentes con los mensajes; y estados de la máquina que la clase <code>Estado</code> no contempla. Cada inconsistencia genera ambigüedad y vuelve el modelo poco confiable."
+  },
+
+  // ── Estilo cátedra: secuencia y comunicación ───────────────────────────
+  {
+    c: "Interacción",
+    q: "¿La cátedra modela mensajes de retorno en el diagrama de secuencia?",
+    a: "<strong>No.</strong> En las realizaciones de análisis no se dibujan flechas de retorno (líneas punteadas) ni mensajes cuyo nombre sea un valor devuelto (<em>ok, datos, resultado</em>). El resultado de una consulta queda <strong>implícito</strong>: solo se dibujan mensajes hacia adelante y <em>self-calls</em>."
+  },
+  {
+    c: "Interacción",
+    q: "¿Qué es un self-call y cuándo es válido?",
+    a: "Es un mensaje que un objeto se envía a sí mismo. Es válido cuando, tras recibir un mensaje, resuelve algo con <strong>su propia información o responsabilidad</strong>: la pantalla con <code>habilitarVentana()</code>, el gestor con <code>validarHorarioHabil()</code> u <code>obtenerMediosDePago()</code> (catálogo sin dueño), o una entidad con <code>obtenerCuotasVencidas()</code> / <code>buscarEstadoActual()</code>. Si la información vive en otro objeto, el mensaje va hacia ese objeto (Experto), no como self."
+  },
+  {
+    c: "Interacción",
+    q: "¿Cómo se representa la iteración sobre una colección?",
+    a: "Con un <strong>asterisco</strong> delante del mensaje (<code>*getNombre()</code>) enviado desde el que itera (el gestor) <strong>hacia</strong> la entidad, o con un fragmento <code>loop</code> con guarda <code>[mientras haya X]</code>. Nunca como un self suelto en la entidad sin nadie que lo dispare."
+  },
+  {
+    c: "Interacción",
+    q: "¿Cómo se modela que el usuario elige un elemento de una lista?",
+    a: "Con el par <code>pedirSelecciónX()</code> (del gestor a la pantalla) y <code>tomarSelecciónX()</code> (del actor a la pantalla y de la pantalla al gestor). Primero el sistema ofrece, después el usuario responde."
+  },
+  {
+    c: "Interacción",
+    q: "Si necesito una colección filtrada, ¿expando el filtro en la secuencia?",
+    a: "No: se <strong>confía en el Experto</strong>. El mensaje <code>obtenerCuotasImpagas()</code> al objeto dueño ya devuelve la colección filtrada; no se dibujan los <code>estaPagada()</code> internos. Recién después se itera (<code>*mostrarDatos()</code>) para mostrarla."
+  },
+
+  // ── GRASP ──────────────────────────────────────────────────────────────
+  {
+    c: "GRASP",
+    q: "¿Por qué un cálculo recorre varias clases en cadena (delegación)?",
+    a: "Por <strong>Experto + Bajo Acoplamiento</strong>: cada objeto solo conoce a su vecino asociado, así que delega el cálculo al siguiente hasta llegar al verdadero Experto. Y por <strong>Polimorfismo</strong>: si el Experto es una clase abstracta con subtipos, cada subtipo calcula distinto sin que los de arriba se enteren (p. ej. <code>DefinicionMora</code> → <code>MoraPorcentual</code>/<code>MoraFija</code>)."
+  },
+  {
+    c: "GRASP",
+    q: "¿Quién crea un objeto según el patrón Creador?",
+    a: "La clase que lo <strong>contiene, agrega, registra</strong> o tiene sus datos de inicialización. Ejemplos: el <code>Préstamo</code> crea sus <code>Cuota</code>; la <code>Cuota</code> crea su <code>Recargo</code>; el <code>PlanDePago</code> crea sus <code>DetallePlanPago</code>."
+  },
+  {
+    c: "GRASP",
+    q: "¿Diferencia entre Bajo Acoplamiento y Alta Cohesión?",
+    a: "<strong>Bajo Acoplamiento</strong>: minimizar las dependencias entre clases (que cada una conozca lo mínimo). <strong>Alta Cohesión</strong>: que cada clase tenga responsabilidades enfocadas y relacionadas entre sí. Son fuerzas complementarias al asignar responsabilidades."
+  },
+
+  // ── Máquina de estados ─────────────────────────────────────────────────
+  {
+    c: "Máquina de estados",
+    q: "¿Cómo se rotula una transición en el estilo de la cátedra?",
+    a: "<code>Nº NombreCU [guarda] /metodo()</code>: el número y nombre del caso de uso que la dispara, una <strong>guarda</strong> entre corchetes cuando el mismo evento puede llevar a estados distintos, y el <strong>método</strong> que se ejecuta. Sin punto tras el número (ej. <code>10 Registrar Pedido /new()</code>)."
+  },
+  {
+    c: "Máquina de estados",
+    q: "¿Puede un mismo evento llevar a estados distintos?",
+    a: "Sí: es el patrón <strong>mismo evento, distinta guarda, distinto destino</strong>. Ej.: <code>Registrar Pago de Cuota</code> deja el préstamo <em>En Mora</em> <code>[quedan vencidas]</code>, lo pasa a <em>Vigente</em> <code>[no quedan]</code> o a <em>Finalizado</em> <code>[última cuota]</code>."
+  },
+  {
+    c: "Máquina de estados",
+    q: "¿Cómo se conserva el historial de estados de un objeto?",
+    a: "Con una clase <code>Estado</code> (catálogo) y una clase <code>CambioEstadoX</code> (registro con <code>fechaHoraInicio/Fin</code> y <code>esEstadoActual()</code>). El objeto tiene <code>1..*</code> <code>CambioEstadoX</code>; el actual es el único <strong>sin fechaHoraFin</strong>. Para cambiar de estado: <code>buscarEstadoActual()</code> (self), <code>setFechaHoraFin()</code> al cambio actual y <strong>crear</strong> un <code>CambioEstadoX</code> nuevo apuntando al <code>Estado</code> destino, sin pisar el anterior."
+  },
+
+  // ── Relaciones / vista de análisis ─────────────────────────────────────
+  {
+    c: "Relaciones",
+    q: "¿Cómo dibuja la cátedra las asociaciones en la vista de análisis?",
+    a: "<strong>Unidireccionales</strong> (flecha de navegabilidad) con la <strong>multiplicidad solo en la clase destino</strong>, no en ambos extremos. No usa rombos de composición/agregación aunque sean todo-parte; el «control» <strong>depende</strong> (línea punteada) de las entidades a las que envía mensajes."
+  },
+  {
+    c: "Relaciones",
+    q: "¿Cómo se decide el sentido de una asociación dirigida?",
+    a: "Por <strong>quién necesita mandar mensajes a quién</strong>: el agregado apunta a sus detalles y el detalle apunta a las entidades de catálogo que referencia. Cada método debe ser coherente con la navegabilidad (si A → B, B no tiene <code>getA()</code>)."
+  },
+  {
+    c: "Clases BCE",
+    q: "¿Qué pasa con el objeto «control» a lo largo del tiempo?",
+    a: "Suele <strong>crearse al iniciar</strong> el caso de uso y <strong>destruirse al terminar</strong> (encapsula esa conversación). Las <strong>entidades</strong> viven más allá y participan en varias realizaciones; una <strong>boundary</strong> puede compartirse entre pantallas."
+  },
+  {
+    c: "Interacción",
+    q: "Para asociar un objeto B dentro de A (asociación A → B), ¿a quién va el mensaje?",
+    a: "Al <strong>receptor que guarda la referencia</strong>, o sea a <code>A</code>; el objeto <code>B</code> viaja como <strong>parámetro</strong> (en el <code>new(...)</code> o en un <code>setB(b)</code>). Nunca al revés, porque con navegabilidad <code>A → B</code> el objeto <code>B</code> no conoce a <code>A</code>."
+  },
+  {
+    c: "Casos de uso",
+    q: "En la realización de un CU, ¿cuántos escenarios se modelan en el diagrama de secuencia?",
+    a: "Uno solo: el <strong>escenario principal</strong> (curso normal). Los cursos alternativos no se dibujan con <code>alt/opt</code>; si hace falta, se hace <strong>un diagrama por flujo</strong> y las condiciones van como guarda <code>[...]</code> sobre el mensaje."
   }
 ];
 
