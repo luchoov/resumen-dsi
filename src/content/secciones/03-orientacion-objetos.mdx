@@ -70,11 +70,9 @@ Un sistema orientado a objetos se piensa como una red de objetos que colaboran e
   participant P as Pedido
   participant D as DetallePedido
   UI->>G: confirmarPedido(datos)
-  G->>P: crear(datos)
+  G->>P: new(datos)
   P->>D: agregarProducto(producto, cantidad)
-  D-->>P: subtotal
-  P-->>G: total
-  G-->>UI: confirmación`} />
+  G->>UI: mostrarConfirmacion()`} />
 
 ### 2.7. Clases en el dominio del problema
 

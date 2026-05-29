@@ -178,12 +178,11 @@ Según los resúmenes, el objeto de <strong>control</strong> suele <em>crearse c
   participant B as :Boundary
   participant C as :Control
   participant E as :Entity
-  A->>B: evento
-  B->>C: delega evento
+  A->>B: opcionDelCU()
+  B->>B: habilitarVentana()
+  B->>C: registrar/procesar()
   C->>E: solicita dato / comportamiento
-  E-->>C: respuesta
-  C-->>B: resultado
-  B-->>A: muestra respuesta`} />
+  C->>B: mostrarResultado()`} />
 
 <DiagramaAnalisisOO
   modo="comunicacion"

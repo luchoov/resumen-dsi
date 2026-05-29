@@ -89,12 +89,12 @@ Ahora modelamos el <strong>escenario del curso normal</strong>. Estructura BCE: 
   loop campos habilitados
     C->>C: estaHabilitado()
   end
-  G-->>P: mostrarCamposHabilitados()
+  G->>P: mostrarCamposHabilitados()
   EL->>P: tomarSeleccionCampo()
   P->>G: tomarSeleccionCampo()
   G->>C: buscarLotesProyCultivo()
   C->>L: tieneProyectoCultivoVigente()
-  G-->>P: mostrarLotesConProyecto()
+  G->>P: mostrarLotesConProyecto()
   EL->>P: tomarSeleccionLaboreo()
   P->>G: tomarDatosLaboreo()
   G->>G: validarFechas()
@@ -102,7 +102,7 @@ Ahora modelamos el <strong>escenario del curso normal</strong>. Estructura BCE: 
   L->>Lab: new()
   G->>L: validarTipoLaboreo()
   L->>L: sembrar()
-  G-->>P: confirmacion()
+  G->>P: confirmacion()
   EL->>P: tomarSeleccionFinalizar()
   P->>G: finCU()`} />
 

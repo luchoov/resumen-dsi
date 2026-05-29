@@ -166,11 +166,10 @@ Los dos buscan <strong>bajo acoplamiento</strong>: asignan la responsabilidad a 
     participant B as PantallaPedido
     participant C as GestorRegistrarPedido
     participant E as Pedido
-    A->>B: registrar pedido
+    A->>B: opcionRegistrarPedido()
     B->>C: registrarPedido(datos)
-    C->>E: crear/validar
-    E-->>C: resultado
-    C-->>B: respuesta`} />
+    C->>E: new(datos)
+    C->>B: mostrarConfirmacion()`} />
   <EjemploReal titulo="¿Quién recibe 'registrar pedido'?" dominio="Caso cátedra">
     Cuando el empleado aprieta "registrar pedido", el evento no lo maneja la pantalla ni la entidad `Pedido`: lo recibe el `GestorRegistrarPedido` (controlador del caso de uso). Él orquesta los pasos —crear el pedido, agregar detalles, calcular total— pero delega el trabajo real a quien corresponde. Coordina, no hace todo.
   </EjemploReal>

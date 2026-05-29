@@ -67,14 +67,12 @@ Si el caso de uso tiene flujos o subflujos diferenciados, conviene crear un diag
   participant C as :GestorRegistrarPedido
   participant E1 as :Pedido
   participant E2 as :Producto
-  A->>B: solicita registrar pedido
+  A->>B: opcionRegistrarPedido()
+  B->>B: habilitarVentana()
   B->>C: registrarPedido(datos)
   C->>E2: verificarStock(items)
-  E2-->>C: stockDisponible
-  C->>E1: crear(datos, items)
-  E1-->>C: pedidoCreado
-  C-->>B: confirmación
-  B-->>A: muestra número de pedido`} />
+  C->>E1: new(datos, items)
+  C->>B: mostrarConfirmacion(nroPedido)`} />
 
 <DiagramaAnalisisOO
   modo="comunicacion"

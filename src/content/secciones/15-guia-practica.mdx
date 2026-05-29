@@ -363,11 +363,9 @@ En FIA F1 - CU Generar Orden de Traslado, Líneas Aéreas - Consultar Disponibil
   Pantalla->>Pantalla: habilitarVentana()
   Pantalla->>Gestor: iniciarCasoUso()
   Gestor->>Sesion: getUsuarioLogueado()
-  Sesion-->>Gestor: usuario
   Gestor->>Usuario: validarRolUsuarioLogueado()
   Gestor->>Entidad: buscarDatosIniciales()
-  Entidad-->>Gestor: datos
-  Gestor-->>Pantalla: mostrarDatos()
+  Gestor->>Pantalla: mostrarDatos()
   A->>Pantalla: tomarSeleccion()
   Pantalla->>Gestor: seleccionTomada()`} />
 
@@ -386,7 +384,7 @@ Este patrón aparece con países/provincias/ciudades en Líneas Aéreas y con ci
   loop mientras existan items
     Catalogo->>Item: getNombre()
   end
-  Gestor-->>Pantalla: listarOpciones()
+  Gestor->>Pantalla: listarOpciones()
   A->>Pantalla: seleccionOpcion()
   Pantalla->>Gestor: opcionSeleccionada()`} />
 
@@ -1012,7 +1010,7 @@ Actor selecciona opción, pantalla se habilita, gestor busca datos, pantalla mue
   Pantalla->>Pantalla: habilitarVentana()
   Pantalla->>Gestor: iniciarCU()
   Gestor->>Entidad: buscar()
-  Gestor-->>Pantalla: mostrarOListar()
+  Gestor->>Pantalla: mostrarOListar()
   A->>Pantalla: seleccion()
   Pantalla->>Gestor: tomarSeleccion()`} />
 
@@ -1131,8 +1129,7 @@ El gestor no decide solo si el objeto puede participar del caso de uso. Recorre 
   Pantalla->>Pantalla: habilitarVentana()
   Pantalla->>Gestor: iniciarCasoUso()
   Gestor->>Entidad: buscarDatos()
-  Entidad-->>Gestor: datos
-  Gestor-->>Pantalla: mostrarDatos()
+  Gestor->>Pantalla: mostrarDatos()
   A->>Pantalla: confirmar()
   Pantalla->>Gestor: tomarConfirmacion()
   Gestor->>Entidad: metodoDeNegocio()`} />
