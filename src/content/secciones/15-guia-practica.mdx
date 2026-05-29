@@ -19,7 +19,7 @@ Los tres diagramas se corrigen juntos:
 - El <strong>diagrama de clases de análisis</strong> consolida las clases, atributos, métodos, relaciones, multiplicidades y navegabilidad que aparecieron en la dinámica.
 
 <Callout tipo="info" titulo="Fuentes prácticas revisadas">
-Los patrones salen de los PDFs y `.mmd` de `docs/fuente/practico` y de los tips de construcción de artefactos del Modelo de Análisis: FIA F1 - Orden de Traslado, Líneas Aéreas - Vuelo, Guía 2026 de Máquina de Estados, PPA Peaje, Festival + DiaFestival, Publicidad Multipunto, Frigorífico, Administración de Campos, Crustáceo Cascarudo, Estrella de la Muerte y casos de requerimientos. Se priorizan ejemplos donde aparecen soluciones oficiales o diagramas ya resueltos.
+Los patrones provienen de los casos resueltos de la cátedra: FIA F1 - Orden de Traslado, Líneas Aéreas - Vuelo, Guía 2026 de Máquina de Estados, PPA Peaje, Publicidad Multipunto, Administración de Campos, Crustáceo Cascarudo y Pizzería, además de los casos de requerimientos. Se priorizan ejemplos con soluciones oficiales o diagramas ya resueltos.
 </Callout>
 
 ### 14.2. Método general para encarar un ejercicio
@@ -748,7 +748,7 @@ Ejemplos:
   GestorVuelo->>PantallaEstados: actualizarEstadoVuelos()
   GestorVuelo->>PantallaConsulta: actualizarEstadoVuelos()`} />
 
-En Publicidad Multipunto, cuando se actualiza una tanda publicitaria vigente, se notifica a pantallas de puntos de emisión y a la vista previa. El PDF de diseño lo resuelve con Observer, pero el patrón de análisis sigue siendo detectar interesados y mostrar el loop de notificación.
+En Publicidad Multipunto, cuando se actualiza una tanda publicitaria vigente, se notifica a las pantallas de los puntos de emisión y a la vista previa. En diseño esto se resuelve con Observer; en análisis el patrón sigue siendo detectar a los interesados y mostrar el loop de notificación.
 
 <ChecklistRepaso
   id="practica-secuencia"
