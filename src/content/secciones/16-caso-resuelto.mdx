@@ -67,7 +67,7 @@ El proyecto nace *EnPreparación* (al registrarlo) y avanza a medida que se regi
   Cancelado --> [*]`} />
 
 <Callout tipo="atencion">
-La sintaxis de cátedra para cada transición es <code>Nº CU. Nombre del CU [guarda] / metodo()</code>. La <strong>transición a sí mismo</strong> (`EnPreparacion → EnPreparacion`) representa registrar un laboreo que <em>no</em> es siembra: el proyecto sigue en el mismo estado. Y una <strong>misma transición con guardas distintas</strong> (`[siembra = SI]` vs `[siembra = NO]`) muestra que el mismo evento puede llevar a estados diferentes.
+La sintaxis de cátedra para cada transición es <code>Nº NombreCU [guarda] /metodo()</code> (sin punto tras el número, como en "10 Registrar Pedido /new()"). La <strong>transición a sí mismo</strong> (`EnPreparacion → EnPreparacion`) representa registrar un laboreo que <em>no</em> es siembra: el proyecto sigue en el mismo estado. Y una <strong>misma transición con guardas distintas</strong> (`[siembra = SI]` vs `[siembra = NO]`) muestra que el mismo evento puede llevar a estados diferentes.
 </Callout>
 
 ### 15.4. Paso 3 — Diagrama de secuencia (realización del CU)
@@ -197,7 +197,7 @@ Si en la máquina pusiste <code>/ sembrar()</code>, ese mensaje <strong>debe ver
   id="caso-resuelto-final"
   preguntas={[
     "¿Identifiqué la clase con ciclo de vida y le hice la máquina de estados?",
-    "¿Las transiciones usan la sintaxis Nº CU. Nombre [guarda] / metodo()?",
+    "¿Las transiciones usan la sintaxis Nº NombreCU [guarda] /metodo()?",
     "¿La secuencia arranca con actor → pantalla → gestor → entidades?",
     "¿Usé loops para las colecciones y finCU() al cerrar?",
     "¿Cada objeto de la secuencia es una clase y cada mensaje entrante un método?",
