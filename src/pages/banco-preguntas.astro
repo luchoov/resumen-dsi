@@ -353,6 +353,41 @@ const preguntas: QA[] = [
     q: "¿Diferencia entre Bajo Acoplamiento y Alta Cohesión?",
     a: "<strong>Bajo Acoplamiento</strong>: minimizar las dependencias entre clases (que cada una conozca lo mínimo). <strong>Alta Cohesión</strong>: que cada clase tenga responsabilidades enfocadas y relacionadas entre sí. Son fuerzas complementarias al asignar responsabilidades."
   },
+  {
+    c: "GRASP",
+    q: "Dado un diagrama, ¿cómo identifico qué patrones GRASP se aplican?",
+    a: "Mirar los <strong>mensajes</strong> y sus receptores: <code>Pantalla -> Gestor</code> suele evidenciar <strong>Controlador</strong>; <code>Gestor -> Entidad : calcular/validar</code> evidencia <strong>Experto</strong> si la entidad conoce los datos; <code>Todo -> Parte : &lt;&lt;create&gt;&gt;</code> evidencia <strong>Creador</strong>; delegar en entidades en vez de pedir getters favorece <strong>Bajo Acoplamiento</strong>; y que cada clase haga tareas propias evidencia <strong>Alta Cohesión</strong>."
+  },
+  {
+    c: "GRASP",
+    q: "Dado un diagrama, ¿cómo identifico qué patrones GRASP NO se aplican y cómo corregirlos?",
+    a: "Si la pantalla habla con varias entidades, falta <strong>Controlador</strong>: introducir un gestor. Si el gestor pide muchos getters y calcula con datos ajenos, faltan <strong>Experto</strong> y <strong>Bajo Acoplamiento</strong>: delegar al objeto que conoce. Si una clase mezcla cálculos, reportes, notificaciones y facturación, falta <strong>Alta Cohesión</strong>: separar responsabilidades. Si una parte la crea alguien que no la contiene ni registra, falta <strong>Creador</strong>: mover la creación al todo o registro natural."
+  },
+  {
+    c: "GRASP",
+    q: "Compare Experto y Creador.",
+    a: "<strong>Experto</strong> responde quién debe calcular, validar, derivar o informar algo: la clase que posee la información necesaria. <strong>Creador</strong> responde quién debe instanciar un objeto: quien lo contiene, agrega, registra, usa fuertemente o tiene sus datos de inicialización. Ambos asignan responsabilidades y suelen favorecer bajo acoplamiento, pero resuelven preguntas distintas."
+  },
+  {
+    c: "GRASP",
+    q: "¿Por qué Creador no es una especialización formal de Experto?",
+    a: "Porque no responden la misma pregunta. <strong>Experto</strong> decide quién debe hacer o conocer algo por tener la información necesaria. <strong>Creador</strong> decide quién debe crear una instancia por contenerla, agregarla, registrarla, usarla o tener datos de inicialización. Pueden coincidir en una misma clase, pero Creador no deriva formalmente de Experto."
+  },
+  {
+    c: "GRASP",
+    q: "Explique cómo Controlador, Experto, Bajo Acoplamiento y Alta Cohesión se relacionan en una misma secuencia.",
+    a: "La secuencia típica es <code>Actor -> Boundary -> Gestor -> Entidades</code>. El <strong>Controlador</strong> recibe el evento y coordina; el <strong>Experto</strong> resuelve porque conoce los datos; el <strong>Bajo Acoplamiento</strong> aparece porque el gestor delega en vez de pedir datos internos; y la <strong>Alta Cohesión</strong> se mantiene porque el gestor coordina mientras las entidades hacen operaciones propias."
+  },
+  {
+    c: "GRASP",
+    q: "Dé un ejemplo y contraejemplo de Alta Cohesión.",
+    a: "Ejemplo: <code>Consulta.calcularDuracion()</code>, <code>Consulta.agregarDetalleConsulta()</code> y <code>Consulta.calcularMontoTotal()</code>, porque todo pertenece al concepto Consulta. Contraejemplo: <code>Consulta.enviarWhatsapp()</code>, <code>Consulta.generarFactura()</code> e <code>Consulta.imprimirReporteMensual()</code>, porque mezcla comunicación, facturación y reportes."
+  },
+  {
+    c: "GRASP",
+    q: "Dé un ejemplo y contraejemplo de Bajo Acoplamiento.",
+    a: "Ejemplo: <code>GestorVentaEntrada -> Funcion : hayLugar()</code>, porque el gestor delega y no conoce sala ni entradas por dentro. Contraejemplo: el gestor pide <code>Sala.getCapacidad()</code>, recorre <code>Entrada</code> y calcula disponibilidad; queda acoplado a detalles internos que deberían estar encapsulados en <code>Funcion</code>."
+  },
 
   // ── Máquina de estados ─────────────────────────────────────────────────
   {

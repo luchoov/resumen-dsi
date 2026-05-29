@@ -90,42 +90,61 @@ const { indiceBusqueda } = Astro.props;
     setTimeout(() => input?.focus(), 0);
   };
 
-  // ClientRouter swaps the <body> on navigation without re-running module scripts,
-  // so re-bind every listener on each astro:page-load (also fires on first load).
+  let topbarController: AbortController | null = null;
+
+  const initTopbarWhenReady = (callback: () => void) => {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", callback, { once: true });
+      return;
+    }
+
+    callback();
+  };
+
+  // ClientRouter swaps the <body> on navigation, so re-bind listeners after each page load.
   const initTopbar = () => {
+    topbarController?.abort();
+    topbarController = new AbortController();
+    const { signal } = topbarController;
+
     const rawIndex = document.getElementById("search-index")?.textContent ?? "[]";
     indice = JSON.parse(rawIndex) as Entrada[];
     fuse = new Fuse(indice, { keys: ["titulo", "resumen", "keywords"], threshold: 0.35, ignoreLocation: true });
 
     document.getElementById("theme-toggle")?.addEventListener("click", () => {
       applyTheme(document.documentElement.classList.contains("dark") ? "light" : "dark");
-    });
+    }, { signal });
     document.getElementById("toggle-indices")?.addEventListener("click", () => {
       const hidden = document.documentElement.classList.toggle("indices-hidden");
       localStorage.setItem("indices", hidden ? "hidden" : "shown");
-    });
-    document.getElementById("abrir-busqueda")?.addEventListener("click", openSearch);
-    document.getElementById("abrir-busqueda-mobile")?.addEventListener("click", openSearch);
+    }, { signal });
+    document.getElementById("abrir-busqueda")?.addEventListener("click", openSearch, { signal });
+    document.getElementById("abrir-busqueda-mobile")?.addEventListener("click", openSearch, { signal });
     document.getElementById("input-busqueda")?.addEventListener("input", (event) => {
       renderResults((event.target as HTMLInputElement).value);
-    });
+    }, { signal });
     document.getElementById("resultados-busqueda")?.addEventListener("click", (event) => {
       if ((event.target as HTMLElement).closest("a")) {
         (document.getElementById("dialog-busqueda") as HTMLDialogElement | null)?.close();
       }
-    });
+    }, { signal });
     document.getElementById("abrir-sidebar")?.addEventListener("click", () => {
       document.documentElement.classList.add("sidebar-open");
-    });
+    }, { signal });
   };
 
   // window persists across view transitions, so bind the shortcut only once.
-  window.addEventListener("keydown", (event) => {
-    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
-      event.preventDefault();
-      openSearch();
-    }
-  });
+  const topbarWindow = window as Window & { __dsiSearchShortcutReady?: boolean };
+  if (!topbarWindow.__dsiSearchShortcutReady) {
+    topbarWindow.__dsiSearchShortcutReady = true;
+    window.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        openSearch();
+      }
+    });
+  }
 
+  initTopbarWhenReady(initTopbar);
   document.addEventListener("astro:page-load", initTopbar);
 </script>

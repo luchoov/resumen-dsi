@@ -101,20 +101,22 @@ function connectionPath(conexion: ConexionAnalisis) {
   </div>
 </figure>
 
-<dialog class="analysis-dialog w-[min(92rem,calc(100vw-2rem))] rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--popover))] p-0 text-[hsl(var(--popover-foreground))] shadow-2xl backdrop:bg-black/70">
-  <div class="flex items-center justify-between border-b border-[hsl(var(--border))] p-3">
-    <strong class="text-sm">{caption ?? "Diagrama"}</strong>
-    <div class="flex items-center gap-2">
-      <button type="button" class="diagram-zoom-out rounded-lg border border-[hsl(var(--border))] px-3 py-1.5 text-sm" aria-label="Alejar">-</button>
-      <button type="button" class="diagram-zoom-reset rounded-lg border border-[hsl(var(--border))] px-3 py-1.5 text-sm">100%</button>
-      <button type="button" class="diagram-zoom-in rounded-lg border border-[hsl(var(--border))] px-3 py-1.5 text-sm" aria-label="Acercar">+</button>
-      <form method="dialog"><button class="rounded-lg border border-[hsl(var(--border))] px-3 py-1.5 text-sm">Cerrar</button></form>
+<dialog class="analysis-dialog w-[min(92rem,calc(100vw-0.75rem))] max-h-[calc(100dvh-0.75rem)] overflow-hidden rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--popover))] p-0 text-[hsl(var(--popover-foreground))] shadow-2xl backdrop:bg-black/70">
+  <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[hsl(var(--border))] p-2 sm:p-3">
+    <strong class="min-w-0 flex-1 truncate text-sm">{caption ?? "Diagrama"}</strong>
+    <div class="flex shrink-0 items-center gap-1 sm:gap-2">
+      <button type="button" class="diagram-zoom-out h-9 min-w-9 rounded-lg border border-[hsl(var(--border))] px-2 text-sm sm:px-3" aria-label="Alejar">-</button>
+      <button type="button" class="diagram-zoom-reset h-9 min-w-14 rounded-lg border border-[hsl(var(--border))] px-2 text-sm sm:px-3">100%</button>
+      <button type="button" class="diagram-zoom-in h-9 min-w-9 rounded-lg border border-[hsl(var(--border))] px-2 text-sm sm:px-3" aria-label="Acercar">+</button>
+      <form method="dialog"><button class="h-9 rounded-lg border border-[hsl(var(--border))] px-2 text-sm sm:px-3">Cerrar</button></form>
     </div>
   </div>
-  <div class="diagram-viewport analysis-dialog-body h-[min(78vh,52rem)] overflow-hidden bg-[hsl(var(--background))]"></div>
+  <div class="diagram-viewport analysis-dialog-body h-[calc(100dvh-5.75rem)] overflow-hidden bg-[hsl(var(--background))] sm:h-[min(78dvh,52rem)]"></div>
 </dialog>
 
 <script>
+  import { setupDiagramPanZoom } from "@/lib/diagram-panzoom";
+
   document.querySelectorAll<HTMLElement>("[data-analysis-root]").forEach((root) => {
     const button = root.querySelector<HTMLButtonElement>(".analysis-fullscreen");
     const dialog = root.nextElementSibling as HTMLDialogElement | null;
@@ -132,7 +134,7 @@ function connectionPath(conexion: ConexionAnalisis) {
       surface.append(svg);
       body.append(surface);
       dialog.showModal();
-      setupPanZoom(dialog, surface);
+      setupDiagramPanZoom(dialog, surface);
     };
     button?.addEventListener("click", (event) => {
       event.stopPropagation();
@@ -144,61 +146,6 @@ function connectionPath(conexion: ConexionAnalisis) {
     });
   });
 
-  function setupPanZoom(dialog: HTMLDialogElement, surface: HTMLElement) {
-    const viewport = dialog.querySelector<HTMLElement>(".diagram-viewport");
-    const zoomIn = dialog.querySelector<HTMLButtonElement>(".diagram-zoom-in");
-    const zoomOut = dialog.querySelector<HTMLButtonElement>(".diagram-zoom-out");
-    const reset = dialog.querySelector<HTMLButtonElement>(".diagram-zoom-reset");
-    if (!viewport) return;
-    let scale = 1;
-    let x = 24;
-    let y = 24;
-    let dragging = false;
-    let startX = 0;
-    let startY = 0;
-    const apply = () => {
-      surface.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
-      if (reset) reset.textContent = `${Math.round(scale * 100)}%`;
-    };
-    const zoom = (delta: number, originX = viewport.clientWidth / 2, originY = viewport.clientHeight / 2) => {
-      const next = Math.min(4, Math.max(0.4, scale + delta));
-      const ratio = next / scale;
-      x = originX - (originX - x) * ratio;
-      y = originY - (originY - y) * ratio;
-      scale = next;
-      apply();
-    };
-    zoomIn?.addEventListener("click", () => zoom(0.2));
-    zoomOut?.addEventListener("click", () => zoom(-0.2));
-    reset?.addEventListener("click", () => {
-      scale = 1;
-      x = 24;
-      y = 24;
-      apply();
-    });
-    viewport.addEventListener("wheel", (event) => {
-      event.preventDefault();
-      const rect = viewport.getBoundingClientRect();
-      zoom(event.deltaY > 0 ? -0.12 : 0.12, event.clientX - rect.left, event.clientY - rect.top);
-    }, { passive: false });
-    viewport.addEventListener("pointerdown", (event) => {
-      dragging = true;
-      startX = event.clientX - x;
-      startY = event.clientY - y;
-      viewport.setPointerCapture(event.pointerId);
-    });
-    viewport.addEventListener("pointermove", (event) => {
-      if (!dragging) return;
-      x = event.clientX - startX;
-      y = event.clientY - startY;
-      apply();
-    });
-    viewport.addEventListener("pointerup", (event) => {
-      dragging = false;
-      viewport.releasePointerCapture(event.pointerId);
-    });
-    apply();
-  }
 </script>
 
 <style>
@@ -209,16 +156,17 @@ function connectionPath(conexion: ConexionAnalisis) {
     transform: translate(-50%, -50%);
   }
 
-  .diagram-viewport {
+  :global(.diagram-viewport) {
     cursor: grab;
     touch-action: none;
+    overscroll-behavior: contain;
   }
 
-  .diagram-viewport:active {
+  :global(.diagram-viewport:active) {
     cursor: grabbing;
   }
 
-  .diagram-surface {
+  :global(.diagram-surface) {
     width: max-content;
     transform-origin: 0 0;
     will-change: transform;

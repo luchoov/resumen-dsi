@@ -24,15 +24,15 @@ const { nombre, ideaCentral, problema, solucion, beneficios, ejemploTitulo } = A
   <div class="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
     <div class="space-y-4">
       <div>
-        <h4 class="!mt-0">Problema</h4>
+        <h4 class="!mt-0">Pregunta que responde</h4>
         <p>{problema}</p>
       </div>
       <div>
-        <h4>Solución</h4>
+        <h4>Definición corta</h4>
         <p>{solucion}</p>
       </div>
       <div>
-        <h4>Beneficios</h4>
+        <h4>Por qué importa</h4>
         <ul>
           {beneficios.map((beneficio) => <li>{beneficio}</li>)}
         </ul>

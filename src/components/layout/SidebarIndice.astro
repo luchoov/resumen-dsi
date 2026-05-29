@@ -40,16 +40,38 @@ const { secciones, activa } = Astro.props;
 <div id="sidebar-backdrop" class="fixed inset-0 z-40 hidden bg-black/60 no-print lg:hidden"></div>
 
 <script>
+  let sidebarController: AbortController | null = null;
+
+  const initSidebarWhenReady = (callback: () => void) => {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", callback, { once: true });
+      return;
+    }
+
+    callback();
+  };
+
   const closeSidebar = () => document.documentElement.classList.remove("sidebar-open");
-  document.getElementById("cerrar-sidebar")?.addEventListener("click", closeSidebar);
-  document.getElementById("sidebar-backdrop")?.addEventListener("click", closeSidebar);
-  document.getElementById("sidebar-indice")?.addEventListener("click", (event) => {
-    if ((event.target as HTMLElement).closest("a")) closeSidebar();
-  });
+
+  const initSidebar = () => {
+    sidebarController?.abort();
+    sidebarController = new AbortController();
+    const { signal } = sidebarController;
+
+    document.getElementById("cerrar-sidebar")?.addEventListener("click", closeSidebar, { signal });
+    document.getElementById("sidebar-backdrop")?.addEventListener("click", closeSidebar, { signal });
+    document.getElementById("sidebar-indice")?.addEventListener("click", (event) => {
+      if ((event.target as HTMLElement).closest("a")) closeSidebar();
+    }, { signal });
+  };
+
+  initSidebarWhenReady(initSidebar);
+  document.addEventListener("astro:page-load", initSidebar);
 </script>
 
 <style>
   :global(.sidebar-open #sidebar-indice) {
+    translate: 0 0;
     transform: translateX(0);
   }
 

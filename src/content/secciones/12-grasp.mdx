@@ -3,194 +3,308 @@ id: "sec-12"
 numero: 11
 titulo: "Patrones GRASP para análisis"
 slug: "12-grasp"
-resumen: "GRASP ayuda a decidir dónde ubicar responsabilidades en objetos para lograr bajo acoplamiento, alta cohesión y diseños más flexibles."
+resumen: "GRASP ayuda a asignar responsabilidades en análisis y a justificar diagramas de secuencia y clases en parciales."
 keywords: ["GRASP", "responsabilidad", "experto", "creador", "controlador", "bajo acoplamiento", "alta cohesión"]
-relacionadas: ["06-clases-analisis", "13-relaciones-clave"]
+relacionadas: ["06-clases-analisis", "11-secuencia-comunicacion", "13-relaciones-clave", "17-parcial-teorico"]
 ---
 
 ### 11.1. Qué son los patrones GRASP
 
 <Definicion termino="GRASP">
-<strong>GRASP</strong> significa Patrones Generales de Asignación de Responsabilidades en Software.
+<strong>GRASP</strong> significa Patrones Generales de Asignación de Responsabilidades en Software. En análisis se usan como criterios para decidir qué objeto conceptual debe conocer, hacer, crear o coordinar algo.
 </Definicion>
 
-Ayudan a decidir qué objeto debe asumir cada responsabilidad en un diseño orientado a objetos. En análisis son claves para evitar pantallas con lógica, controladores saturados o entidades anémicas.
+En esta unidad la cátedra trabaja con cinco patrones GRASP de análisis:
 
-<MermaidDiagram caption="GRASP como brújula de responsabilidades" code={`flowchart TB
+- <strong>Experto en Información</strong>.
+- <strong>Creador</strong>.
+- <strong>Controlador</strong>.
+- <strong>Bajo Acoplamiento</strong>.
+- <strong>Alta Cohesión</strong>.
+
+No son recetas para escribir código ni patrones de diseño de la Unidad 2. Sirven para defender decisiones en una realización de caso de uso: por qué un mensaje va a una entidad, por qué una creación ocurre en el todo, por qué la pantalla no habla con todas las clases o por qué un gestor queda mal si calcula todo con datos ajenos.
+
+<Callout tipo="tip" titulo="Idea para parcial">
+En un diagrama de secuencia, GRASP se justifica mirando <strong>quién recibe cada mensaje</strong>. La pregunta no es solo "qué patrón aparece", sino "por qué esa responsabilidad quedó en ese objeto y no en otro".
+</Callout>
+
+<MermaidDiagram caption="GRASP como criterios de asignación de responsabilidades" code={`flowchart TB
   GRASP((GRASP))
-  GRASP --> Asignar[Asignar responsabilidades]
-  GRASP --> Mantener[Mantener diseno sano]
-  GRASP --> Proteger[Proteger frente a cambios]
-  Asignar --> Experto
-  Asignar --> Creador
-  Asignar --> Controlador
-  Mantener --> Bajo[Bajo acoplamiento]
-  Mantener --> Alta[Alta cohesion]`} />
+  GRASP --> Hacer[Responsabilidades de hacer]
+  GRASP --> Conocer[Responsabilidades de conocer]
+  Hacer --> Experto
+  Hacer --> Creador
+  Hacer --> Controlador
+  Conocer --> Experto
+  Experto --> Bajo[Bajo acoplamiento]
+  Controlador --> Alta[Alta cohesion]
+  Creador --> Bajo
+  Bajo --> Diseno[Solucion defendible en parcial]
+  Alta --> Diseno`} />
 
 ### 11.2. Responsabilidades de hacer y conocer
 
-Las responsabilidades que asignamos a un objeto (definidas en su clase) caen en dos grandes categorías: <strong>conocer</strong> y <strong>hacer</strong>.
+La fuente de cátedra clasifica las responsabilidades en dos grupos: <strong>hacer</strong> y <strong>conocer</strong>. Esa clasificación es la base para entender GRASP.
 
 <TablaComparativa
-  caption="Tipos de responsabilidad"
-  columnas={["Tipo", "Qué implica", "Ejemplo"]}
+  caption="Responsabilidades según la fuente de cátedra"
+  columnas={["Tipo", "Subtipo", "Qué significa", "Ejemplo de lectura"]}
   filas={[
-    ["Hacer", "Crear, modificar estado, calcular, iniciar acciones o coordinar.", "Pedido.calcularTotal()."],
-    ["Conocer", "Conocer datos privados, objetos relacionados o información derivable.", "Catálogo conoce productos existentes."]
+    ["<strong>Hacer</strong>", "Hacer algo en uno mismo.", "El objeto ejecuta una acción propia, modifica su estado, calcula o crea algo que le corresponde.", "<code>Consulta.calcularMontoTotal()</code>."],
+    ["<strong>Hacer</strong>", "Iniciar una acción en otros objetos.", "El objeto envía un mensaje a otro para que ese otro resuelva su responsabilidad.", "<code>GestorVentaEntrada -> Funcion : hayLugar()</code>."],
+    ["<strong>Hacer</strong>", "Controlar y coordinar actividades en otros objetos.", "El objeto organiza la colaboración entre pantalla, entidades y objetos relacionados.", "<code>GestorRegistrarConsulta.registrarConsulta(datos)</code>."],
+    ["<strong>Conocer</strong>", "Conocer datos privados encapsulados.", "El objeto sabe sus propios atributos y no obliga a otros a manipularlos.", "<code>Paciente</code> conoce <code>fechaNacimiento</code>."],
+    ["<strong>Conocer</strong>", "Conocer objetos relacionados.", "El objeto sabe con qué otros objetos está asociado.", "<code>Funcion</code> conoce su <code>Sala</code> y sus <code>Entrada</code>."],
+    ["<strong>Conocer</strong>", "Conocer cosas derivables o calculables.", "El objeto puede obtener información a partir de lo que ya conoce.", "<code>Viaje.calcularDuracionSinPausas()</code>."]
   ]}
 />
 
-#### 11.2.1. Los tres tipos de responsabilidad del *hacer*
+En análisis, una responsabilidad todavía es <strong>conceptual</strong>. Puede aparecer nombrada como un mensaje o una operación, pero no obliga a definir firma completa, tipo de retorno, excepciones, framework, base de datos ni algoritmo final. Por ejemplo, decir que `Funcion` responde `hayLugar()` alcanza para análisis: el detalle exacto de implementación queda para diseño.
 
-El <strong>hacer</strong> no es uno solo: se subdivide en tres formas, y distinguirlas es una pregunta clásica de parcial.
+### 11.3. Cómo leer GRASP en diagramas
+
+Para contestar parciales conviene mirar tres cosas:
+
+- <strong>El mensaje:</strong> qué responsabilidad se está pidiendo.
+- <strong>El receptor:</strong> qué objeto quedó encargado de cumplirla.
+- <strong>La información usada:</strong> si el receptor conoce lo necesario o si el emisor está sacando datos para calcular afuera.
 
 <TablaComparativa
-  caption="Subtipos de la responsabilidad de hacer"
-  columnas={["Subtipo", "Qué implica", "Ejemplo", "GRASP afín"]}
+  caption="Preguntas guía para leer una secuencia"
+  columnas={["Si veo...", "Me pregunto...", "Patrón probable"]}
   filas={[
-    ["<strong>Hacer algo en uno mismo</strong>", "Crear un objeto, hacer un cálculo o modificar el propio estado usando los datos que la clase ya conoce.", "<code>Pedido.calcularTotal()</code> suma sus detalles; <code>Pantalla</code> asigna a sus atributos lo que el actor tipea.", "Experto / Creador"],
-    ["<strong>Iniciar una acción en otros objetos</strong>", "Enviar un mensaje a otro objeto para que haga algo o responda por su información.", "El <code>Gestor</code> consulta <code>Producto.tieneNombre()</code> o le pide a <code>Vehículo.esConPatente()</code>.", "Experto (en el receptor)"],
-    ["<strong>Controlar y coordinar actividades en otros objetos</strong>", "Orquestar la secuencia de mensajes entre varios objetos para cumplir un caso de uso.", "El <code>Gestor</code> coordina el flujo: pide datos, valida, crea entidades y notifica, en orden.", "Controlador"]
+    ["<code>Pantalla -> Gestor : operacion(datos)</code>", "¿El gestor recibe el evento del sistema y coordina el caso de uso?", "Controlador."],
+    ["<code>Gestor -> Entidad : calcularAlgo()</code>", "¿La entidad conoce los datos necesarios para responder?", "Experto en Información y Bajo Acoplamiento."],
+    ["<code>Todo -> Parte : &lt;&lt;create&gt;&gt;</code>", "¿El todo contiene, agrega o registra la parte?", "Creador."],
+    ["Muchos <code>get...</code> hacia varias entidades", "¿Alguien está calculando con datos ajenos?", "Falta Experto y suele subir el acoplamiento."],
+    ["Un objeto mezcla coordinación, cálculo, reportes y notificaciones", "¿Está haciendo más de una idea funcional?", "Falta Alta Cohesión."]
   ]}
 />
-
-<Callout tipo="tip">
-Truco de lectura del diagrama de secuencia: un mensaje de un objeto <strong>a sí mismo</strong> (reflexivo) suele ser "hacer algo en uno mismo"; un mensaje <strong>hacia otro objeto</strong> es "iniciar una acción en otros"; y el objeto que <strong>envía y recibe la mayoría de los mensajes en orden</strong> (típicamente el gestor) es el que "controla y coordina".
-</Callout>
-
-### 11.3. Responsabilidad versus método
-
-Una <strong>responsabilidad</strong> es una obligación conceptual del objeto. Un <strong>método</strong> es una operación concreta que implementa una responsabilidad.
-
-En análisis se habla más de responsabilidades que de métodos con firma completa. El método aparece como una forma de nombrar el mensaje, pero todavía no se decide tipo de retorno, excepción, framework, base de datos ni detalles de implementación.
-
-<MermaidDiagram caption="Dónde se decide la asignación de responsabilidades" code={`flowchart LR
-  RCU[Realizacion de caso de uso] --> INT[Diagramas de interaccion]
-  INT --> MSG[Mensajes entre objetos]
-  MSG --> RESP[Asignacion de responsabilidades]
-  RESP --> GRASP[Patrones GRASP]
-  GRASP --> CLASES[Clases mas cohesivas y menos acopladas]`} />
 
 ### 11.4. Patrón Experto en Información
 
 <PatronGRASP
   nombre="Experto en Información"
   ideaCentral="Lo hace quien conoce."
-  problema="¿A qué clase se le debe asignar una responsabilidad?"
-  solucion="Asignar la responsabilidad a la clase que tiene la información necesaria para cumplirla."
-  beneficios={["Distribuye comportamiento entre clases que poseen información.", "Favorece bajo acoplamiento.", "Evita concentrar lógica en controladores o fronteras."]}
-  ejemploTitulo="Validar existencia de un Festival"
+  problema="¿A qué clase se le debe asignar una responsabilidad de calcular, validar, derivar o responder algo?"
+  solucion="Asignar la responsabilidad a la clase que posee la información necesaria para cumplirla."
+  beneficios={["Ubica el comportamiento junto a los datos que usa.", "Evita que el gestor o la pantalla conozcan detalles internos.", "Favorece bajo acoplamiento y clases de entidad con comportamiento."]}
+  ejemploTitulo="Mensaje al objeto que sabe resolver"
 >
-  <MermaidDiagram caption="Experto: antes vs después" code={`classDiagram
-    class PantallaRegistrar {
-      <<boundary>>
-      +validarFestival(datos)
-    }
-    class CatalogoFestivales {
-      <<entity>>
-      -festivales
-      +existe(datos) bool
-    }
-    class GestorRegistrar {
-      <<control>>
-      +registrar(datos)
-    }
-    PantallaRegistrar ..> CatalogoFestivales : antes logica en UI
-    GestorRegistrar --> CatalogoFestivales : despues consulta experto`} />
-  <EjemploReal titulo="¿Quién calcula el total del pedido?" dominio="Caso cátedra">
-    El `Pedido` de la pizzería es el experto: él conoce sus `DetallePedido`, y cada detalle conoce su pizza y cantidad. Por eso `Pedido.calcularTotal()` suma los subtotales de sus detalles. Sería un error que lo calcule la `PantallaRegistrarPedido` (no tiene los datos) o el gestor (no es su info).
-  </EjemploReal>
+  <MermaidDiagram caption="Experto: pedir la edad al Paciente" code={`sequenceDiagram
+    participant G as GestorRegistrarConsulta
+    participant P as Paciente
+    G->>P: calcularEdad()
+    Note right of P: Paciente conoce fechaNacimiento`} />
 </PatronGRASP>
+
+#### 11.4.1. Pregunta que responde
+
+¿Quién debe hacer o conocer algo cuando esa responsabilidad depende de cierta información?
+
+#### 11.4.2. Definición corta
+
+Se asigna la responsabilidad a la clase que posee la información necesaria para cumplirla. Sirve especialmente para cálculos, validaciones, derivaciones o respuestas sobre información propia.
+
+#### 11.4.3. Cómo detectarlo en un diagrama de secuencia o clases
+
+- En secuencia, un objeto recibe un mensaje que puede resolver con sus atributos o asociaciones.
+- En clases, la clase receptora tiene los datos, la colección o las relaciones necesarias.
+- Puede verse como mensaje reflexivo, pero <strong>Experto no significa necesariamente self-call</strong>.
+- También hay Experto cuando el gestor le pide a una entidad que resuelva algo que esa entidad sabe resolver.
+
+<Callout tipo="atencion" titulo="Self-call no es sinónimo de Experto">
+Un mensaje a sí mismo suele indicar que el objeto hace algo propio, pero el patrón se justifica por la información que posee. Si el gestor hace un self-call para calcular con datos de <code>Paciente</code>, no es buen Experto: el experto sería <code>Paciente</code>.
+</Callout>
+
+#### 11.4.4. Ejemplo correcto
+
+- `Paciente.calcularEdad()` porque `Paciente` conoce `fechaNacimiento`.
+- `Consulta.calcularMontoTotal()` porque `Consulta` conoce sus `DetalleConsulta`.
+- `Funcion.hayLugar()` o `Funcion.calcularDisponibilidad()` porque `Funcion` conoce su `Sala` y sus `Entrada`.
+- `Viaje.calcularDuracionSinPausas()` porque `Viaje` conoce inicio, fin y pausas.
+
+<EjemploReal titulo="Consulta calcula su total" dominio="Parcial">
+Si el gestor necesita saber cuánto cuesta una consulta, el mensaje defendible es <code>GestorConsulta -> Consulta : calcularMontoTotal()</code>. La consulta conoce sus detalles y puede pedir a cada detalle su subtotal. El gestor coordina, pero no suma datos internos de la consulta.
+</EjemploReal>
+
+#### 11.4.5. Contraejemplo o mala aplicación
+
+`GestorConsulta` pide `getFechaNacimiento()` a `Paciente` y calcula la edad él mismo.
+
+No se aplica Experto porque la responsabilidad de calcular edad depende de información propia de `Paciente`. El gestor queda con conocimiento innecesario sobre cómo se calcula la edad y sobre qué dato interno se usa.
+
+#### 11.4.6. Cómo justificarlo en un parcial
+
+<blockquote class="respuesta-modelo">
+Se aplica Experto en Información porque la responsabilidad se asigna a la clase que posee la información necesaria para cumplirla. De esta forma, el comportamiento queda ubicado junto a los datos que utiliza, evitando que otros objetos deban conocer detalles internos.
+</blockquote>
+
+#### 11.4.7. Cómo responder cuando NO se aplica
+
+<blockquote class="respuesta-modelo">
+No se aplica Experto en Información porque la responsabilidad queda en una clase que no posee la información necesaria y debe pedir datos internos a otra. La corrección sería delegar el cálculo, validación o derivación al objeto que conoce esos datos.
+</blockquote>
+
+#### 11.4.8. Relación con otros patrones
+
+- Con <strong>Bajo Acoplamiento</strong>: si le pido al experto que resuelva, reduzco getters y dependencias.
+- Con <strong>Alta Cohesión</strong>: la entidad mantiene responsabilidades propias de su información.
+- Con <strong>Controlador</strong>: el gestor coordina, pero delega en expertos.
+- Con <strong>Creador</strong>: pueden coincidir en una clase, pero no responden la misma pregunta.
 
 ### 11.5. Patrón Creador
 
 <PatronGRASP
   nombre="Creador"
-  ideaCentral="Crea quien contiene, registra, usa o tiene los datos."
-  problema="¿Quién debe ser responsable de crear una instancia de una clase?"
-  solucion="Asignar a B la creación de A si B contiene, agrega, registra, usa intensivamente o tiene los datos de inicialización de A."
-  beneficios={["Reduce dependencias innecesarias.", "Mantiene la creación cerca de quien conoce el contexto.", "Evita factorías conceptuales prematuras."]}
-  ejemploTitulo="Pedido crea DetallePedido"
+  ideaCentral="Crea quien contiene, agrega, registra, usa fuertemente o tiene los datos necesarios."
+  problema="¿Quién debe ser responsable de crear una nueva instancia?"
+  solucion="Asignar la creación a una clase que contiene, agrega, registra, usa estrechamente o tiene datos de inicialización del objeto creado."
+  beneficios={["Deja la creación cerca del objeto que tendrá relación con lo creado.", "Evita objetos sueltos creados por quien no los contiene.", "Ayuda al bajo acoplamiento cuando se elige al verdadero dueño de la relación."]}
+  ejemploTitulo="El todo crea sus partes"
 >
-  <MermaidDiagram caption="Creador: Pedido aloja creación de DetallePedido" code={`classDiagram
-    class GestorPedido {
-      +agregarItem(datos)
-    }
-    class Pedido {
-      -detalles
-      +agregarProducto(producto, cantidad)
-    }
-    class DetallePedido {
-      -cantidad
-      -precio
-    }
-    GestorPedido ..> DetallePedido : antes crea desde control
-    GestorPedido --> Pedido : despues delega
-    Pedido *-- DetallePedido : crea y contiene`} />
-  <EjemploReal titulo="¿Quién crea cada DetallePedido?" dominio="Caso cátedra">
-    Como el `Pedido` <em>contiene</em> sus `DetallePedido` (composición), es él quien los crea cuando se agrega una pizza al pedido. El gestor no crea los detalles sueltos: le dice al pedido "agregá esta pizza" y el pedido instancia el detalle. La creación queda cerca de quien tiene el contexto.
-  </EjemploReal>
+  <MermaidDiagram caption="Creador típico de cátedra: gestor crea el todo y el todo crea sus partes" code={`sequenceDiagram
+    participant G as Gestor
+    participant T as nuevoTodo:Todo
+    participant P as nuevaParte:Parte
+    G->>T: <<create>>(datosTodo)
+    T->>P: <<create>>(datosParte)
+    Note right of T: El todo contiene/agrega sus partes`} />
 </PatronGRASP>
 
-#### 11.5.1. Creador vs Experto: en qué se parecen y en qué difieren
+#### 11.5.1. Pregunta que responde
 
-Ambos patrones son de asignación de responsabilidades y suelen confundirse porque los dos miran "qué tiene la clase". La diferencia está en <strong>qué tipo</strong> de responsabilidad asignan.
+¿Quién debe crear una instancia nueva?
 
-<TablaComparativa
-  caption="Creador vs Experto en Información"
-  columnas={["Aspecto", "Experto en Información", "Creador"]}
-  filas={[
-    ["Pregunta que responde", "¿Quién debe hacer/conocer/calcular algo?", "¿Quién debe instanciar (crear) un objeto?"],
-    ["Criterio de asignación", "La clase que tiene la <strong>información</strong> necesaria para cumplir la responsabilidad.", "La clase que <strong>contiene, agrega, registra, usa</strong> o tiene los datos de inicialización del objeto a crear."],
-    ["Tipo de responsabilidad", "De conocer o de hacer un cálculo/validación.", "De hacer: específicamente, crear una instancia."],
-    ["Ejemplo", "<code>Pedido.calcularTotal()</code> porque conoce sus detalles.", "<code>Pedido</code> crea sus <code>DetallePedido</code> porque los contiene."]
-  ]}
-/>
+#### 11.5.2. Definición corta
 
-<Callout tipo="tip" titulo="Lo que comparten">
-Los dos buscan <strong>bajo acoplamiento</strong>: asignan la responsabilidad a la clase que ya tiene la información o la relación, evitando que otras clases necesiten conocer datos internos ajenos. Muchas veces la misma clase es Experto <em>y</em> Creador (el <code>Pedido</code> conoce sus detalles y por eso los crea y los suma).
+Una clase `A` debería crear `B` si `A` contiene, agrega, registra, usa estrechamente o tiene los datos de inicialización de `B`. En forma simple: <strong>el todo crea sus partes</strong>.
+
+#### 11.5.3. Cómo detectarlo en un diagrama de secuencia o clases
+
+- En secuencia, aparece un mensaje `<<create>>` desde un objeto hacia otro.
+- En clases, el emisor de la creación suele tener asociación, agregación conceptual, composición conceptual o registro sobre el objeto creado.
+- Si se crea una estructura todo-parte, suele verse el patrón de cátedra: `Gestor -> nuevoTodo:Todo : <<create>>` y luego `nuevoTodo -> nuevaParte:Parte : <<create>>`.
+- El gestor puede crear el objeto principal del caso de uso si recibió los datos necesarios, pero conviene que el objeto principal cree sus partes.
+
+#### 11.5.4. Ejemplo correcto
+
+- `Consulta -> DetalleConsulta : <<create>>` porque `Consulta` contiene/agrega detalles.
+- `Factura -> DetalleFactura : <<create>>` porque `Factura` contiene detalles.
+- `Funcion -> Entrada : <<create>>` porque `Funcion` registra sus entradas.
+- `Festival -> DiaFestival : <<create>>` porque `Festival` contiene sus días.
+
+<EjemploReal titulo="Factura crea sus detalles" dominio="Parcial">
+Si una factura tiene varios detalles, el gestor no debería crear cada <code>DetalleFactura</code> por separado y luego armar la estructura desde afuera. Una solución más defendible es que el gestor cree o recupere la <code>Factura</code> y le pida <code>agregarDetalle(...)</code>; dentro de esa responsabilidad, <code>Factura</code> crea el <code>DetalleFactura</code>.
+</EjemploReal>
+
+#### 11.5.5. Contraejemplo o mala aplicación
+
+- `Paciente -> DetalleConsulta : <<create>>`: no es buen creador porque `Paciente` no contiene naturalmente los detalles de consulta.
+- `Producto -> DetalleFactura : <<create>>`: `Producto` puede ser usado por el detalle, pero no lo contiene. Quien debería crear el detalle es `Factura`.
+
+#### 11.5.6. Cómo justificarlo en un parcial
+
+<blockquote class="respuesta-modelo">
+Se aplica Creador porque la responsabilidad de instanciar la clase queda asignada a quien la contiene, agrega, registra, usa fuertemente o posee los datos necesarios para inicializarla. En particular, el todo crea sus partes, por eso la creación queda cerca de la relación que la justifica.
+</blockquote>
+
+#### 11.5.7. Cómo responder cuando NO se aplica
+
+<blockquote class="respuesta-modelo">
+No se aplica Creador porque el objeto que instancia no contiene, agrega, registra ni usa fuertemente al objeto creado. La corrección sería mover la creación al objeto que actúa como todo, registro o dueño natural de la relación.
+</blockquote>
+
+#### 11.5.8. Relación con otros patrones
+
+<Callout tipo="atencion" titulo="Creador no es una especialización formal de Experto">
+Creador y Experto son patrones de asignación de responsabilidades, pero responden preguntas distintas. Experto responde quién debe calcular, validar o conocer algo. Creador responde quién debe crear una instancia. Se relacionan porque muchas veces el creador tiene información útil para inicializar el objeto, pero no son el mismo patrón.
 </Callout>
+
+- Con <strong>Bajo Acoplamiento</strong>: elegir al creador correcto evita que un objeto externo conozca detalles de armado.
+- Con <strong>Alta Cohesión</strong>: el objeto que contiene partes conserva la responsabilidad de administrarlas.
+- Con <strong>Controlador</strong>: el gestor puede crear el objeto principal del caso de uso, pero debería delegar la creación de partes al todo.
 
 ### 11.6. Patrón Controlador
 
 <PatronGRASP
   nombre="Controlador"
-  ideaCentral="La UI no coordina el caso de uso."
-  problema="¿Quién debe recibir o manejar un evento del sistema generado por un actor externo?"
-  solucion="Asignar la responsabilidad a una clase controladora que represente el sistema, un subsistema o el caso de uso."
-  beneficios={["Evita poner lógica de negocio en la interfaz.", "Permite razonar sobre el estado del caso de uso.", "Organiza la secuencia de operaciones."]}
-  ejemploTitulo="GestorRegistrarPedido recibe el evento"
+  ideaCentral="Controlador = coordinar el caso de uso."
+  problema="¿Quién debe recibir el evento del sistema y coordinar la realización del caso de uso?"
+  solucion="Asignar esa responsabilidad a una clase controladora o gestor, no a la interfaz ni directamente a las entidades."
+  beneficios={["Evita lógica de negocio en la boundary.", "Organiza la secuencia del caso de uso.", "Permite delegar cálculos, validaciones y creaciones a entidades expertas."]}
+  ejemploTitulo="Boundary recibe datos. Controlador coordina. Entidad resuelve."
 >
-  <MermaidDiagram caption="Controlador: evento del sistema" code={`sequenceDiagram
+  <MermaidDiagram caption="Interacción típica BCE con Controlador" code={`sequenceDiagram
     actor A as Actor
-    participant B as PantallaPedido
-    participant C as GestorRegistrarPedido
-    participant E as Pedido
-    A->>B: opcionRegistrarPedido()
-    B->>C: registrarPedido(datos)
-    C->>E: new(datos)
-    C->>B: mostrarConfirmacion()`} />
-  <EjemploReal titulo="¿Quién recibe 'registrar pedido'?" dominio="Caso cátedra">
-    Cuando el empleado aprieta "registrar pedido", el evento no lo maneja la pantalla ni la entidad `Pedido`: lo recibe el `GestorRegistrarPedido` (controlador del caso de uso). Él orquesta los pasos —crear el pedido, agregar detalles, calcular total— pero delega el trabajo real a quien corresponde. Coordina, no hace todo.
-  </EjemploReal>
+    participant B as PantallaVentaEntrada
+    participant G as GestorVentaEntrada
+    participant F as Funcion
+    A->>B: confirmarVenta(datos)
+    B->>G: registrarVenta(datos)
+    G->>F: hayLugar()
+    F->>F: calcularDisponibilidad()
+    G->>F: venderEntrada(datos)`} />
 </PatronGRASP>
 
-<Callout tipo="error" titulo="Controlador saturado">
-Un controlador puede saturarse si absorbe responsabilidades que pertenecen a entidades. Controlar no significa hacer todo. Según los resúmenes, hay <strong>controlador saturado</strong> cuando: una única clase recibe <em>todos</em> los eventos del sistema; el control hace el trabajo en vez de delegarlo (viola Experto y Alta Cohesión); o acumula muchos atributos que deberían vivir en otros objetos.
-<br /><br /><strong>Dos remedios:</strong> (1) agregar más controladores —un controlador por caso de uso en vez de uno de fachada (p. ej. un sistema de reservas de vuelos)—; (2) rediseñar el controlador para que <em>delegue</em> cada responsabilidad a otros objetos.
-</Callout>
+#### 11.6.1. Pregunta que responde
 
-<Callout tipo="tip">
-Un beneficio clave del Controlador: permite <strong>razonar sobre el estado del caso de uso</strong> (asegurar que las operaciones ocurren en una secuencia válida), porque concentra esa coordinación fuera de la interfaz.
-</Callout>
+¿Quién debe recibir y manejar el evento del sistema que llega desde la interfaz?
+
+#### 11.6.2. Definición corta
+
+El controlador recibe la solicitud proveniente de la boundary y coordina el caso de uso. La interacción típica es `Actor -> Boundary -> Controlador/Gestor -> Entidades`.
+
+#### 11.6.3. Cómo detectarlo en un diagrama de secuencia o clases
+
+- El actor no habla directamente con entidades.
+- La boundary recibe datos, selecciones o confirmaciones y reenvía el evento al gestor.
+- El gestor manda mensajes a entidades para validar, consultar, crear o modificar.
+- El controlador <strong>no significa hacer todo</strong>. Si calcula todo, se satura y rompe Alta Cohesión y Experto.
+
+#### 11.6.4. Ejemplo correcto
+
+- `PantallaRegistrarConsulta -> GestorRegistrarConsulta : registrarConsulta(datos)`.
+- `PantallaVentaEntrada -> GestorVentaEntrada : registrarVenta(...)`.
+- `PantallaReporteMonopatines -> GestorUtilizacionMonopatines : generarReporte(...)`.
+
+#### 11.6.5. Contraejemplo o mala aplicación
+
+`PantallaRegistrarConsulta` habla directamente con `Paciente`, `Consulta`, `Prestacion` y `DetalleConsulta`.
+
+No se aplica Controlador porque la boundary está coordinando el caso de uso y queda acoplada a entidades. La pantalla debería recibir/interactuar con el actor y delegar el evento a un gestor.
+
+#### 11.6.6. Cómo justificarlo en un parcial
+
+<blockquote class="respuesta-modelo">
+Se aplica Controlador porque el gestor recibe la solicitud proveniente de la interfaz y coordina las operaciones necesarias para realizar el caso de uso, delegando en las entidades las responsabilidades que les corresponden.
+</blockquote>
+
+#### 11.6.7. Cómo responder cuando NO se aplica
+
+<blockquote class="respuesta-modelo">
+No se aplica Controlador porque la interfaz o el actor se comunica directamente con varias entidades y coordina el flujo del caso de uso. La corrección sería introducir un gestor/controlador de caso de uso que reciba el evento del sistema y delegue en las entidades.
+</blockquote>
+
+#### 11.6.8. Relación con otros patrones
+
+- Con <strong>Experto</strong>: el controlador no calcula con datos ajenos; delega en el experto.
+- Con <strong>Creador</strong>: puede crear el objeto principal si tiene datos de inicialización, pero no debería crear todas las partes si hay un todo que las contiene.
+- Con <strong>Bajo Acoplamiento</strong>: evita que la boundary conozca todo el dominio.
+- Con <strong>Alta Cohesión</strong>: su responsabilidad fuerte es coordinar el caso de uso.
+
+#### 11.6.9. Controlador saturado
+
+Un controlador se satura cuando recibe todos los eventos del sistema o cuando absorbe cálculos, validaciones y creaciones que deberían estar en entidades.
 
 <TablaComparativa
-  caption="Tipos de controlador"
-  columnas={["Tipo", "Cuándo aparece", "Ejemplo"]}
+  caption="Síntomas y corrección de un controlador saturado"
+  columnas={["Síntoma", "Por qué está mal", "Corrección"]}
   filas={[
-    ["Controlador de fachada", "Representa al sistema completo o un subsistema.", "SistemaVentas, SubsistemaFacturacion."],
-    ["Controlador de caso de uso", "Coordina un caso de uso o una sesión concreta.", "GestorRegistrarPedido, ControlCancelarVuelo."],
-    ["Controlador artificial", "No pertenece naturalmente al dominio, pero organiza el flujo.", "Una clase control creada para no cargar la UI ni las entidades."]
+    ["Un único <code>GestorSistema</code> recibe todos los casos de uso.", "Concentra demasiadas responsabilidades y estados de conversación.", "Usar controladores por caso de uso o por proceso cohesivo."],
+    ["El gestor pide getters y calcula todo.", "Viola Experto y aumenta el acoplamiento.", "Delegar cálculos y validaciones en las entidades expertas."],
+    ["El gestor crea todos los detalles y partes.", "Ignora al todo que contiene o registra esas partes.", "Aplicar Creador: el todo crea sus partes."],
+    ["El gestor envía WhatsApp, imprime, factura y reporta.", "Mezcla áreas funcionales distintas.", "Separar responsabilidades y mantener al gestor como coordinador."]
   ]}
 />
 
@@ -198,103 +312,278 @@ Un beneficio clave del Controlador: permite <strong>razonar sobre el estado del 
 
 <PatronGRASP
   nombre="Bajo Acoplamiento"
-  ideaCentral="Cambios con bajo radio de impacto."
-  problema="¿Cómo reducir el impacto de los cambios y aumentar la reutilización?"
-  solucion="Asignar responsabilidades de forma que las clases dependan lo menos posible unas de otras."
-  beneficios={["Los cambios afectan menos clases.", "Las clases se comprenden aisladamente.", "Reduce fragilidad del diseño."]}
-  ejemploTitulo="Control consulta un catálogo en vez de conocer todas las entidades concretas"
+  ideaCentral="Bajo acoplamiento = conocer poco."
+  problema="¿Cómo reducir dependencias innecesarias y el impacto de los cambios?"
+  solucion="Asignar responsabilidades de modo que cada clase conozca solo a las clases necesarias para cumplir su rol."
+  beneficios={["Reduce el impacto de cambios.", "Mejora mantenimiento y reutilización.", "Evita que un gestor o una pantalla dependan de detalles internos de muchas entidades."]}
+  ejemploTitulo="Delegar en el experto reduce dependencias"
 >
-  <MermaidDiagram caption="Bajo acoplamiento: reducir dependencias directas" code={`classDiagram
-    class GestorVenta
-    class Producto
-    class ServicioPrecio
-    class CatalogoProductos
-    GestorVenta ..> Producto : antes conoce muchos productos
-    GestorVenta --> CatalogoProductos : despues consulta
-    CatalogoProductos --> Producto
-    CatalogoProductos --> ServicioPrecio`} />
+  <MermaidDiagram caption="Bajo acoplamiento: gestor delega disponibilidad en Funcion" code={`sequenceDiagram
+    participant G as GestorVentaEntrada
+    participant F as Funcion
+    G->>F: hayLugar()
+    F->>F: calcularDisponibilidad()
+    Note right of F: Funcion conoce sala y entradas`} />
 </PatronGRASP>
+
+#### 11.7.1. Pregunta que responde
+
+¿Cómo asignar responsabilidades para que las clases dependan lo menos posible unas de otras?
+
+#### 11.7.2. Definición corta
+
+Una clase está acoplada a otra cuando la conoce, la usa, le manda mensajes, la tiene como atributo o depende de sus detalles internos. Bajo Acoplamiento busca que cada clase conozca solamente lo necesario para cumplir su responsabilidad.
+
+#### 11.7.3. Cómo detectarlo en un diagrama de secuencia o clases
+
+- Si una clase pide muchos getters para calcular afuera, suele haber alto acoplamiento.
+- Si una clase delega la operación al objeto experto, suele bajar el acoplamiento.
+- En clases, una pantalla o gestor con dependencias hacia muchas entidades es una señal de riesgo.
+- En secuencia, muchas flechas desde el gestor hacia objetos internos de una entidad suelen indicar que el gestor sabe demasiado.
+
+#### 11.7.4. Ejemplo correcto
+
+Mal: `GestorVentaEntrada` pide `Sala.getCapacidad()`, recorre `Entrada`, llama `Entrada.estaAnulada()` y calcula disponibilidad él mismo.
+
+Bien: `GestorVentaEntrada -> Funcion : hayLugar()`, y `Funcion` calcula internamente la disponibilidad.
+
+Mal: `GestorViajes` pide `Viaje.getInicio()`, `Viaje.getFin()`, `Viaje.getPausas()` y calcula duración.
+
+Bien: `GestorViajes -> Viaje : calcularDuracionSinPausas()`.
+
+#### 11.7.5. Contraejemplo o mala aplicación
+
+Un gestor que conoce `Sala`, `Entrada`, `EstadoEntrada`, `Promocion`, `Butaca` y además recorre sus colecciones para calcular disponibilidad queda altamente acoplado. Si cambia cómo se calcula la disponibilidad, cambia el gestor aunque la responsabilidad real pertenezca a `Funcion`.
+
+#### 11.7.6. Cómo justificarlo en un parcial
+
+<blockquote class="respuesta-modelo">
+Se aplica Bajo Acoplamiento porque el objeto controlador no accede directamente a todas las entidades ni conoce sus detalles internos, sino que delega la responsabilidad en el objeto que corresponde. De esta forma, si cambia la forma en que se calcula o valida esa información, el impacto queda localizado en la clase experta.
+</blockquote>
+
+#### 11.7.7. Cómo responder cuando NO se aplica
+
+<blockquote class="respuesta-modelo">
+No se aplica Bajo Acoplamiento porque una clase concentra dependencias hacia muchas otras clases y conoce detalles que no necesita conocer. Esto hace que cualquier cambio en esas clases pueda afectar a la clase acoplada.
+</blockquote>
+
+#### 11.7.8. Relación con otros patrones
+
+- Con <strong>Experto</strong>: delegar en quien conoce evita pedir datos internos.
+- Con <strong>Controlador</strong>: el gestor coordina sin conocer detalles profundos de las entidades.
+- Con <strong>Creador</strong>: el creador correcto ya está conectado con lo creado, por eso evita dependencias artificiales.
+- Con <strong>Alta Cohesión</strong>: cuando una clase conoce demasiadas cosas, suele terminar haciendo tareas mezcladas.
 
 ### 11.8. Patrón Alta Cohesión
 
 <PatronGRASP
   nombre="Alta Cohesión"
-  ideaCentral="Cada clase hace un conjunto relacionado de cosas."
-  problema="Las clases con baja cohesión acumulan responsabilidades no relacionadas y se vuelven difíciles de mantener."
-  solucion="Asignar responsabilidades de manera que cada clase conserve un conjunto pequeño y relacionado de operaciones."
-  beneficios={["Mejora claridad.", "Simplifica evolución.", "Favorece bajo acoplamiento.", "Aumenta reutilización específica."]}
-  ejemploTitulo="Separar coordinación, cálculo y persistencia conceptual"
+  ideaCentral="Alta cohesión = hacer lo propio."
+  problema="¿Cómo evitar clases que mezclan responsabilidades no relacionadas?"
+  solucion="Asignar responsabilidades para que cada clase tenga un propósito claro y operaciones fuertemente relacionadas con ese propósito."
+  beneficios={["Mejora claridad y comprensión.", "Simplifica la evolución.", "Favorece bajo acoplamiento y reutilización específica."]}
+  ejemploTitulo="Una clase, una idea fuerte"
 >
-  <MermaidDiagram caption="Alta cohesión: separar responsabilidades no relacionadas" code={`classDiagram
-    class GestorPedido {
-      +registrar()
-      +calcularTotal()
-      +imprimirFactura()
+  <MermaidDiagram caption="Alta cohesión: separar coordinación, consulta, facturación y reporte" code={`classDiagram
+    class Consulta {
+      +calcularDuracion()
+      +agregarDetalleConsulta()
+      +calcularMontoTotal()
     }
-    class Pedido {
-      +calcularTotal()
+    class GestorRegistrarConsulta {
+      +registrarConsulta()
+      +buscarPaciente()
+      +coordinarCreacionConsulta()
     }
     class Factura {
-      +emitir()
+      +generarFactura()
     }
-    class GestorRegistrarPedido {
-      +registrar()
+    class Notificador {
+      +enviarWhatsapp()
     }
-    GestorPedido ..> Pedido : antes clase cargada
-    GestorRegistrarPedido --> Pedido : despues
-    GestorRegistrarPedido --> Factura`} />
-  <EjemploReal titulo="Por qué la pantalla no calcula precios" dominio="Caso cátedra">
-    Si `PantallaRegistrarPedido` calculara el total y conociera los precios de cada variedad, quedaría <strong>muy acoplada</strong> a `Pizza`, `VariedadPizza` y `TamañoPizza`, y mezclaría dos trabajos (mostrar + calcular), perdiendo <strong>cohesión</strong>. Dejándole el cálculo al `Pedido` y la coordinación al gestor, cada clase hace una sola cosa y un cambio en los precios no rompe la pantalla.
-  </EjemploReal>
+    GestorRegistrarConsulta --> Consulta
+    GestorRegistrarConsulta --> Factura
+    GestorRegistrarConsulta --> Notificador`} />
 </PatronGRASP>
 
-La cohesión no es "todo o nada": los resúmenes describen una escala de <strong>grados de cohesión funcional</strong>.
+#### 11.8.1. Pregunta que responde
+
+¿Cómo mantener las responsabilidades de una clase enfocadas, relacionadas y comprensibles?
+
+#### 11.8.2. Definición corta
+
+La Alta Cohesión busca que una clase tenga responsabilidades fuertemente relacionadas con su rol dentro del sistema y también fuertemente relacionadas entre sí. No alcanza con que todas las responsabilidades puedan asociarse de manera general a la clase; deben pertenecer a un mismo propósito o área específica. Cuando una clase reúne responsabilidades de áreas distintas, aunque todas puedan justificarse dentro de un rol amplio, la cohesión tiende a ser moderada o baja.
 
 <TablaComparativa
-  caption="Grados de cohesión funcional"
-  columnas={["Grado", "Descripción"]}
+  caption="Grados prácticos de cohesión"
+  columnas={["Grado", "Idea", "Cómo se ve"]}
   filas={[
-    ["<strong>Muy baja</strong>", "Una clase es responsable de muchas cosas en áreas funcionales muy distintas."],
-    ["<strong>Baja</strong>", "Una clase tiene la responsabilidad de una tarea compleja en un área funcional."],
-    ["<strong>Alta</strong> (deseable)", "Una clase tiene una responsabilidad moderada en un área y colabora con otras para el resto."],
-    ["<strong>Moderada</strong>", "Responsabilidades livianas en pocas áreas, relacionadas con el concepto de la clase pero no entre sí."]
+    ["<strong>Alta cohesión</strong>", "Una clase, una idea fuerte.", "Responsabilidades propias y relacionadas."],
+    ["<strong>Cohesión moderada</strong>", "Una clase, varias ideas relacionadas.", "Todavía se entiende, pero empieza a abarcar más de un foco."],
+    ["<strong>Baja cohesión</strong>", "Una clase, mezcla de ideas.", "Cálculos, comunicación, facturación, reportes o persistencia en el mismo objeto sin un propósito único."]
   ]}
 />
 
-### 11.9. GRASP aplicado a clases de análisis
+#### 11.8.3. Cómo detectarlo en un diagrama de secuencia o clases
 
-- <strong>Boundary:</strong> recibe eventos del actor y muestra respuestas.
-- <strong>Control:</strong> coordina el caso de uso y administra la secuencia.
-- <strong>Entity:</strong> conoce datos duraderos y ejecuta responsabilidades relacionadas con esa información.
+- En clases, las operaciones de una clase deberían sonar al mismo propósito.
+- En secuencia, el gestor debería coordinar, no absorber cálculos o validaciones de entidades.
+- Una entidad debería resolver operaciones vinculadas a sus datos y asociaciones.
+- Si el nombre de la clase es demasiado amplio y cualquier método "entra", revisar cohesión.
 
-<MermaidDiagram caption="Aplicación típica BCE + GRASP" code={`flowchart LR
-  Actor --> Boundary
-  Boundary --> Control
-  Control --> Entity
-  Entity --> Experto[Experto: conoce]
-  Control --> Controlador[Controlador: coordina]
-  Entity --> Creador[Creador: contiene/crea]
-  Experto --> BA[Bajo acoplamiento]
-  Creador --> AC[Alta cohesión]`} />
+#### 11.8.4. Ejemplo correcto
 
-### 11.10. Cómo elegir el patrón en un ejercicio
+Alta cohesión en entidad:
+
+- `Consulta.calcularDuracion()`.
+- `Consulta.agregarDetalleConsulta()`.
+- `Consulta.calcularMontoTotal()`.
+
+Todo está relacionado con una consulta.
+
+Controlador con alta cohesión:
+
+- `GestorRegistrarConsulta.registrarConsulta()`.
+- `GestorRegistrarConsulta.buscarPaciente()`.
+- `GestorRegistrarConsulta.coordinarCreacionConsulta()`.
+
+Todo está relacionado con coordinar el caso de uso Registrar Consulta.
+
+#### 11.8.5. Contraejemplo o mala aplicación
+
+Baja cohesión en entidad:
+
+- `Consulta.calcularMontoTotal()`.
+- `Consulta.enviarWhatsapp()`.
+- `Consulta.generarFactura()`.
+- `Consulta.imprimirReporteMensual()`.
+
+Mezcla consulta, comunicación, facturación y reportes.
+
+Controlador con baja cohesión:
+
+- `GestorRegistrarConsulta.calcularEdadPaciente()`.
+- `GestorRegistrarConsulta.calcularPrecioPrestacion()`.
+- `GestorRegistrarConsulta.enviarWhatsapp()`.
+- `GestorRegistrarConsulta.imprimirFactura()`.
+
+El gestor deja de coordinar y absorbe responsabilidades que pertenecen a entidades u otros objetos.
+
+#### 11.8.6. Cómo justificarlo en un parcial
+
+<blockquote class="respuesta-modelo">
+Se aplica Alta Cohesión porque las responsabilidades se encuentran asignadas a clases que tienen un propósito claro y relacionado con dichas responsabilidades. El gestor se limita a coordinar el caso de uso, mientras que las entidades realizan las operaciones vinculadas a la información que conocen.
+</blockquote>
+
+#### 11.8.7. Cómo responder cuando NO se aplica
+
+<blockquote class="respuesta-modelo">
+No se aplica Alta Cohesión porque el objeto controlador concentra responsabilidades que pertenecen a otras clases de entidad. En lugar de limitarse a coordinar el caso de uso, realiza cálculos, validaciones o creaciones que deberían ser delegadas a los objetos expertos.
+</blockquote>
+
+#### 11.8.8. Relación con otros patrones
+
+- Con <strong>Controlador</strong>: un buen controlador mantiene cohesión si coordina un caso de uso acotado.
+- Con <strong>Experto</strong>: las entidades son más cohesivas cuando conservan responsabilidades sobre su información.
+- Con <strong>Bajo Acoplamiento</strong>: al no mezclar tareas, una clase necesita menos dependencias.
+- Con <strong>Creador</strong>: crear las partes propias mantiene el manejo de la estructura en el objeto que la representa.
+
+### 11.9. Cómo se relacionan los cinco patrones
+
+Los cinco patrones se leen juntos en una misma secuencia:
+
+- <strong>Controlador</strong> recibe y coordina.
+- <strong>Experto</strong> resuelve porque conoce.
+- <strong>Creador</strong> crea donde corresponde.
+- <strong>Bajo Acoplamiento</strong> evita dependencias innecesarias.
+- <strong>Alta Cohesión</strong> mantiene cada clase con responsabilidades propias y relacionadas.
+
+<MermaidDiagram caption="Ejemplo integrado: venta de entrada" code={`sequenceDiagram
+  actor A as Actor
+  participant B as PantallaVentaEntrada
+  participant G as GestorVentaEntrada
+  participant F as Funcion
+  participant E as Entrada
+  A->>B: confirmarVenta(datos)
+  B->>G: registrarVenta(datos)
+  G->>F: hayLugar()
+  F->>F: calcularDisponibilidad()
+  G->>F: venderEntrada(datos)
+  F->>E: <<create>>(datosEntrada)`} />
+
+Lectura para parcial:
+
+- `PantallaVentaEntrada -> GestorVentaEntrada : registrarVenta(datos)` aplica <strong>Controlador</strong>: el gestor coordina el caso de uso.
+- `GestorVentaEntrada -> Funcion : hayLugar()` aplica <strong>Experto</strong>: `Funcion` responde porque conoce su sala y sus entradas.
+- Esa delegación aplica <strong>Bajo Acoplamiento</strong>: el gestor no recorre directamente entradas ni sala.
+- También aplica <strong>Alta Cohesión</strong>: `Funcion` conserva la responsabilidad de disponibilidad, que pertenece a su rol.
+- `Funcion -> Entrada : <<create>>` aplica <strong>Creador</strong>: `Funcion` crea `Entrada` porque registra sus entradas.
+
+### 11.10. Matriz de detección rápida en diagramas
 
 <TablaComparativa
-  caption="Preguntas rápidas para asignar responsabilidades"
-  columnas={["Pregunta del ejercicio", "Patrón que conviene mirar", "Decisión típica"]}
+  caption="Señales típicas para identificar GRASP"
+  columnas={["Señal en el diagrama", "Lectura", "Patrón o problema"]}
   filas={[
-    ["¿Quién calcula, valida o informa algo?", "Experto en Información", "La entidad o catálogo que conoce los datos."],
-    ["¿Quién crea una nueva instancia?", "Creador", "Quien contiene, agrega, registra o tiene datos iniciales."],
-    ["¿Quién recibe el evento del actor?", "Controlador", "Un control de caso de uso o fachada del sistema."],
-    ["¿Cómo evitar dependencias innecesarias?", "Bajo Acoplamiento", "No hacer que una clase conozca demasiadas clases concretas."],
-    ["¿Cómo evitar clases que hacen de todo?", "Alta Cohesión", "Separar responsabilidades no relacionadas."]
+    ["<code>Pantalla -> Gestor</code>", "La boundary pasa el evento al gestor.", "Controlador."],
+    ["<code>Entidad -> Entidad : calcularAlgo()</code>", "La responsabilidad queda en quien conoce datos o relaciones.", "Experto."],
+    ["<code>Todo -> Parte : &lt;&lt;create&gt;&gt;</code>", "El objeto que contiene o registra crea la parte.", "Creador."],
+    ["El gestor delega en entidad en vez de pedir getters.", "El gestor no conoce detalles internos.", "Bajo Acoplamiento."],
+    ["Cada clase hace tareas propias y relacionadas.", "Responsabilidades enfocadas.", "Alta Cohesión."],
+    ["Pantalla habla con varias entidades.", "La interfaz coordina el caso de uso.", "Falta Controlador."],
+    ["Gestor calcula todo con datos ajenos.", "Pide getters, recorre colecciones y aplica reglas de otros.", "Falta Experto / Bajo Acoplamiento / Alta Cohesión."],
+    ["Una clase mezcla reportes, cálculos, notificaciones y persistencia.", "Varias áreas funcionales en una misma clase.", "Baja Cohesión."]
   ]}
 />
 
-<Callout tipo="tip">
-En los diagramas, GRASP se ve en los mensajes: cada flecha debería poder defenderse con una responsabilidad razonable.
-</Callout>
+### 11.11. Respuestas modelo para parcial
 
-### 11.11. GRASP versus patrones de diseño
+#### 11.11.1. Cómo justificar Experto
 
-En esta unidad solo se usan los <strong>cinco GRASP</strong> de análisis (Experto, Creador, Controlador, Bajo Acoplamiento, Alta Cohesión). GRASP son criterios para <strong>asignar responsabilidades</strong>; los patrones de diseño (Observer, State, Strategy, etc.) son soluciones estructurales más específicas que recién se ven en Unidad 2. En el parcial el foco es justificar responsabilidades sobre el modelo de análisis, no aplicar patrones de diseño.
+<blockquote class="respuesta-modelo">
+Se aplica Experto en Información porque la responsabilidad se asigna a la clase que posee la información necesaria para cumplirla. De esta forma, el comportamiento queda ubicado junto a los datos que utiliza, evitando que otros objetos deban conocer detalles internos.
+</blockquote>
+
+#### 11.11.2. Cómo justificar Creador
+
+<blockquote class="respuesta-modelo">
+Se aplica Creador porque la clase que instancia al objeto lo contiene, agrega, registra, usa fuertemente o posee los datos necesarios para inicializarlo. En este caso, el todo crea sus partes, por lo que la creación queda en el objeto que mantiene la relación.
+</blockquote>
+
+#### 11.11.3. Cómo justificar Controlador
+
+<blockquote class="respuesta-modelo">
+Se aplica Controlador porque el gestor recibe la solicitud proveniente de la interfaz y coordina las operaciones necesarias para realizar el caso de uso, delegando en las entidades las responsabilidades que les corresponden.
+</blockquote>
+
+#### 11.11.4. Cómo justificar Bajo Acoplamiento
+
+<blockquote class="respuesta-modelo">
+Se aplica Bajo Acoplamiento porque el objeto controlador no accede directamente a todas las entidades ni conoce sus detalles internos, sino que delega la responsabilidad en el objeto que corresponde. De esta forma, si cambia la forma en que se calcula o valida esa información, el impacto queda localizado en la clase experta.
+</blockquote>
+
+#### 11.11.5. Cómo justificar Alta Cohesión
+
+<blockquote class="respuesta-modelo">
+Se aplica Alta Cohesión porque las responsabilidades se encuentran asignadas a clases que tienen un propósito claro y relacionado con dichas responsabilidades. El gestor se limita a coordinar el caso de uso, mientras que las entidades realizan las operaciones vinculadas a la información que conocen.
+</blockquote>
+
+#### 11.11.6. Cómo responder cuando NO se aplica cada uno
+
+<TablaComparativa
+  caption="Respuestas modelo para marcar ausencia de patrón"
+  columnas={["Patrón", "Respuesta breve"]}
+  filas={[
+    ["Experto", "No se aplica Experto porque la responsabilidad queda en una clase que no posee la información necesaria y debe pedir datos internos a otra. La corrección es delegar al objeto que conoce esos datos."],
+    ["Creador", "No se aplica Creador porque el objeto que instancia no contiene, agrega, registra ni usa fuertemente al objeto creado. La creación debería quedar en el todo, registro o dueño natural de la relación."],
+    ["Controlador", "No se aplica Controlador porque la interfaz o el actor se comunica directamente con varias entidades y coordina el flujo. La corrección es introducir un gestor del caso de uso."],
+    ["Bajo Acoplamiento", "No se aplica Bajo Acoplamiento porque una clase concentra dependencias hacia muchas otras y conoce detalles que no necesita. Cualquier cambio en esas clases puede afectarla."],
+    ["Alta Cohesión", "No se aplica Alta Cohesión porque una clase concentra responsabilidades de áreas distintas o que pertenecen a otros objetos. La corrección es delegar en expertos y separar responsabilidades."]
+  ]}
+/>
+
+### 11.12. GRASP versus patrones de diseño
+
+En esta unidad solo se usan los <strong>cinco GRASP de análisis</strong>: Experto en Información, Creador, Controlador, Bajo Acoplamiento y Alta Cohesión. No hace falta agregar los nueve GRASP ni aplicar patrones de diseño como Strategy, Observer o State.
+
+Para el parcial, la respuesta debe enfocarse en responsabilidades de análisis: qué objeto recibe el mensaje, qué información posee, si está creando algo que contiene, si el gestor coordina sin saturarse y si el reparto mantiene bajo acoplamiento y alta cohesión.
