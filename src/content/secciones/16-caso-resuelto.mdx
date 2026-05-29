@@ -170,9 +170,9 @@ Cada <strong>objeto</strong> que apareció en la secuencia se vuelve <strong>cla
   }
   PantAdmLaboreos ..> GestorLaboreos
   GestorLaboreos --> Campo
-  Campo "1" --> "1..*" Lote : lotes
-  Lote "1" --> "0..1" ProyectoDeCultivo : vigente
-  ProyectoDeCultivo "1" o-- "0..*" Laboreo : laboreos
+  Campo --> "1..*" Lote : lotes
+  Lote --> "0..1" ProyectoDeCultivo : vigente
+  ProyectoDeCultivo --> "0..*" Laboreo : laboreos
   Laboreo --> TipoLaboreo
   Laboreo --> Empleado
   ProyectoDeCultivo --> Estado : estado`} />

@@ -223,9 +223,9 @@ Patrón de soporte:
     <<entity>>
     - nombre
   }
-  EntidadConEstados "1" --> "1..*" CambioEstadoEntidad
-  CambioEstadoEntidad "*" --> "1" Estado
-  CambioEstadoEntidad "*" --> "0..1" Responsable`} />
+  EntidadConEstados --> "1..*" CambioEstadoEntidad
+  CambioEstadoEntidad --> "1" Estado
+  CambioEstadoEntidad --> "0..1" Responsable`} />
 
 Si el enunciado dice que no hay historial, puede alcanzar una relación directa con `Estado`. Si pide historial, fecha/hora, responsable o permanencia en estados, necesitás `CambioEstado...`, `HistorialEstado...` o clase equivalente.
 
@@ -880,14 +880,14 @@ En las soluciones se ven muchos `getNombre()`, `getFecha()`, `getHoraPartidaProg
 La multiplicidad se razona desde el dominio y desde los mensajes:
 
 <MermaidDiagram caption="Multiplicidades típicas en clases de análisis" code={`classDiagram
-  Vuelo "1" --> "1..*" CambioEstadoVuelo
-  CambioEstadoVuelo "*" --> "1" Estado
-  CambioEstadoVuelo "*" --> "0..1" MotivoCancelacion
-  OrdenTraslado "1" --> "1..*" DetalleOT
-  DetalleOT "1" --> "1" Contenedor
-  DefinicionDeVuelo "1" --> "1" Aeropuerto : origen
-  DefinicionDeVuelo "1" --> "1" Aeropuerto : destino
-  Vuelo "1" --> "0..*" Reserva`} />
+  Vuelo --> "1..*" CambioEstadoVuelo
+  CambioEstadoVuelo --> "1" Estado
+  CambioEstadoVuelo --> "0..1" MotivoCancelacion
+  OrdenTraslado --> "1..*" DetalleOT
+  DetalleOT --> "1" Contenedor
+  DefinicionDeVuelo --> "1" Aeropuerto : origen
+  DefinicionDeVuelo --> "1" Aeropuerto : destino
+  Vuelo --> "0..*" Reserva`} />
 
 La navegabilidad se justifica por quién necesita conocer a quién para enviar mensajes. Si `GestorDeConsultaDisponibilidad` consulta `Vuelo`, `Pais`, `Provincia`, `Ciudad`, `TipoClase` y `TipoVuelo`, esas dependencias aparecen en la vista de clases. Si `OrdenTraslado` crea `DetalleOT`, hay relación estructural entre ambas.
 
@@ -935,10 +935,10 @@ Este patrón aparece en FIA F1, Líneas Aéreas, Peaje y otros ejercicios de cic
     - nombre
     + getNombre()
   }
-  Vuelo "1" --> "1..*" CambioEstadoVuelo : cambios
-  CambioEstadoVuelo "*" --> "1" Estado : estado
-  CambioEstadoVuelo "*" --> "0..1" MotivoCancelacion : motivo
-  CambioEstadoVuelo "*" --> "1" Empleado : responsable`} />
+  Vuelo --> "1..*" CambioEstadoVuelo : cambios
+  CambioEstadoVuelo --> "1" Estado : estado
+  CambioEstadoVuelo --> "0..1" MotivoCancelacion : motivo
+  CambioEstadoVuelo --> "1" Empleado : responsable`} />
 
 <ChecklistRepaso
   id="practica-clases-analisis"
