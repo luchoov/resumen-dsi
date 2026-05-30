@@ -157,6 +157,51 @@ Obligaciones del objeto relacionadas con la acción: <strong>hacer algo en uno m
 Aclaración típica de la respuesta modelo: el ejemplo se simplifica (se corta el inicio/fin del caso de uso y se toma "marca" como string en lugar de una clase de soporte). Aclararlo en el parcial demuestra interpretación, que es parte de lo que se evalúa.
 </Callout>
 
+**Variante con clase dada (caso real *Consultorio Odontológico*).** A veces dan un diagrama de clases y piden completar con **un método por cada una de las 6 responsabilidades** (3 del conocer + 3 del hacer), indicando cuál es cuál.
+
+<MermaidDiagram caption="Clases dadas + métodos agregados (Consultorio Odontológico)" code={`classDiagram
+  class Odontologo {
+    <<entity>>
+    - apellido
+    - nombre
+    - fechaNacimiento
+    + setDatos()
+    + calcularEdad()
+  }
+  class Agenda {
+    <<entity>>
+    - anio
+    - mes
+    + registrarTurno()
+    + existeTurnoActivo()
+  }
+  class Turno {
+    <<entity>>
+    - fecha
+    - hora
+    + getDatosTurno()
+  }
+  class Estado {
+    <<entity>>
+    - nombre
+  }
+  Odontologo --> "1" Agenda : agenda
+  Agenda --> "0..*" Turno : turnos
+  Turno --> "1" Estado : estado`} />
+
+<TablaComparativa
+  caption="Un método por responsabilidad (conocer y hacer)"
+  columnas={["Responsabilidad", "Método", "Por qué"]}
+  filas={[
+    ["<strong>Hacer — en uno mismo</strong>", "<code>Odontologo.setDatos()</code>", "Opera sobre sus propios atributos."],
+    ["<strong>Hacer — iniciar en otros</strong>", "<code>Agenda.registrarTurno()</code> → <code>Turno.new()</code>", "Dispara la creación de otro objeto."],
+    ["<strong>Hacer — controlar/coordinar</strong>", "<code>Agenda.existeTurnoActivo()</code>", "Recorre y coordina sus turnos."],
+    ["<strong>Conocer — datos propios</strong>", "<code>Turno.getDatosTurno()</code>", "Devuelve sus atributos encapsulados."],
+    ["<strong>Conocer — objetos conexos</strong>", "asociación <code>Agenda → Turno</code> (<code>turnos</code>)", "Está enterado de los objetos con los que se relaciona."],
+    ["<strong>Conocer — derivable/calculable</strong>", "<code>Odontologo.calcularEdad()</code>", "Calcula algo a partir de sus datos (la fecha de nacimiento)."]
+  ]}
+/>
+
 ### 16.4. GRASP: Creador vs Experto y bajo acoplamiento
 
 Esta pregunta pide relacionar **Creador** y **Experto**, dar un ejemplo propio y, a veces, explicar cómo **Experto favorece el bajo acoplamiento**. La teoría de ambos patrones está en **[GRASP 11.4–11.5](/seccion/12-grasp)** y la comparación lado a lado en **[GRASP 11.5.1](/seccion/12-grasp)**.
@@ -228,6 +273,29 @@ En parciales recientes aparece un fragmento de análisis (vista dinámica + vist
 
 **Qué problema conlleva.** Toda inconsistencia entre vistas genera **ambigüedad**: el equipo no sabe cuál vista es la correcta, se programan métodos que no existen o estados que no se pueden alcanzar, y el modelo deja de ser confiable para guiar el diseño. Por eso el modelo de análisis no debería tener redundancias ni inconsistencias (a diferencia del de requerimientos).
 
+**Caso real de parcial (*Actualizar Estado de Sala*).** Dan tres vistas con errores y piden detectar las inconsistencias y qué GRASP no se cumple.
+
+<MermaidDiagram caption="Vista dinámica del CU (con inconsistencias para detectar)" code={`sequenceDiagram
+  actor U as Encargado
+  participant P as :PantallaAdmSala
+  participant Es as :Estado
+  participant S as elegida:Sala
+  U->>P: opcionActualizarEstadoSala()
+  P->>P: buscarEstadoParaHabilitar()
+  P->>Es: *esAmbitoSala()
+  P->>Es: *esHabilitada()
+  P->>S: habilitarSala()
+  S->>S: setEstado()`} />
+
+La clase `Estado` declara `esAmbitoFuncion()` y `estaHabilitado()`; la clase `Sala` declara `habilitar()`. La máquina de estados de `Sala` cambia con `27 Habilitar Sala /habilitar()`. Inconsistencias:
+
+<EjemploClase titulo="Inconsistencias y qué GRASP no se cumple">
+- <strong>Nombres distintos entre vistas:</strong> la secuencia manda <code>esAmbitoSala()</code> y <code>esHabilitada()</code>, pero la clase tiene <code>esAmbitoFuncion()</code> y <code>estaHabilitado()</code>. No se puede trazar.
+- <strong>Mensaje sin método receptor:</strong> <code>habilitarSala()</code> se manda a la <code>Sala</code>, que solo tiene <code>habilitar()</code>.
+- <strong>Transición no trazada:</strong> la MEF habilita con <code>habilitar()</code>, pero la secuencia usa <code>setEstado()</code> directo: el método de transición no aparece como mensaje.
+- <strong>Falta el «control»:</strong> la <code>PantallaAdmSala</code> habla directo con <code>Estado</code> y <code>Sala</code>. No se aplica <strong>Controlador</strong> (la boundary termina coordinando), lo que además rompe <strong>Bajo Acoplamiento</strong> y <strong>Alta Cohesión</strong>.
+</EjemploClase>
+
 ### 16.7. Identificar patrones GRASP en un diagrama dado
 
 Otra consigna frecuente da un fragmento de **secuencia + clases** y pide marcar qué patrones GRASP se aplican (y a veces cuáles **no**, con la corrección). Ejemplo real de parcial: registrar el **consumo de un expendedor** de combustible que está en un surtidor.
@@ -275,6 +343,28 @@ Otra consigna frecuente da un fragmento de **secuencia + clases** y pide marcar 
 <Callout tipo="tip" titulo="Otros diagramas que aparecen igual">
 La misma consigna se repite con distintos dominios: <em>reporte de utilización de monopatines</em>, <em>registrar canje de puntos</em> (fidelización) y <em>registrar ingresos de un comercio</em>. En todos, lo que hay que reconocer es lo mismo: <strong>Controlador</strong> (el gestor), <strong>Experto</strong> (cada entidad responde por lo suyo, p. ej. su estado), <strong>Creador</strong> (quien contiene crea) y el cambio de estado vía <code>buscarEstadoActual()</code> → <code>setEstado()</code>.
 </Callout>
+
+**Mismo patrón, otros dominios reales.** En *reporte de monopatines* el gestor coordina y cada `Viaje` calcula su propia duración (Experto); en *canje de puntos* el controlador coordina y cada `Beneficio`/`Tarjeta` responde por lo suyo.
+
+<MermaidDiagram caption="Monopatines: el cálculo lo hace el Experto" code={`sequenceDiagram
+  participant G as :GestorUtilizacionMonopatines
+  participant V as :Viaje
+  G->>G: calcularDuracionViajesSinPausas()
+  G->>V: *esViajeDePeriodo()
+  V->>V: calcularDuracionSinPausas()
+  V->>V: calcularDuracion()`} />
+
+<MermaidDiagram caption="Canje de puntos: controlador + expertos" code={`sequenceDiagram
+  actor C as Cliente
+  participant V as :VentanaCanjeDePuntos
+  participant G as :ControladorCanjeDePuntos
+  participant B as :Beneficio
+  participant T as :Tarjeta
+  C->>V: opcionCanjearPuntos()
+  V->>G: registrarCanje()
+  G->>B: *verificarBeneficioVigente()
+  G->>B: *hayStock()
+  G->>T: *estaActiva()`} />
 
 ### 16.8. Cómo redactar una respuesta que sume puntos
 

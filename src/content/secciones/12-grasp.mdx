@@ -582,7 +582,48 @@ Se aplica Alta Cohesión porque las responsabilidades se encuentran asignadas a 
   ]}
 />
 
-### 11.12. GRASP versus patrones de diseño
+### 11.12. Cómo detectar GRASP en un diagrama de secuencia
+
+El **verbo del método ayuda, pero no alcanza**. Para identificar el patrón hay que mirar tres cosas: **quién envía** el mensaje, **quién lo recibe** y **qué información necesita** ese método para resolverse. El mismo nombre (`calcularX()`) puede ser Experto bien aplicado o un síntoma de mal diseño según dónde esté la información.
+
+<TablaComparativa
+  caption="Leer el patrón a partir del mensaje"
+  columnas={["Mensaje en la secuencia", "Patrón probable", "Por qué"]}
+  filas={[
+    ["<code>Pantalla → Gestor : registrarX()</code>", "Controlador", "El gestor recibe el evento del sistema y coordina el caso de uso."],
+    ["<code>Gestor → Entidad : calcularX()</code>", "Experto", "El cálculo lo hace quien tiene la información."],
+    ["<code>Entidad → Entidad : calcularX()</code>", "Experto", "Una entidad delega en otra que conoce el dato necesario."],
+    ["<code>Todo → Parte : «create»</code>", "Creador", "El todo crea su parte porque la contiene."],
+    ["<code>Gestor → Todo : agregarParte()</code> y luego <code>Todo → Parte : «create»</code>", "Creador + Bajo Acoplamiento", "El gestor no crea la parte: se lo pide al todo (que la contiene), así no depende de la parte."],
+    ["<code>Gestor → Entidad : hayX()</code>", "Experto + Bajo Acoplamiento", "Se le pregunta a la entidad en vez de leer sus datos: menos dependencias."],
+    ["<code>Gestor → Entidad : getDato1(), getDato2(), getDato3()</code>", "Sospecha de alto acoplamiento", "El gestor saca muchos datos para decidir él; debería delegar la decisión."],
+    ["<code>Pantalla → EntidadA</code>, <code>Pantalla → EntidadB</code>", "Falta Controlador", "La boundary habla directo con entidades: nadie coordina el caso de uso."],
+    ["<code>Gestor → Gestor : calcularTodo()</code>", "Sospecha de baja cohesión", "Un solo método hace demasiado; la responsabilidad está mal repartida."],
+    ["<code>Entidad → Entidad : estaAnulada()</code>", "Experto", "La entidad responde por su propio estado."]
+  ]}
+/>
+
+<Callout tipo="tip" titulo="Frase mental para el parcial">
+- <strong>Controlador</strong> = recibe y coordina.
+- <strong>Experto</strong> = calcula, valida o responde porque conoce.
+- <strong>Creador</strong> = crea donde corresponde.
+- <strong>Bajo Acoplamiento</strong> = evita pedir datos de más.
+- <strong>Alta Cohesión</strong> = cada clase hace métodos de una misma idea.
+</Callout>
+
+<TablaComparativa
+  caption="Verbos típicos por patrón"
+  columnas={["Patrón", "Verbos típicos"]}
+  filas={[
+    ["<strong>Controlador</strong>", "registrar, generar, actualizar, modificar, cancelar, anular, consultar, confirmar, finalizar."],
+    ["<strong>Experto</strong>", "calcular, validar, verificar, determinar, obtener, buscar, contar, es…, está…, hay…, tiene…"],
+    ["<strong>Creador</strong>", "«create», new, crear, agregar, registrar, generar, inicializar."],
+    ["<strong>Bajo Acoplamiento</strong>", "Sin verbos propios: se detecta por la <strong>delegación</strong> y por evitar getters innecesarios."],
+    ["<strong>Alta Cohesión</strong>", "Sin verbos propios: se detecta porque los métodos de una clase pertenecen a <strong>una misma idea</strong>."]
+  ]}
+/>
+
+### 11.13. GRASP versus patrones de diseño
 
 En esta unidad solo se usan los <strong>cinco GRASP de análisis</strong>: Experto en Información, Creador, Controlador, Bajo Acoplamiento y Alta Cohesión. No hace falta agregar los nueve GRASP ni aplicar patrones de diseño como Strategy, Observer o State.
 
