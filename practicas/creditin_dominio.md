@@ -32,6 +32,21 @@ class CuentaBancaria:::clientes {
   acreditar()
 }
 
+class Usuario:::acceso {
+  nombreUsuario
+  contrasena
+  getNombreUsuario()
+  validarContrasena()
+}
+
+class Sesion:::acceso {
+  fechaHoraInicio
+  fechaHoraFin
+  token
+  estaActiva()
+  cerrar()
+}
+
 class Prestamo:::prestamo {
   fechaAcreditacion
   fechaSolicitud
@@ -161,13 +176,13 @@ TipoPrestamo --> "1" DefinicionMora : definicionMora
 DefinicionMora <|-- MoraPorcentual
 DefinicionMora <|-- MoraFija
 
-Prestamo --> "1" CuentaBancaria : acreditacion
-Prestamo --> "1..*" Cuota : cuota
+Prestamo --> "0..1" CuentaBancaria : acreditacion
+Prestamo --> "0..*" Cuota : cuota
 Prestamo --> "0..*" PlanDePago : planDePago
 Prestamo --> "1..*" CambioEstadoPrestamo : cambioEstado
 
 Cuota --> "0..1" Recargo : recargo
-Cuota --> "0..*" Pago : pago
+Cuota --> "0..1" Pago : pago
 Pago --> "1" MedioDePago : medioDePago
 
 PlanDePago --> "1..*" DetallePlanPago : detalle
@@ -175,11 +190,15 @@ DetallePlanPago --> "1..*" Cuota : cuota
 
 CambioEstadoPrestamo --> "1" Estado : estado
 
+Sesion ..> Usuario : usuario
+Usuario ..> Cliente : cliente
+
 classDef clientes fill:#0369a1,stroke:#06b6d4,stroke-width:2px,color:#ffffff
 classDef prestamo fill:#059669,stroke:#10b981,stroke-width:2px,color:#ffffff
 classDef cobranza fill:#d97706,stroke:#f59e0b,stroke-width:2px,color:#ffffff
 classDef planes fill:#be185d,stroke:#ec4899,stroke-width:2px,color:#ffffff
 classDef estado fill:#7c3aed,stroke:#a78bfa,stroke-width:2px,color:#ffffff
+classDef acceso fill:#475569,stroke:#94a3b8,stroke-width:2px,color:#ffffff
 ```
 
 ## Decisiones de modelado (justificación según el enunciado)
