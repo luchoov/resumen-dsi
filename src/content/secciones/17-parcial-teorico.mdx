@@ -228,7 +228,55 @@ En parciales recientes aparece un fragmento de análisis (vista dinámica + vist
 
 **Qué problema conlleva.** Toda inconsistencia entre vistas genera **ambigüedad**: el equipo no sabe cuál vista es la correcta, se programan métodos que no existen o estados que no se pueden alcanzar, y el modelo deja de ser confiable para guiar el diseño. Por eso el modelo de análisis no debería tener redundancias ni inconsistencias (a diferencia del de requerimientos).
 
-### 16.7. Cómo redactar una respuesta que sume puntos
+### 16.7. Identificar patrones GRASP en un diagrama dado
+
+Otra consigna frecuente da un fragmento de **secuencia + clases** y pide marcar qué patrones GRASP se aplican (y a veces cuáles **no**, con la corrección). Ejemplo real de parcial: registrar el **consumo de un expendedor** de combustible que está en un surtidor.
+
+<MermaidDiagram caption="Vista dinámica: registrar consumo (expendedor de combustible)" code={`sequenceDiagram
+  participant G as :GestorConsumo
+  participant E as seleccionado:Expendedor
+  participant S as surtidorSel:Surtidor
+  participant Es as :Estado
+  G->>E: buscarEstadoExpendedor()
+  E->>Es: *esEnUso()
+  G->>E: actualizarEstadoExpendedor()
+  E->>S: descargarCombustible()
+  E->>Es: setEstado(estado)`} />
+
+<MermaidDiagram caption="Vista de clases (acotada al CU)" code={`classDiagram
+  class Consumo {
+    <<entity>>
+  }
+  class Expendedor {
+    <<entity>>
+  }
+  class Surtidor {
+    <<entity>>
+  }
+  class Estado {
+    <<entity>>
+  }
+  Surtidor --> "1..*" Expendedor : expendedores
+  Expendedor --> "0..*" Consumo : consumos
+  Expendedor --> "1" Estado : estado
+  Consumo --> "1" Estado : estado`} />
+
+<TablaComparativa
+  caption="Qué patrón se ve en cada mensaje (con su contraejemplo)"
+  columnas={["Patrón", "Dónde se aplica", "Contraejemplo (mal hecho)"]}
+  filas={[
+    ["<strong>Controlador</strong>", "<code>GestorConsumo</code> recibe el evento del CU y coordina; no pone la lógica en la pantalla ni en las entidades.", "Que la pantalla decida el cambio de estado del expendedor."],
+    ["<strong>Experto en información</strong>", "El <code>Expendedor</code> responde por su propio estado (<code>buscarEstadoExpendedor()</code>, <code>esEnUso()</code>); el <code>Surtidor</code> sabe descargar su combustible.", "Que el gestor lea el atributo <code>estado</code> del expendedor y decida él (<code>if estado == EnUso</code>): la lógica queda fuera de su dueño."],
+    ["<strong>Creador</strong>", "El <code>Expendedor</code> crea/registra su <code>Consumo</code> porque lo contiene.", "Que el gestor cree el <code>Consumo</code> y se lo enganche al expendedor con setters externos."],
+    ["<strong>Bajo acoplamiento</strong>", "El gestor no conoce cómo el expendedor representa su estado: solo le manda mensajes.", "El gestor depende de la representación interna del estado del expendedor; si cambia, se rompe."]
+  ]}
+/>
+
+<Callout tipo="tip" titulo="Otros diagramas que aparecen igual">
+La misma consigna se repite con distintos dominios: <em>reporte de utilización de monopatines</em>, <em>registrar canje de puntos</em> (fidelización) y <em>registrar ingresos de un comercio</em>. En todos, lo que hay que reconocer es lo mismo: <strong>Controlador</strong> (el gestor), <strong>Experto</strong> (cada entidad responde por lo suyo, p. ej. su estado), <strong>Creador</strong> (quien contiene crea) y el cambio de estado vía <code>buscarEstadoActual()</code> → <code>setEstado()</code>.
+</Callout>
+
+### 16.8. Cómo redactar una respuesta que sume puntos
 
 <ChecklistRepaso
   id="parcial-teorico"

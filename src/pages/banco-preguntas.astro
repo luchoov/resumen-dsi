@@ -431,6 +431,48 @@ const preguntas: QA[] = [
     c: "Casos de uso",
     q: "En la realización de un CU, ¿cuántos escenarios se modelan en el diagrama de secuencia?",
     a: "Uno solo: el <strong>escenario principal</strong> (curso normal). Los cursos alternativos no se dibujan con <code>alt/opt</code>; si hace falta, se hace <strong>un diagrama por flujo</strong> y las condiciones van como guarda <code>[...]</code> sobre el mensaje."
+  },
+
+  // ── Preguntas teóricas recurrentes (parciales reales) ──────────────────
+  {
+    c: "Parcial teórico",
+    q: "¿Cuál es la diferencia entre Modelo, Vista y Diagrama?",
+    a: "Un <strong>modelo</strong> es una abstracción completa del sistema desde cierto enfoque (p. ej. el modelo de análisis). Una <strong>vista</strong> es una proyección del modelo que muestra un aspecto (estática o dinámica). Un <strong>diagrama</strong> es la representación gráfica concreta de (parte de) una vista. Ej.: el modelo de análisis tiene una <em>vista dinámica</em> que se dibuja con diagramas de secuencia y de comunicación."
+  },
+  {
+    c: "Parcial teórico",
+    q: "¿En qué casos el PUD recomienda construir un modelo de análisis?",
+    a: "Cuando el sistema es <strong>grande o complejo</strong> y conviene una vista interna conceptual antes de diseñar; cuando hay muchos requerimientos que refinar y aspectos internos sobre los que razonar; y de forma <strong>iterativa e incremental</strong> (cada iteración analiza los casos de uso significativos de esa iteración). En sistemas triviales puede omitirse."
+  },
+  {
+    c: "Parcial teórico",
+    q: "¿Cuál es el propósito del Análisis y su rol en el ciclo iterativo e incremental del PUD?",
+    a: "Refinar los requerimientos en términos de <strong>objetos</strong> (modelo conceptual), razonar sobre los <strong>aspectos internos</strong> sin comprometerse con tecnología, y producir una base estructurada (clases de análisis, realizaciones de CU, paquetes) para el diseño. En el PUD se hace <strong>por iteración</strong>: cada incremento analiza los casos de uso de esa iteración, no todo de una vez."
+  },
+  {
+    c: "Parcial teórico",
+    q: "¿Cuáles son las entradas y las salidas del proceso de Análisis orientado a objetos?",
+    a: "<strong>Entradas:</strong> el modelo de requerimientos (casos de uso, glosario, reglas de negocio) y el modelo del negocio/dominio. <strong>Salidas:</strong> el modelo de análisis = clases de análisis estereotipadas («boundary»/«control»/«entity»), realizaciones de casos de uso (vista estática de clases + vista dinámica de secuencia/comunicación/máquina de estados) y paquetes de análisis. Las clases modelan la estructura; las realizaciones, el comportamiento por CU."
+  },
+  {
+    c: "Parcial teórico",
+    q: "“El patrón Creador es una especialización del patrón Experto.” ¿Es correcto?",
+    a: "No exactamente: son patrones <strong>distintos</strong>. Ambos asignan responsabilidades según lo que la clase conoce o contiene, pero responden preguntas diferentes: <strong>Experto</strong> → ¿quién debe hacer/conocer algo? (quien tiene la información); <strong>Creador</strong> → ¿quién instancia a B? (quien lo contiene, agrega, registra, usa o tiene sus datos de inicialización). Se relacionan (el creador suele ser experto en los datos de inicialización) pero no es una especialización formal."
+  },
+  {
+    c: "Parcial teórico",
+    q: "¿Qué diagramas propone UML 2.0 para el análisis y qué trazabilidad hay entre ellos?",
+    a: "Diagramas de <strong>interacción</strong> (secuencia y comunicación, equivalentes entre sí), <strong>máquina de estados</strong> y <strong>diagrama de clases</strong>. Trazabilidad / controles de consistencia: cada mensaje de la secuencia debe ser un método de la clase receptora; cada método de transición de la MEF debe ser método de la clase que cambia y figurar como mensaje; los estados de la MEF se corresponden con la clase <code>Estado</code>; los nombres de clases y métodos coinciden en todas las vistas."
+  },
+  {
+    c: "Parcial teórico",
+    q: "¿Cómo se relacionan Bajo Acoplamiento y Alta Cohesión?",
+    a: "Son patrones <strong>evaluativos complementarios</strong>. Aplicar bien Experto/Creador tiende a producir bajo acoplamiento (menos dependencias) y alta cohesión (responsabilidades enfocadas) a la vez. A veces <strong>compiten</strong>: concentrar todo en una clase baja el acoplamiento entre clases pero hunde la cohesión de esa clase. El buen diseño <strong>balancea</strong> ambos."
+  },
+  {
+    c: "Parcial teórico",
+    q: "¿De qué se compone el modelo resultante del análisis?",
+    a: "De <strong>clases de análisis</strong> (boundary/control/entity con responsabilidades, no métodos con firma completa), <strong>realizaciones de casos de uso</strong> (vista estática = diagrama de clases del CU; vista dinámica = secuencia/comunicación + máquina de estados de las clases con ciclo de vida) y <strong>paquetes de análisis</strong> (agrupación con alta cohesión y bajo acoplamiento)."
   }
 ];
 
