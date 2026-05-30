@@ -11,14 +11,14 @@ interface Props {
 const { secciones, activa } = Astro.props;
 ---
 
-<aside id="sidebar-indice" class="fixed inset-y-0 left-0 z-50 w-[19rem] -translate-x-full border-r border-[hsl(var(--border))] bg-[hsl(var(--background))] px-4 pb-6 pt-20 transition-transform lg:sticky lg:top-16 lg:z-auto lg:h-[calc(100vh-5rem)] lg:w-auto lg:translate-x-0 lg:overflow-y-auto lg:border-r-0 lg:bg-transparent lg:px-0 lg:pt-0 no-print">
-  <div class="mb-4 flex items-center justify-between lg:hidden">
+<aside id="sidebar-indice" class="fixed inset-y-0 left-0 z-50 flex w-[19rem] max-w-[85vw] -translate-x-full flex-col border-r border-[hsl(var(--border))] bg-[hsl(var(--background))] transition-transform lg:sticky lg:top-16 lg:z-auto lg:h-[calc(100vh-5rem)] lg:w-auto lg:max-w-none lg:translate-x-0 lg:border-r-0 lg:bg-transparent no-print">
+  <div class="flex shrink-0 items-center justify-between border-b border-[hsl(var(--border))] px-4 py-3 lg:hidden">
     <p class="font-semibold">Índice</p>
     <button id="cerrar-sidebar" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[hsl(var(--border))]" aria-label="Cerrar índice">
       <X size={16} aria-hidden="true" />
     </button>
   </div>
-  <nav aria-label="Índice de secciones" class="space-y-1 text-sm">
+  <nav aria-label="Índice de secciones" class="flex-1 space-y-1 overflow-y-auto px-4 pb-6 pt-4 text-sm lg:px-0 lg:pt-0">
     {secciones.map((seccion) => (
       <a
         href={seccionUrl(seccion)}
