@@ -28,19 +28,18 @@ No son recetas para escribir código ni patrones de diseño de la Unidad 2. Sirv
 En un diagrama de secuencia, GRASP se justifica mirando <strong>quién recibe cada mensaje</strong>. La pregunta no es solo "qué patrón aparece", sino "por qué esa responsabilidad quedó en ese objeto y no en otro".
 </Callout>
 
-<MermaidDiagram caption="GRASP como criterios de asignación de responsabilidades" code={`flowchart TB
+<MermaidDiagram caption="GRASP: patrones de asignación y criterios de calidad" code={`flowchart TD
   GRASP((GRASP))
-  GRASP --> Hacer[Responsabilidades de hacer]
   GRASP --> Conocer[Responsabilidades de conocer]
-  Hacer --> Experto
-  Hacer --> Creador
-  Hacer --> Controlador
-  Conocer --> Experto
-  Experto --> Bajo[Bajo acoplamiento]
-  Controlador --> Alta[Alta cohesion]
-  Creador --> Bajo
-  Bajo --> Diseno[Solucion defendible en parcial]
-  Alta --> Diseno`} />
+  GRASP --> Hacer[Responsabilidades de hacer]
+  GRASP --> Calidad[Criterios de calidad de la asignación]
+  Conocer --> Experto["Experto en Información<br/>(lo hace quien conoce)"]
+  Hacer --> Creador["Creador<br/>(crea quien contiene/agrega/registra/usa)"]
+  Hacer --> Controlador["Controlador<br/>(recibe y coordina el caso de uso)"]
+  Calidad --> Bajo["Bajo Acoplamiento<br/>(conocer poco)"]
+  Calidad --> Alta["Alta Cohesión<br/>(hacer lo propio)"]`} />
+
+Los tres primeros (**Experto, Creador, Controlador**) <strong>asignan</strong> responsabilidades; <strong>Bajo Acoplamiento</strong> y <strong>Alta Cohesión</strong> no asignan, son <strong>criterios de calidad</strong> con los que se evalúa cualquier asignación. <em>Nota:</em> el Experto también puede asignar un <em>hacer</em> (hace el cálculo porque tiene la información); se lo ubica bajo «conocer» por el lema "lo hace quien conoce".
 
 ### 11.2. Responsabilidades de hacer y conocer
 
