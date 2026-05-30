@@ -144,6 +144,7 @@ class Estado:::estado {
   esEnMora()
   esEnPlanPago()
   esCancelado()
+  esFinalizado()
   getNombre()
 }
 
@@ -233,6 +234,8 @@ class GestorRegistrarPago:::control {
   tomarSeleccionMedioDePago()
   confirmarPago()
   validarHorarioHabil()
+  obtenerFechaHoraActual()
+  obtenerMediosDePago()
 }
 
 class Sesion:::entity {
@@ -283,6 +286,8 @@ class Cuota:::entity {
   calcularRecargo()
   getMontoTotal()
   registrarPago()
+  crearRecargo()
+  crearPago()
   mostrarDatos()
 }
 
@@ -313,7 +318,14 @@ class CambioEstadoPrestamo:::entity {
 class Estado:::entity {
   <<entity>>
   esVigente()
+  esEnMora()
+  esFinalizado()
   getNombre()
+}
+
+class InterfazCorreo:::boundary {
+  <<boundary>>
+  enviarComprobante()
 }
 
 PantallaRegistrarPago ..> GestorRegistrarPago
@@ -322,7 +334,8 @@ GestorRegistrarPago ..> Cliente
 GestorRegistrarPago ..> Prestamo
 GestorRegistrarPago ..> Cuota
 GestorRegistrarPago ..> MedioDePago
-GestorRegistrarPago ..> Pago
+GestorRegistrarPago ..> Estado
+GestorRegistrarPago ..> InterfazCorreo
 
 Sesion --> "1" Cliente : cliente
 Cliente --> "0..*" Prestamo : prestamo
@@ -342,7 +355,7 @@ classDef control fill:#be185d,stroke:#ec4899,stroke-width:2px,color:#ffffff
 classDef entity fill:#059669,stroke:#10b981,stroke-width:2px,color:#ffffff`;
 
 const secuenciaCU7Code = `sequenceDiagram
-  actor Cli as :Cliente
+  actor Cli as Cliente
   participant P as :PantallaRegistrarPago
   participant G as :GestorRegistrarPago
   participant Se as :Sesion
@@ -354,14 +367,16 @@ const secuenciaCU7Code = `sequenceDiagram
   participant R as :Recargo
   participant Pa as :Pago
   participant MP as :MedioDePago
+  participant E as :Estado
   participant CA as actual:CambioEstadoPrestamo
   participant CN as nuevo:CambioEstadoPrestamo
-  participant SC as :Servidor de Correo
+  participant IC as :InterfazCorreo
 
   Cli->>P: opcionRegistrarPago()
   P->>P: habilitarVentana()
   P->>G: registrarPago()
   G->>G: validarHorarioHabil()
+  G->>G: obtenerFechaHoraActual()
   G->>Se: getCliente()
   G->>C: obtenerPrestamosConCuotasImpagas()
   G->>Pr: *mostrarDatos()
@@ -378,6 +393,7 @@ const secuenciaCU7Code = `sequenceDiagram
   Cu->>Pr: calcularRecargo(diasAtraso)
   Pr->>TP: calcularRecargo(diasAtraso)
   TP->>DM: calcularRecargo(diasAtraso)
+  Cu->>Cu: crearRecargo()
   Cu->>R: new(montoRecargo)
   G->>Cu: getMontoTotal()
   G->>G: obtenerMediosDePago()
@@ -388,16 +404,19 @@ const secuenciaCU7Code = `sequenceDiagram
   G->>P: pedirConfirmacion()
   Cli->>P: confirmarPago()
   P->>G: confirmarPago()
-  G->>Pa: new(fechaHora, monto, medioDePago)
-  G->>Cu: registrarPago(pago)
-  G->>Pr: actualizarEstado()
-  Pr->>Pr: obtenerCuotasVencidas()
+  G->>Cu: registrarPago(fechaHora, montoTotal, medioDePago)
+  Cu->>Cu: crearPago()
+  Cu->>Pa: new(fechaHora, montoTotal, medioDePago)
+  G->>Pr: obtenerCuotasVencidas()
+  G->>E: *esVigente()
+  G->>Pr: actualizarEstado(fechaHora, estadoVigente)
   Pr->>Pr: buscarEstadoActual()
   Pr->>CA: *esEstadoActual()
   Pr->>CA: setFechaHoraFin(fechaHora)
   Pr->>Pr: crearCambioEstado()
-  Pr->>CN: new(fechaHora, estado)
-  G->>SC: enviarComprobante(cliente)`;
+  Pr->>CN: new(fechaHora, estadoDestino)
+  G->>IC: enviarComprobante(cliente, pago)
+  G->>P: mostrarComprobante()`;
 ---
 
 <BaseLayout
@@ -724,9 +743,9 @@ const secuenciaCU7Code = `sequenceDiagram
       <p><strong>3) Elegir la cuota.</strong> Mismo patrón: <code>obtenerCuotasImpagas()</code> al <code>:Prestamo</code>, <code>*mostrarDatos()</code> a cada <code>:Cuota</code>, y la terna <code>pedirSeleccionCuota()</code> / <code>tomarSeleccionCuota()</code> / <code>tomarSeleccionCuota(cuota)</code>.</p>
       <p><strong>4) Calcular el recargo.</strong> El gestor confirma con <code>estaVencida()</code> y pide <code>calcularRecargo()</code> a la cuota. Como la cuota no conoce la fórmula, la delega hacia arriba —<code>Cuota → Prestamo → TipoPrestamo → DefinicionMora</code>, todos con <code>calcularRecargo(diasAtraso)</code>— hasta llegar a la <code>:DefinicionMora</code>, que es la única que calcula (polimórficamente: porcentual o fija). Con el resultado, la cuota crea su recargo con <code>new(montoRecargo)</code> sobre <code>:Recargo</code>. Luego el gestor pide el total con <code>getMontoTotal()</code>.</p>
       <p><strong>5) Medio de pago y confirmación.</strong> El gestor arma la lista de medios con <code>obtenerMediosDePago()</code> (<em>self</em>: es un catálogo sin dueño en el modelo) y le pide el nombre a cada uno con <code>*getNombre()</code>. Sigue la selección (<code>pedirSeleccionMedioDePago()</code> / <code>tomarSeleccionMedioDePago(medioDePago)</code>) y la confirmación (<code>pedirConfirmacion()</code> / <code>confirmarPago()</code>).</p>
-      <p><strong>6) Registrar el pago.</strong> El gestor crea el pago con <code>new(fechaHora, monto, medioDePago)</code> sobre <code>:Pago</code> —el medio elegido viaja como <strong>parámetro</strong>— y se lo entrega a la cuota con <code>registrarPago(pago)</code>.</p>
-      <p><strong>7) Actualizar el estado del préstamo.</strong> El gestor avisa al préstamo con <code>actualizarEstado()</code>. El préstamo revisa por su cuenta si le quedan vencidas con <code>obtenerCuotasVencidas()</code> (<em>self</em>) y busca su cambio de estado vigente con <code>buscarEstadoActual()</code> (<em>self</em>). Esa búsqueda <strong>itera</strong> sus cambios preguntándole a cada uno <code>*esEstadoActual()</code> (el actual es el único <strong>sin <code>fechaHoraFin</code></strong>). Cierra ese cambio con <code>setFechaHoraFin(fechaHora)</code> sobre <code>actual:CambioEstadoPrestamo</code> y, mediante <code>crearCambioEstado()</code> (<em>self</em>), crea el nuevo con <code>new(fechaHora, estado)</code> sobre <code>nuevo:CambioEstadoPrestamo</code> (el estado destino también viaja como parámetro).</p>
-      <p><strong>8) Notificar.</strong> El gestor le pide al <code>:Servidor de Correo</code> el comprobante con <code>enviarComprobante(cliente)</code>. Esa es la última flecha: no hay ningún mensaje de vuelta.</p>
+      <p><strong>6) Registrar el pago.</strong> El gestor le pide a la cuota <code>registrarPago(fechaHora, montoTotal, medioDePago)</code>. La <code>:Cuota</code> ejecuta <code>crearPago()</code> (<em>self</em>) y crea su <code>:Pago</code> con <code>new(fechaHora, montoTotal, medioDePago)</code>, porque es quien lo registra y lo conoce.</p>
+      <p><strong>7) Actualizar el estado del préstamo.</strong> En este escenario principal, después del pago no quedan cuotas vencidas, por eso el gestor busca el estado destino con <code>*esVigente()</code> y avisa al préstamo con <code>actualizarEstado(fechaHora, estadoVigente)</code>. El préstamo busca su cambio de estado vigente con <code>buscarEstadoActual()</code> (<em>self</em>). Esa búsqueda <strong>itera</strong> sus cambios preguntándole a cada uno <code>*esEstadoActual()</code> (el actual es el único <strong>sin <code>fechaHoraFin</code></strong>). Cierra ese cambio con <code>setFechaHoraFin(fechaHora)</code> sobre <code>actual:CambioEstadoPrestamo</code> y, mediante <code>crearCambioEstado()</code> (<em>self</em>), crea el nuevo con <code>new(fechaHora, estadoDestino)</code> sobre <code>nuevo:CambioEstadoPrestamo</code>.</p>
+      <p><strong>8) Notificar.</strong> El gestor le pide a la <code>:InterfazCorreo</code> el comprobante con <code>enviarComprobante(cliente, pago)</code> y luego actualiza la pantalla con <code>mostrarComprobante()</code>. No hay flechas de retorno.</p>
 
       <h3>3.5 Decisiones de modelado y dudas frecuentes</h3>
       <p>
@@ -739,10 +758,10 @@ const secuenciaCU7Code = `sequenceDiagram
           ["<strong>Sin retornos</strong>", "No se dibujan flechas de vuelta ni mensajes tipo <em>ok / resultado / datos</em>: el resultado de una consulta queda implícito.", "Tras <code>getCliente()</code> u <code>obtenerCuotasImpagas()</code> no hay flecha de regreso."],
           ["<strong>Self válido</strong>", "Un objeto se manda un mensaje a sí mismo solo si <strong>ya recibió uno</strong> y resuelve algo con lo suyo.", "<code>habilitarVentana()</code> (pantalla); <code>validarHorarioHabil()</code> (gestor); <code>obtenerCuotasVencidas()</code> / <code>buscarEstadoActual()</code> (préstamo)."],
           ["<strong>Self por catálogo sin dueño</strong>", "Si una colección no tiene dueño en el modelo, la consigue el gestor como self.", "<code>obtenerMediosDePago()</code>."],
-          ["<strong>Iteración con asterisco</strong>", "Para repetir sobre cada elemento: <code>*mensaje()</code> del gestor <strong>hacia</strong> la entidad. Nunca un self suelto en la entidad ni un frame <code>loop</code>.", "<code>*mostrarDatos()</code>, <code>*getNombre()</code>."],
+          ["<strong>Iteración con asterisco</strong>", "Para repetir un mensaje simple sobre cada elemento: <code>*mensaje()</code> del gestor <strong>hacia</strong> la entidad. Si se repiten varios mensajes juntos, puede usarse <code>loop</code>.", "<code>*mostrarDatos()</code>, <code>*getNombre()</code>."],
           ["<strong>Filtrado encapsulado</strong>", "El <code>obtener…()</code> ya devuelve la colección filtrada; no se expanden los <code>estaPagada()</code> / <code>estaVencida()</code> (se confía en el Experto).", "<code>obtenerPrestamosConCuotasImpagas()</code>, <code>obtenerCuotasImpagas()</code>."],
           ["<strong>Mensaje al Experto</strong>", "Se le pide el dato a quien lo posee según las asociaciones del dominio.", "préstamos al <code>:Cliente</code>; cuotas al <code>:Prestamo</code>."],
-          ["<strong>Asociar = navegabilidad</strong>", "La referencia la guarda el <strong>receptor</strong>; el otro objeto viaja como <strong>parámetro</strong> (en el <code>new()</code> o un <code>setX()</code>).", "<code>new(fechaHora, monto, medioDePago)</code>; <code>new(fechaHora, estado)</code>."],
+          ["<strong>Asociar = navegabilidad</strong>", "La referencia la guarda el <strong>receptor</strong>; el otro objeto viaja como <strong>parámetro</strong> (en el <code>new()</code> o un <code>setX()</code>).", "<code>new(fechaHora, montoTotal, medioDePago)</code>; <code>new(fechaHora, estadoDestino)</code>."],
           ["<strong>Selección</strong>", "Elegir de una lista = <code>pedirSeleccionX()</code> (gestor → pantalla) + <code>tomarSeleccionX()</code> (actor → pantalla → gestor).", "préstamo, cuota y medio de pago."]
         ]}
       />
@@ -756,7 +775,7 @@ const secuenciaCU7Code = `sequenceDiagram
       </Callout>
 
       <Callout tipo="atencion" titulo="El cambio de estado (patrón historial)">
-        El préstamo busca su cambio vigente con <code>buscarEstadoActual()</code> —<em>self</em>, porque él es el dueño de su colección de <code>CambioEstadoPrestamo</code>—. Esa búsqueda <strong>itera</strong> los cambios preguntándole a cada uno <code>*esEstadoActual()</code>: el actual es el único <strong>sin <code>fechaHoraFin</code></strong>. Para no perder el historial, no se pisa el estado: se <strong>cierra</strong> el actual con <code>setFechaHoraFin(fechaHora)</code> y, vía <code>crearCambioEstado()</code> (<em>self</em>), se <strong>crea</strong> uno nuevo con <code>new(fechaHora, estado)</code> apuntando al <code>Estado</code> destino. Importante: <code>setFechaHoraFin()</code> es una <strong>orden del préstamo</strong> al cambio actual, <strong>no</strong> un self del cambio —el que coordina la transición es el préstamo (Experto en su propio historial)—. Este patrón es idéntico al que usa la cátedra (Peaje: <code>buscarEstadoActual()</code> → <code>*esEstadoActual()</code> → <code>setFechaFinEstado()</code> → <code>crearHistorial()</code> → <code>new()</code>).
+        El préstamo busca su cambio vigente con <code>buscarEstadoActual()</code> —<em>self</em>, porque él es el dueño de su colección de <code>CambioEstadoPrestamo</code>—. Esa búsqueda <strong>itera</strong> los cambios preguntándole a cada uno <code>*esEstadoActual()</code>: el actual es el único <strong>sin <code>fechaHoraFin</code></strong>. Para no perder el historial, no se pisa el estado: se <strong>cierra</strong> el actual con <code>setFechaHoraFin(fechaHora)</code> y, vía <code>crearCambioEstado()</code> (<em>self</em>), se <strong>crea</strong> uno nuevo con <code>new(fechaHora, estadoDestino)</code> apuntando al <code>Estado</code> destino. Importante: <code>setFechaHoraFin()</code> es una <strong>orden del préstamo</strong> al cambio actual, <strong>no</strong> un self del cambio —el que coordina la transición es el préstamo (Experto en su propio historial)—. Este patrón es idéntico al que usa la cátedra (Peaje: <code>buscarEstadoActual()</code> → <code>*esEstadoActual()</code> → <code>setFechaFinEstado()</code> → <code>crearHistorial()</code> → <code>new()</code>).
       </Callout>
 
     </article>

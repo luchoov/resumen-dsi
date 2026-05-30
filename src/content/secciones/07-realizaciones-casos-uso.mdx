@@ -48,10 +48,14 @@ La vista estática se modela con diagrama de clases. Muestra qué clases partici
   class Producto {
     <<entity>>
   }
+  class DetallePedido {
+    <<entity>>
+  }
   PantallaRegistrarPedido --> GestorRegistrarPedido
   GestorRegistrarPedido --> Pedido
   Pedido --> Cliente
-  Pedido --> Producto`} />
+  Pedido *-- DetallePedido
+  DetallePedido --> Producto`} />
 
 ### 6.4. Vista dinámica
 
@@ -65,13 +69,19 @@ Si el caso de uso tiene flujos o subflujos diferenciados, conviene crear un diag
   actor A as Actor
   participant B as :PantallaRegistrarPedido
   participant C as :GestorRegistrarPedido
-  participant E1 as :Pedido
+  participant E1 as nuevo:Pedido
+  participant D as nuevo:DetallePedido
   participant E2 as :Producto
   A->>B: opcionRegistrarPedido()
   B->>B: habilitarVentana()
   B->>C: registrarPedido(datos)
-  C->>E2: verificarStock(items)
-  C->>E1: new(datos, items)
+  C->>E2: *verificarStock(items)
+  C->>E1: new(datos)
+  loop por cada item
+    E1->>D: new(producto, cantidad)
+    E1->>E1: agregarDetalle(detalle)
+  end
+  E1->>E1: calcularTotal()
   C->>B: mostrarConfirmacion(nroPedido)`} />
 
 <DiagramaAnalisisOO
@@ -82,13 +92,16 @@ Si el caso de uso tiene flujos o subflujos diferenciados, conviene crear un diag
     { id: "b", tipo: "boundary", etiqueta: "Pantalla", x: 300, y: 150 },
     { id: "c", tipo: "control", etiqueta: "Gestor", x: 540, y: 210 },
     { id: "p", tipo: "entity", etiqueta: "Pedido", x: 840, y: 110 },
-    { id: "prod", tipo: "entity", etiqueta: "Producto", x: 840, y: 280 }
+    { id: "det", tipo: "entity", etiqueta: "DetallePedido", x: 840, y: 250 },
+    { id: "prod", tipo: "entity", etiqueta: "Producto", x: 1060, y: 250 }
   ]}
   conexiones={[
     { from: "actor", to: "b", numero: 1, etiqueta: "solicita" },
     { from: "b", to: "c", numero: 2, etiqueta: "registrar" },
     { from: "c", to: "prod", numero: 3, etiqueta: "verificarStock" },
-    { from: "c", to: "p", numero: 4, etiqueta: "crear" }
+    { from: "c", to: "p", numero: 4, etiqueta: "crear" },
+    { from: "p", to: "det", numero: 4.1, etiqueta: "crearDetalle" },
+    { from: "det", to: "prod", numero: 4.2, etiqueta: "referencia" }
   ]}
 />
 

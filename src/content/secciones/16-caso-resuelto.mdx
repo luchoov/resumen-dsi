@@ -81,6 +81,7 @@ Ahora modelamos el <strong>escenario del curso normal</strong>. Estructura BCE: 
   participant C as :Campo
   participant L as vigente:ProyectoDeCultivo
   participant Lab as :Laboreo
+  participant E as :Estado
 
   EL->>P: opcionRegLaboreoLote()
   P->>P: habilitarVentana()
@@ -101,7 +102,9 @@ Ahora modelamos el <strong>escenario del curso normal</strong>. Estructura BCE: 
   G->>L: crearLaboreo()
   L->>Lab: new()
   G->>L: validarTipoLaboreo()
-  L->>L: sembrar()
+  G->>E: *esEnSiembra()
+  G->>L: sembrar(estadoEnSiembra)
+  L->>L: setEstado(estadoEnSiembra)
   G->>P: confirmacion()
   EL->>P: tomarSeleccionFinalizar()
   P->>G: finCU()`} />
@@ -147,6 +150,7 @@ Cada <strong>objeto</strong> que apareció en la secuencia se vuelve <strong>cla
     +sembrar()
     +cosechar()
     +laborear()
+    +setEstado()
     +estaVigente()
   }
   class Laboreo {
@@ -167,6 +171,7 @@ Cada <strong>objeto</strong> que apareció en la secuencia se vuelve <strong>cla
     <<entity>>
     -nombre
     -esFinal
+    +esEnSiembra()
   }
   PantAdmLaboreos ..> GestorLaboreos
   GestorLaboreos --> Campo

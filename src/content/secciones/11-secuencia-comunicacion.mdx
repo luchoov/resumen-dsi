@@ -66,43 +66,39 @@ Los resúmenes precisan cómo se dibuja cada tipo de mensaje y la línea de vida
   ]}
 />
 
-#### 10.2.2. Operadores de control estructurado (opt, alt, par, loop)
+#### 10.2.2. Control de flujo en el estilo de la cátedra
 
-Cuando un escenario tiene condicionales o bucles, UML los encierra en <strong>fragmentos combinados</strong> con una guarda. Los resúmenes los ilustran con un cajero automático.
+UML permite varios fragmentos combinados, pero en las realizaciones de análisis de la cátedra no se modelan frames `alt`, `opt` ni `par`. El único frame que aparece como recurso habitual es <strong>loop</strong>; las alternativas se resuelven con un diagrama por flujo o con guardas en la máquina de estados.
 
 <TablaComparativa
-  caption="Fragmentos combinados de un diagrama de secuencia"
-  columnas={["Operador", "Significado", "Guarda"]}
+  caption="Cómo representar control de flujo en la cátedra"
+  columnas={["Situación", "Cómo se modela", "Ejemplo"]}
   filas={[
-    ["<strong>opt</strong>", "El bloque se ejecuta solo si la guarda es verdadera (un <em>if</em> sin <em>else</em>).", "[condición]"],
-    ["<strong>alt</strong>", "Varias subregiones excluyentes; se ejecuta la primera cuya guarda es verdadera (<em>if/else</em>).", "[c1] / [c2] / [else]"],
-    ["<strong>par</strong>", "Subregiones que se ejecutan en paralelo.", "—"],
-    ["<strong>loop</strong>", "El bloque se repite mientras la guarda sea verdadera (o n veces: loop(1,3)).", "[mientras...]"]
+    ["<strong>Recorrer una colección</strong>", "Frame <code>loop</code> con guarda o mensaje iterado con asterisco.", "<code>*getNombre()</code> / <code>loop [mientras haya X]</code>"],
+    ["<strong>Curso alternativo</strong>", "Otro diagrama de secuencia o comunicación para ese flujo.", "Curso normal separado de cancelación."],
+    ["<strong>Condición de estado</strong>", "Guarda <code>[...]</code> en la máquina de estados o validación previa en la secuencia.", "<code>[quedan vencidas]</code>."],
+    ["<strong>Selección de usuario</strong>", "Par <code>pedirSeleccionX()</code> / <code>tomarSeleccionX()</code>.", "El gestor ofrece; el actor selecciona."]
   ]}
 />
 
-<MermaidDiagram caption="opt, alt, par y loop en un cajero (Resumen DSI)" code={`sequenceDiagram
+<MermaidDiagram caption="Loop de intentos sin frames de alternativa" code={`sequenceDiagram
   actor U as usuario:Persona
   participant C as banco:Cajero
-  loop [clave inválida] (hasta 3)
+  loop [clave inválida y quedan intentos]
     U->>C: introducir(clave)
-    C-->>U: válida = verificar(clave)
+    C->>C: verificarClave()
   end
-  opt [clave válida]
-    par
-      U->>C: introducir(cuenta)
-    and
-      U->>C: introducir(cantidad)
-    end
-    C-->>U: entregar dinero
-  end`} />
+  U->>C: introducir(cuenta)
+  U->>C: introducir(cantidad)
+  C->>C: validarExtraccion()
+  C->>U: entregarDinero()`} />
 
 <EjemploReal titulo="Retiro en el cajero automático" dominio="Cotidiano">
-El retiro se lee así: con `loop` el cajero te deja reintentar la clave hasta 3 veces <em>mientras sea inválida</em>; recién con `opt [clave válida]` continúa; dentro, `par` indica que cuenta y monto pueden ingresarse en cualquier orden, y al final entrega el dinero. Cada caja es una porción de flujo con su propia condición, sin tener que dibujar diagramas separados.
+El retiro se lee así: con `loop` el cajero permite reintentar la clave mientras sea inválida y queden intentos. Si hubiera un flujo alternativo por clave bloqueada, se modela en otro diagrama o se explica por texto; no se mete como frame de alternativa dentro del mismo diagrama.
 </EjemploReal>
 
 <Callout tipo="atencion">
-Convención de cátedra: en los prácticos rara vez se dibujan `alt/opt/par`. Para las alternativas se hace <strong>un diagrama por flujo</strong> (curso normal, cancelación, etc.) y las condiciones se ponen como guarda `[...]` sobre el mensaje. `loop` sí aparece para recorrer colecciones.
+Convención de cátedra: no dibujes frames de alternativa u opción en el parcial. Para alternativas, hacé <strong>un diagrama por flujo</strong> y dejá la condición como guarda o como validación. Para iteraciones simples sobre colecciones, usá <code>*metodo()</code>; cuando conviene encerrar varios mensajes repetidos, usá <code>loop</code>.
 </Callout>
 
 ### 10.3. Diagrama de comunicación

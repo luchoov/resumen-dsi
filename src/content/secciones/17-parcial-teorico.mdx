@@ -32,8 +32,8 @@ Las cuatro preguntas se repiten parcial a parcial: **consistencia entre vistas**
 **Ejemplo (caso *Reparar Vehículo*).** Un mecánico registra la reparación de un vehículo. Mostramos las tres vistas y luego dónde se evidencia que son consistentes.
 
 <MermaidDiagram caption="Vista de máquina de estados: ReparaciónVehículo" code={`stateDiagram-v2
-  [*] --> Iniciada: new()
-  Iniciada --> Finalizada: finalizarReparación()
+  [*] --> Iniciada: Registrar Reparación /new()
+  Iniciada --> Finalizada: Finalizar Reparación /finalizarReparación()
   Finalizada --> [*]`} />
 
 <MermaidDiagram caption="Vista de secuencia: registrar una reparación" code={`sequenceDiagram
@@ -45,6 +45,7 @@ Las cuatro preguntas se repiten parcial a parcial: **consistencia entre vistas**
   participant R as nueva ReparaciónVehículo
 
   M->>P: opciónRegistrarReparación()
+  P->>P: habilitarVentana()
   P->>G: registrarReparación()
   G->>P: pedirDatos()
   M->>P: tomarFechaInicio()
@@ -56,13 +57,14 @@ Las cuatro preguntas se repiten parcial a parcial: **consistencia entre vistas**
   G->>G: buscarEstadoInicial()
   G->>E: esInicial()
   G->>G: ingresarReparación()
-  G->>R: new()`} />
+  G->>R: new(fechaHoraInicio, vehículo, estadoInicial)`} />
 
 <MermaidDiagram caption="Vista de estructura de clases" code={`classDiagram
   class PantallaRepararVehículo {
     <<boundary>>
     - fechaInicio
     - patente
+    + habilitarVentana()
     + opciónRegistrarReparación()
     + pedirDatos()
     + tomarFechaInicio()
@@ -309,7 +311,7 @@ Otra consigna frecuente da un fragmento de **secuencia + clases** y pide marcar 
   E->>Es: *esEnUso()
   G->>E: actualizarEstadoExpendedor()
   E->>S: descargarCombustible()
-  E->>Es: setEstado(estado)`} />
+  E->>E: setEstado(estado)`} />
 
 <MermaidDiagram caption="Vista de clases (acotada al CU)" code={`classDiagram
   class Consumo {
@@ -317,12 +319,17 @@ Otra consigna frecuente da un fragmento de **secuencia + clases** y pide marcar 
   }
   class Expendedor {
     <<entity>>
+    +buscarEstadoExpendedor()
+    +actualizarEstadoExpendedor()
+    +setEstado()
   }
   class Surtidor {
     <<entity>>
+    +descargarCombustible()
   }
   class Estado {
     <<entity>>
+    +esEnUso()
   }
   Surtidor --> "1..*" Expendedor : expendedores
   Expendedor --> "0..*" Consumo : consumos

@@ -407,13 +407,16 @@ En las soluciones, las validaciones de flujo suelen quedar en el gestor, pero la
 <MermaidDiagram caption="Validación de flujo y estado actual" code={`sequenceDiagram
   participant Gestor
   participant Vuelo
-  participant Cambio as CambioEstadoVuelo
+  participant CambioClase as :CambioEstadoVuelo
+  participant Actual as actual:CambioEstadoVuelo
   participant Estado
 
   Gestor->>Gestor: verificarDatosRequeridos()
   Gestor->>Vuelo: esFactibleCancelar()
-  Vuelo->>Cambio: obtenerEstadoActual()
-  Cambio->>Estado: permiteCancelacion()`} />
+  Vuelo->>Vuelo: obtenerEstadoActual()
+  Vuelo->>CambioClase: *esEstadoActual()
+  Vuelo->>Actual: esCancelable()
+  Actual->>Estado: permiteCancelacion()`} />
 
 Esto se ve en Líneas Aéreas - CU Cancelar Vuelo: antes de ofrecer vuelos cancelables, el gestor busca vuelos y el vuelo/cambio/estado colaboran para saber si permite cancelación.
 
@@ -434,16 +437,20 @@ Ejemplo basado en Líneas Aéreas - CU Cancelar Vuelo:
 <MermaidDiagram caption="Cambio de estado con historial - Cancelar Vuelo" code={`sequenceDiagram
   participant Gestor as GestorCancelacionVuelo
   participant Vuelo
+  participant CambioClase as :CambioEstadoVuelo
   participant Actual as CambioEstadoVuelo actual
   participant Nuevo as CambioEstadoVuelo cancelado
   participant Estado
   participant Consulta as PantallaConsultarDisponibilidad
   participant Estados as PantallaEstadosDeVuelo
 
+  Gestor->>Estado: *esCancelado()
+  Gestor->>Gestor: obtenerFechaHoraActual()
   Gestor->>Vuelo: cancelar()
-  Vuelo->>Actual: setFechaHoraFin()
-  Vuelo->>Nuevo: new()
-  Nuevo->>Estado: estadoCancelado
+  Vuelo->>Vuelo: obtenerEstadoActual()
+  Vuelo->>CambioClase: *esEstadoActual()
+  Vuelo->>Actual: setFechaHoraFin(fechaHora)
+  Vuelo->>Nuevo: new(fechaHora, estadoCancelado)
   Gestor->>Consulta: actualizarEstadoVuelos()
   Gestor->>Estados: actualizarEstadoVuelos()`} />
 
@@ -529,45 +536,33 @@ Patrón estilo cátedra, basado en `Festival` + `DiaFestival`: el gestor coordin
   Gestor->>Gestor: validarFestival()
   Gestor->>FestivalClass: existeFestival(nombre, fechaInicio, anioEdicion)
 
-  alt existe festival con esos datos
-    Gestor->>Pantalla: informarFestivalExistente()
-  else no existe festival
-    Gestor->>Pantalla: solicitarDatosComplementarios()
-    RF->>Pantalla: ingresarDatosComplementarios()
-    Pantalla->>Gestor: tomarDatosComplementarios(descuentoAnticipada, porcentajeDevolucion)
+  Gestor->>Pantalla: solicitarDatosComplementarios()
+  RF->>Pantalla: ingresarDatosComplementarios()
+  Pantalla->>Gestor: tomarDatosComplementarios(descuentoAnticipada, porcentajeDevolucion)
 
-    loop por cada dia del festival
-      Gestor->>Pantalla: solicitarDatosDiaFestival()
-      RF->>Pantalla: ingresarDatosDiaFestival()
-      Pantalla->>Gestor: tomarDatosDiaFestival(fecha, horaInicio, fechaLimiteAnulacion, fechaVtoVentaAnticipada)
-    end
+  loop por cada dia del festival
+    Gestor->>Pantalla: solicitarDatosDiaFestival()
+    RF->>Pantalla: ingresarDatosDiaFestival()
+    Pantalla->>Gestor: tomarDatosDiaFestival(fecha, horaInicio, fechaLimiteAnulacion, fechaVtoVentaAnticipada)
+  end
 
-    Gestor->>Gestor: validarSuperposicionFechas()
+  Gestor->>Gestor: validarSuperposicionFechas()
+  Gestor->>Pantalla: pedirConfirmacionRegistroFestival()
+  RF->>Pantalla: confirmarRegistro()
+  Pantalla->>Gestor: tomarConfirmacion()
 
-    alt hay superposicion de fechas
-      Gestor->>Pantalla: informarSuperposicionFechas()
-    else no hay superposicion
-      Gestor->>Pantalla: pedirConfirmacionRegistroFestival()
-      RF->>Pantalla: confirmarRegistro()
-      Pantalla->>Gestor: tomarConfirmacion()
+  Gestor->>Gestor: asignarVigenciaFestival()
+  Gestor->>Gestor: registrarFestival()
+  Gestor->>NuevoFestival: new(nombre, fechaInicio, anioEdicion, descuentoAnticipada, porcentajeDevolucion)
 
-      Gestor->>Gestor: registrarFestival()
-      Gestor->>NuevoFestival: new(nombre, fechaInicio, anioEdicion, descuentoAnticipada, porcentajeDevolucion)
+  Gestor->>NuevoFestival: crearDiasFestival(datosDiasFestival)
+  loop por cada dia ingresado
+    NuevoFestival->>NuevoDia: new(fecha, horaInicio, fechaLimiteAnulacion, fechaVtoVentaAnticipada)
+    NuevoFestival->>NuevoFestival: agregarDiaFestival(nuevoDia)
+  end
 
-      opt el enunciado indica que nace no vigente
-        Gestor->>NuevoFestival: setNoVigente()
-      end
-
-      Gestor->>NuevoFestival: crearDiasFestival(datosDiasFestival)
-      loop por cada dia ingresado
-        NuevoFestival->>NuevoDia: new(fecha, horaInicio, fechaLimiteAnulacion, fechaVtoVentaAnticipada)
-        NuevoFestival->>NuevoFestival: agregarDiaFestival(nuevoDia)
-      end
-
-      Gestor->>Pantalla: informarFestivalRegistrado()
-      Gestor->>Pantalla: finCU()
-    end
-  end`} />
+  Gestor->>Pantalla: informarFestivalRegistrado()
+  Gestor->>Pantalla: finCU()`} />
 
 <Callout tipo="error" titulo="Errores comunes">
 - Resolverlo como un `new Festival()` aislado y olvidar el loop de `DiaFestival`.
@@ -859,6 +854,7 @@ Ejemplos:
     - fechaHoraFin
     - comentario
     - descripcion
+    + esCancelable()
   }`} />
 
 <MermaidDiagram caption="Atributos típicos de OrdenTraslado" code={`classDiagram
@@ -916,6 +912,7 @@ Este patrón aparece en FIA F1, Líneas Aéreas, Peaje y otros ejercicios de cic
     - fechaHoraFin
     - descripcion
     + esEstadoActual()
+    + esCancelable()
     + setFechaHoraFin()
   }
   class Estado {
@@ -970,11 +967,14 @@ Si la transición tiene condición, la secuencia debería mostrar la validación
 <MermaidDiagram caption="La guarda se justifica con validaciones en la dinámica" code={`sequenceDiagram
   participant Gestor as GestorCancelacionVuelo
   participant Vuelo
-  participant Cambio as CambioEstadoVuelo
+  participant CambioClase as :CambioEstadoVuelo
+  participant Actual as actual:CambioEstadoVuelo
   participant Estado
   Gestor->>Vuelo: esFactibleCancelar()
-  Vuelo->>Cambio: obtenerEstadoActual()
-  Cambio->>Estado: permiteCancelacion()`} />
+  Vuelo->>Vuelo: obtenerEstadoActual()
+  Vuelo->>CambioClase: *esEstadoActual()
+  Vuelo->>Actual: esCancelable()
+  Actual->>Estado: permiteCancelacion()`} />
 
 #### 14.6.2. Secuencia hacia clases
 
@@ -1043,9 +1043,10 @@ Ejemplos: Vuelo, Cuenta, Orden de Traslado cuando se pide historia.
   participant Actual as CambioEstado actual
   participant Nuevo as CambioEstado nuevo
   participant Estado
-  Entidad->>Actual: setFechaHoraFin()
-  Entidad->>Nuevo: new()
-  Nuevo->>Estado: asociar estado destino
+  Entidad->>Entidad: obtenerEstadoActual()
+  Entidad->>Actual: setFechaHoraFin(fechaHora)
+  Entidad->>Estado: *esEstadoDestino()
+  Entidad->>Nuevo: new(fechaHora, estadoDestino)
   Entidad->>Entidad: agregarCambioEstado()`} />
 
 #### 14.7.5. Patrón 5: creación con cabecera y partes

@@ -94,6 +94,38 @@ UML unifica notaciones previas, ofrece un vocabulario común y permite represent
   ]}
 />
 
+<Callout tipo="tip" titulo="Asociación, agregación o composición">
+<strong>Asociación</strong> = las clases están relacionadas. <strong>Agregación</strong> = relación todo-parte débil; la parte puede existir sin el todo. <strong>Composición</strong> = relación todo-parte fuerte; la parte depende del todo.
+</Callout>
+
+<div class="not-prose my-6 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
+  <p class="mb-3 text-sm font-semibold text-[hsl(var(--foreground))]">Guía rápida de decisión</p>
+  <ol class="space-y-2 text-sm text-[hsl(var(--muted-foreground))]">
+    <li><strong class="text-[hsl(var(--foreground))]">¿Hay relación todo-parte?</strong> No → Asociación. Sí → preguntá si la parte puede existir sin el todo.</li>
+    <li><strong class="text-[hsl(var(--foreground))]">¿La parte puede existir sin el todo?</strong> Sí → Agregación. No → Composición.</li>
+  </ol>
+</div>
+
+<TablaComparativa
+  caption="Cómo decidir la relación en un diagrama de clases"
+  columnas={["Relación", "Pregunta mental", "Ejemplo", "Justificación"]}
+  filas={[
+    ["Asociación", "¿Están relacionados sin ser todo-parte?", "`Cliente -- Factura`", "La factura se asocia al cliente, pero no es parte interna del cliente."],
+    ["Asociación", "¿Un objeto se vincula con otro del dominio?", "`Funcion -- Sala`", "La función se realiza en una sala, pero no está compuesta por la sala."],
+    ["Agregación", "¿El todo agrupa partes independientes?", "`Equipo ◇-- Jugador`", "El jugador puede existir sin ese equipo."],
+    ["Agregación", "¿La parte puede cambiar de todo?", "`Escuderia ◇-- Piloto`", "El piloto puede cambiar de escudería."],
+    ["Composición", "¿La parte no tiene sentido sin el todo?", "`Factura ◆-- DetalleFactura`", "El detalle no existe conceptualmente sin la factura."],
+    ["Composición", "¿La parte pertenece estructuralmente a un único todo?", "`Festival ◆-- DiaFestival`", "El día del festival depende del festival."],
+    ["Composición", "¿La parte nace dentro del todo?", "`Consulta ◆-- DetalleConsulta`", "El detalle pertenece a una consulta concreta."]
+  ]}
+/>
+
+<Callout tipo="atencion" titulo="Criterio para parcial">
+Si dudás entre asociación y agregación, suele ser más seguro usar asociación. Usá agregación o composición solo cuando el enunciado marque claramente una relación todo-parte.
+<br /><br />
+<strong>Frase mental:</strong> Asociación = se relaciona con. Agregación = tiene partes independientes. Composición = tiene partes dependientes.
+</Callout>
+
 <MermaidDiagram caption="Relaciones UML con ejemplo mínimo" code={`classDiagram
   class Pedido
   class Cliente

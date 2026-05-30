@@ -65,13 +65,22 @@ La <strong>abstracción</strong> consiste en concentrarse en las característica
 Un sistema orientado a objetos se piensa como una red de objetos que colaboran enviándose mensajes. Las responsabilidades no deberían concentrarse en una única clase central.
 
 <MermaidDiagram caption="Colaboración entre objetos" code={`sequenceDiagram
-  participant UI as Pantalla
-  participant G as GestorPedido
-  participant P as Pedido
-  participant D as DetallePedido
-  UI->>G: confirmarPedido(datos)
-  G->>P: new(datos)
-  P->>D: agregarProducto(producto, cantidad)
+  actor E as Empleado
+  participant UI as PantallaRegistrarPedido
+  participant G as GestorRegistrarPedido
+  participant Prod as :Producto
+  participant P as nuevo:Pedido
+  participant D as nuevo:DetallePedido
+
+  E->>UI: confirmarPedido()
+  UI->>G: registrarPedido(datosPedido, items)
+  G->>Prod: *verificarStock()
+  G->>P: new(datosPedido)
+  loop por cada item
+    P->>D: new(producto, cantidad)
+    P->>P: agregarDetalle(detalle)
+  end
+  P->>P: calcularTotal()
   G->>UI: mostrarConfirmacion()`} />
 
 ### 2.7. Clases en el dominio del problema
