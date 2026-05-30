@@ -1,6 +1,6 @@
 ---
 id: "sec-17"
-numero: 16
+numero: 17
 titulo: "Parcial teórico: preguntas frecuentes y respuestas modelo"
 slug: "17-parcial-teorico"
 resumen: "Método para responder las preguntas teóricas recurrentes del parcial, con respuestas modelo y diagramas."
@@ -8,7 +8,7 @@ keywords: ["parcial teórico", "consistencia entre vistas", "responsabilidades d
 relacionadas: ["14-guia-repaso", "12-grasp", "10-maquina-estados", "11-secuencia-comunicacion", "04-workflow-analisis"]
 ---
 
-### 16.1. Cómo se evalúa el parcial teórico
+### 17.1. Cómo se evalúa el parcial teórico
 
 El parcial teórico tiene un formato estable que conviene conocer antes de sentarse a responder.
 
@@ -25,7 +25,7 @@ El parcial teórico tiene un formato estable que conviene conocer antes de senta
 
 Las cuatro preguntas se repiten parcial a parcial: **consistencia entre vistas**, **responsabilidades del hacer**, **GRASP (Creador/Experto y bajo acoplamiento)** y **dominio del problema vs solución**. En parciales recientes se sumó **identificar inconsistencias** sobre artefactos dados. Las secciones siguientes dan una respuesta modelo de cada una.
 
-### 16.2. Consistencia entre vistas
+### 17.2. Consistencia entre vistas
 
 **Por qué importa.** Cada vista representa un aspecto del sistema, pero si no son consistentes entre sí aparecen ambigüedades y contradicciones que afectan tanto el desarrollo como la mantenibilidad. La consistencia es lo que permite leer las tres vistas como una única solución.
 
@@ -121,9 +121,9 @@ Las cuatro preguntas se repiten parcial a parcial: **consistencia entre vistas**
 Para responder esta pregunta no hace falta un caso grande: alcanza con un caso chico donde se vea que los nombres y los mensajes coinciden entre las tres vistas. La conexión teórica de fondo está en <strong>[Relaciones clave](/seccion/13-relaciones-clave)</strong> y la trazabilidad de <strong>[Caso resuelto](/seccion/16-caso-resuelto)</strong>.
 </Callout>
 
-### 16.3. Responsabilidades del *hacer* (pregunta obligatoria)
+### 17.3. Responsabilidades del *hacer* (pregunta obligatoria)
 
-Las responsabilidades de un objeto se dividen en **conocer** y **hacer**. El *hacer* se subdivide en tres formas (ver el desglose conceptual en **[GRASP 11.2](/seccion/12-grasp)**):
+Las responsabilidades de un objeto se dividen en **conocer** y **hacer**. El *hacer* se subdivide en tres formas (ver el desglose conceptual en **[GRASP 12.2](/seccion/12-grasp)**):
 
 <Definicion termino="responsabilidades del hacer">
 Obligaciones del objeto relacionadas con la acción: <strong>hacer algo en uno mismo</strong>, <strong>iniciar una acción en otros objetos</strong> y <strong>controlar y coordinar actividades en otros objetos</strong>.
@@ -204,9 +204,9 @@ Aclaración típica de la respuesta modelo: el ejemplo se simplifica (se corta e
   ]}
 />
 
-### 16.4. GRASP: Creador vs Experto y bajo acoplamiento
+### 17.4. GRASP: Creador vs Experto y bajo acoplamiento
 
-Esta pregunta pide relacionar **Creador** y **Experto**, dar un ejemplo propio y, a veces, explicar cómo **Experto favorece el bajo acoplamiento**. La teoría de ambos patrones está en **[GRASP 11.4–11.5](/seccion/12-grasp)** y la comparación lado a lado en **[GRASP 11.5.1](/seccion/12-grasp)**.
+Esta pregunta pide relacionar **Creador** y **Experto**, dar un ejemplo propio y, a veces, explicar cómo **Experto favorece el bajo acoplamiento**. La teoría de ambos patrones está en **[GRASP 12.4–12.5](/seccion/12-grasp)** y la comparación lado a lado en **[GRASP 12.5.1](/seccion/12-grasp)**.
 
 **Cómo se relacionan.** Ambos asignan responsabilidades mirando qué tiene la clase, pero responden preguntas distintas: Experto, *¿quién hace/conoce algo?* → quien tiene la información; Creador, *¿quién instancia un objeto?* → quien lo contiene, agrega, registra o usa.
 
@@ -228,9 +228,9 @@ Esta pregunta pide relacionar **Creador** y **Experto**, dar un ejemplo propio y
   }
   GestorRepararVehículo --> Vehículo : pregunta esConPatente()`} />
 
-### 16.5. Dominio del problema vs dominio de la solución
+### 17.5. Dominio del problema vs dominio de la solución
 
-Esta pregunta pide definir ambos dominios y relacionarlos con las diferencias entre el modelo de **requerimientos** y el modelo de **análisis**. La base conceptual completa (con definiciones y el mapeo a workflows) está en **[Workflow de análisis 3.10](/seccion/04-workflow-analisis)**.
+Esta pregunta pide definir ambos dominios y relacionarlos con las diferencias entre el modelo de **requerimientos** y el modelo de **análisis**. La base conceptual completa (con definiciones y el mapeo a workflows) está en **[Workflow de análisis 4.10](/seccion/04-workflow-analisis)**.
 
 **Respuesta modelo.**
 
@@ -251,7 +251,7 @@ Esta pregunta pide definir ambos dominios y relacionarlos con las diferencias en
 
 El modelo de requerimientos pertenece al **dominio del problema**; el modelo de análisis es el primer artefacto del **dominio de la solución**.
 
-### 16.6. Identificar inconsistencias en artefactos dados
+### 17.6. Identificar inconsistencias en artefactos dados
 
 En parciales recientes aparece un fragmento de análisis (vista dinámica + vista estática + máquina de estados) y se pide **detectar inconsistencias** y explicar qué problemas conllevan. Es la pregunta de consistencia entre vistas, pero al revés: en vez de construir, hay que auditar.
 
@@ -298,7 +298,7 @@ La clase `Estado` declara `esAmbitoFuncion()` y `estaHabilitado()`; la clase `Sa
 - <strong>Falta el «control»:</strong> la <code>PantallaAdmSala</code> habla directo con <code>Estado</code> y <code>Sala</code>. No se aplica <strong>Controlador</strong> (la boundary termina coordinando), lo que además rompe <strong>Bajo Acoplamiento</strong> y <strong>Alta Cohesión</strong>.
 </EjemploClase>
 
-### 16.7. Identificar patrones GRASP en un diagrama dado
+### 17.7. Identificar patrones GRASP en un diagrama dado
 
 Otra consigna frecuente da un fragmento de **secuencia + clases** y pide marcar qué patrones GRASP se aplican (y a veces cuáles **no**, con la corrección). Ejemplo real de parcial: registrar el **consumo de un expendedor** de combustible que está en un surtidor.
 
@@ -373,7 +373,7 @@ La misma consigna se repite con distintos dominios: <em>reporte de utilización 
   G->>B: *hayStock()
   G->>T: *estaActiva()`} />
 
-### 16.8. Cómo redactar una respuesta que sume puntos
+### 17.8. Cómo redactar una respuesta que sume puntos
 
 <ChecklistRepaso
   id="parcial-teorico"

@@ -1,6 +1,6 @@
 ---
 id: "sec-03"
-numero: 2
+numero: 3
 titulo: "Paradigma de orientación a objetos"
 slug: "03-orientacion-objetos"
 resumen: "La orientación a objetos organiza el sistema como objetos con identidad, estado y comportamiento agrupados en clases."
@@ -8,7 +8,7 @@ keywords: ["objeto", "clase", "estado", "atributo", "comportamiento", "abstracci
 relacionadas: ["02-uml", "06-clases-analisis"]
 ---
 
-### 2.1. Qué es un objeto
+### 3.1. Qué es un objeto
 
 <Definicion termino="objeto">
 Un <strong>objeto</strong> representa una entidad individual e identificable, real o abstracta, con un rol definido en el dominio del problema.
@@ -24,7 +24,7 @@ Todo objeto se entiende por tres dimensiones: <strong>identidad</strong>, <stron
   E --> A[Atributo + valor]
   C --> M[Mensajes y operaciones]`} />
 
-### 2.2. Qué es una clase
+### 3.2. Qué es una clase
 
 <Definicion termino="clase">
 Una <strong>clase</strong> describe un conjunto de objetos que comparten estructura, comportamiento, relaciones y semántica.
@@ -36,7 +36,7 @@ Un objeto se crea a partir de una clase. A ese acto se lo denomina <strong>insta
 La <strong>clase</strong> `VariedadPizza` describe qué es "una muzzarella": nombre e ingredientes. La pizza concreta de 8 porciones que se está preparando para el pedido número 47 es un <strong>objeto</strong> (una instancia) con su propia identidad. Mil clientes pueden pedir muzzarella, pero cada pizza horneada es un objeto distinto, todas creadas a partir de la misma clase.
 </EjemploReal>
 
-### 2.3. Estado, atributos y valores
+### 3.3. Estado, atributos y valores
 
 El <strong>estado</strong> de un objeto puede entenderse como:
 
@@ -46,7 +46,7 @@ Estado = atributo + valor en un momento determinado
 
 Si la clase es <strong>SolicitudDeRequerimiento</strong>, algunos atributos podrían ser número, fecha de creación, descripción y estado actual. Si cambia de “Pendiente” a “Aprobada”, el objeto sigue siendo el mismo, pero su estado interno cambió.
 
-### 2.4. Comportamiento y responsabilidades
+### 3.4. Comportamiento y responsabilidades
 
 El comportamiento indica qué puede hacer un objeto. En análisis suele expresarse como <strong>responsabilidades</strong> de alto nivel, no como métodos con signatura completa.
 
@@ -54,13 +54,13 @@ El comportamiento indica qué puede hacer un objeto. En análisis suele expresar
 Pensá en un cajero como objeto: su <strong>estado</strong> es el saldo de su caja y la sucursal donde trabaja; su <strong>comportamiento</strong> son responsabilidades como "depositar", "extraer" o "consultar saldo". No te importa cómo cuenta los billetes internamente: le mandás un mensaje ("quiero extraer 5000") y él responde. Eso es un objeto colaborando por mensajes.
 </EjemploReal>
 
-### 2.5. Abstracción
+### 3.5. Abstracción
 
 <Definicion termino="abstracción">
 La <strong>abstracción</strong> consiste en concentrarse en las características esenciales de un objeto según la perspectiva del observador y el problema que se resuelve.
 </Definicion>
 
-### 2.6. Sistema orientado a objetos
+### 3.6. Sistema orientado a objetos
 
 Un sistema orientado a objetos se piensa como una red de objetos que colaboran enviándose mensajes. Las responsabilidades no deberían concentrarse en una única clase central.
 
@@ -83,7 +83,7 @@ Un sistema orientado a objetos se piensa como una red de objetos que colaboran e
   P->>P: calcularTotal()
   G->>UI: mostrarConfirmacion()`} />
 
-### 2.7. Clases en el dominio del problema
+### 3.7. Clases en el dominio del problema
 
 Se identifican clases buscando roles, lugares, cosas, organizaciones, conceptos, eventos o transacciones.
 

@@ -1,6 +1,6 @@
 ---
 id: "sec-13"
-numero: 12
+numero: 13
 titulo: "Relaciones clave entre todos los temas"
 slug: "13-relaciones-clave"
 resumen: "La materia conecta requerimientos, análisis, casos de uso, realizaciones, clases, estados y GRASP en una cadena conceptual."
@@ -8,11 +8,11 @@ keywords: ["relaciones", "requerimientos", "análisis", "casos de uso", "clases"
 relacionadas: ["12-grasp", "14-guia-repaso"]
 ---
 
-### 12.1. Mapa integral de la materia
+### 13.1. Mapa integral de la materia
 
 <MapaMentalDSI />
 
-### 12.2. De requerimientos a análisis
+### 13.2. De requerimientos a análisis
 
 El modelo de requerimientos expresa qué necesita el usuario. El modelo de análisis expresa cómo se organiza internamente el sistema, todavía en un nivel lógico, para satisfacer esos requisitos.
 
@@ -26,11 +26,11 @@ El modelo de requerimientos expresa qué necesita el usuario. El modelo de anál
   GRASP --> ARQ[Arquitectura lógica]
   ARQ --> DIS[Diseño]`} />
 
-### 12.3. De casos de uso a realizaciones
+### 13.3. De casos de uso a realizaciones
 
 Un caso de uso se transforma en una realización de caso de uso de análisis. La realización abre la caja negra y muestra clases, objetos y mensajes necesarios para cumplir un escenario.
 
-### 12.4. De modelo de dominio a clases de entidad
+### 13.4. De modelo de dominio a clases de entidad
 
 El modelo de dominio aporta conceptos del problema. Muchos de esos conceptos se convierten en clases de entidad cuando representan información que el sistema debe manejar o conservar.
 
@@ -41,15 +41,15 @@ El modelo de dominio aporta conceptos del problema. Muchos de esos conceptos se 
   Persistentes --> Entidades[Clases de entidad]
   Entidades --> Responsabilidades[Responsabilidades de conocer y hacer]`} />
 
-### 12.5. De comportamiento a máquina de estados
+### 13.5. De comportamiento a máquina de estados
 
 Cuando una clase tiene comportamiento dependiente del estado, se complementa el diagrama de clases con una máquina de estados. Esto permite entender qué eventos cambian el estado y bajo qué condiciones.
 
-### 12.6. De colaboración a diagramas de interacción
+### 13.6. De colaboración a diagramas de interacción
 
 Cuando se necesita mostrar cómo colaboran varios objetos para cumplir un caso de uso, se utilizan diagramas de interacción: secuencia si importa el orden temporal; comunicación si importa la estructura de enlaces.
 
-### 12.7. De responsabilidades a GRASP
+### 13.7. De responsabilidades a GRASP
 
 GRASP ayuda a decidir dónde ubicar responsabilidades. En análisis, esto es fundamental para evitar pantallas con demasiada lógica, controladores saturados o entidades sin comportamiento.
 

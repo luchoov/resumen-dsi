@@ -1,6 +1,6 @@
 ---
 id: "sec-05"
-numero: 4
+numero: 5
 titulo: "Modelo de análisis y sus artefactos"
 slug: "05-modelo-analisis"
 resumen: "El modelo de análisis reúne clases, realizaciones, paquetes y arquitectura lógica para satisfacer requisitos funcionales."
@@ -8,7 +8,7 @@ keywords: ["modelo de análisis", "artefactos", "clases de análisis", "realizac
 relacionadas: ["04-workflow-analisis", "07-realizaciones-casos-uso"]
 ---
 
-### 4.1. Entrada del workflow de análisis
+### 5.1. Entrada del workflow de análisis
 
 El análisis recibe principalmente el modelo de requerimientos: casos de uso, actores, glosario, modelo de dominio, requisitos especiales y restricciones conocidas.
 
@@ -20,7 +20,7 @@ El análisis recibe principalmente el modelo de requerimientos: casos de uso, ac
   RNF[Requisitos especiales] --> ANA
   ANA --> MA[Modelo de análisis]`} />
 
-### 4.2. Salida del workflow de análisis
+### 5.2. Salida del workflow de análisis
 
 La salida central es el <strong>modelo de análisis</strong>. Este modelo contiene clases de análisis, realizaciones de casos de uso de análisis, paquetes de análisis y descripción de arquitectura desde la vista del modelo de análisis.
 
@@ -34,7 +34,7 @@ La salida central es el <strong>modelo de análisis</strong>. Este modelo contie
   RCU --> EST[Vista estática]
   RCU --> DIN[Vista dinámica]`} />
 
-### 4.3. Artefactos y diagramas que los representan
+### 5.3. Artefactos y diagramas que los representan
 
 Los resúmenes en PDF conectan cada artefacto con los diagramas UML que conviene usar para documentarlo.
 
@@ -65,7 +65,7 @@ Los resúmenes en PDF conectan cada artefacto con los diagramas UML que conviene
   Paquete --> DP[Diagrama de paquetes]
   Arquitectura --> SIG[Elementos significativos]`} />
 
-### 4.4. Qué es el modelo de análisis
+### 5.4. Qué es el modelo de análisis
 
 <Definicion termino="modelo de análisis">
 El <strong>modelo de análisis</strong> es una jerarquía de paquetes que contiene clases de análisis y realizaciones de casos de uso.
@@ -77,7 +77,7 @@ Describe cómo los objetos conceptuales del sistema colaboran para satisfacer re
 El requerimiento del pizzero es simple: "quiero gestionar los pedidos". El análisis lo convierte en modelo: aparece la realización del caso de uso "Registrar Pedido", y de ahí surgen las clases `Pedido`, `DetallePedido`, `Pizza` (entidades), la `PantallaRegistrarPedido` (frontera) y el `GestorRegistrarPedido` (control). Todavía no se decide si será MySQL o una pantalla web: eso es diseño.
 </EjemploReal>
 
-### 4.5. Cómo se construye el modelo de análisis
+### 5.5. Cómo se construye el modelo de análisis
 
 - <strong>Clases de análisis:</strong> se modelan con diagrama de clases y, si corresponde, máquina de estados.
 - <strong>Realizaciones de casos de uso:</strong> tienen vista estática y vista dinámica.

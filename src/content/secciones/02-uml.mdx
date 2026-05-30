@@ -1,6 +1,6 @@
 ---
 id: "sec-02"
-numero: 1
+numero: 2
 titulo: "UML 2.0 como lenguaje de modelado"
 slug: "02-uml"
 resumen: "UML aporta notación, semántica y reglas para visualizar, especificar, construir y documentar modelos."
@@ -8,7 +8,7 @@ keywords: ["UML", "modelo", "diagrama", "relaciones", "paquete", "clase", "secue
 relacionadas: ["03-orientacion-objetos", "11-secuencia-comunicacion"]
 ---
 
-### 1.1. Qué es un modelo
+### 2.1. Qué es un modelo
 
 <Definicion termino="modelo">
 Un <strong>modelo</strong> es una simplificación de la realidad construida para comprender, comunicar, especificar y guiar la construcción de un sistema.
@@ -34,7 +34,7 @@ Un plano de arquitecto es un <strong>modelo</strong> de la casa: no es la casa r
   Construir --> Guia[Guia de implementacion]
   Documentar --> Decisiones[Decisiones importantes]`} />
 
-### 1.2. Qué es UML
+### 2.2. Qué es UML
 
 <Definicion termino="UML">
 <strong>UML</strong>, Lenguaje Unificado de Modelado, es un lenguaje de modelado visual de propósito general usado para visualizar, especificar, construir y documentar sistemas orientados a objetos.
@@ -46,11 +46,11 @@ UML no es una metodología. No dice por sí solo qué modelos crear, en qué ord
 La diferencia típica de parcial: UML define la <strong>notación y semántica</strong> de los modelos; no define el proceso de desarrollo.
 </Callout>
 
-### 1.3. Por qué UML es “unificado”
+### 2.3. Por qué UML es “unificado”
 
 UML unifica notaciones previas, ofrece un vocabulario común y permite representar distintos puntos de vista del sistema con reglas compartidas.
 
-### 1.4. Modelo conceptual de UML
+### 2.4. Modelo conceptual de UML
 
 <MermaidDiagram caption="Modelo conceptual de UML" code={`graph LR
   UML[UML]
@@ -66,7 +66,7 @@ UML unifica notaciones previas, ofrece un vocabulario común y permite represent
   RG --> IN[Integridad]
   RG --> EJ[Ejecución]`} />
 
-### 1.5. Elementos de UML
+### 2.5. Elementos de UML
 
 <TablaComparativa
   caption="Elementos principales de UML"
@@ -79,7 +79,7 @@ UML unifica notaciones previas, ofrece un vocabulario común y permite represent
   ]}
 />
 
-### 1.6. Relaciones en UML
+### 2.6. Relaciones en UML
 
 <TablaComparativa
   caption="Relaciones básicas de UML"
@@ -139,7 +139,7 @@ Si dudás entre asociación y agregación, suele ser más seguro usar asociació
   Pedido ..> MedioPago : dependencia
   PagoTarjeta --|> MedioPago : generalización`} />
 
-### 1.7. Mecanismos de extensibilidad
+### 2.7. Mecanismos de extensibilidad
 
 UML no es solo dibujo: cada notación tiene una semántica y mecanismos comunes. En análisis, los más visibles son los mecanismos de extensibilidad.
 
@@ -165,7 +165,7 @@ UML no es solo dibujo: cada notación tiene una semántica y mecanismos comunes.
 La misma "caja" de clase UML cambia de significado según su <strong>estereotipo</strong>: `PantallaRegistrarPedido` lleva «boundary» (habla con el empleado), `GestorRegistrarPedido` lleva «control» (coordina el caso de uso) y `Pedido` lleva «entity» (guarda los datos). Una <strong>restricción</strong> sería `{solo se modifica si está PtePreparación}` y un <strong>valor etiquetado</strong>, `{persistente=true}` sobre `Factura`.
 </EjemploReal>
 
-### 1.8. Diagramas UML relevantes
+### 2.8. Diagramas UML relevantes
 
 <MermaidDiagram caption="Vistas estructurales vs dinámicas de UML" code={`flowchart TB
   UML[Diagramas UML usados en análisis]

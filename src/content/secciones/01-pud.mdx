@@ -1,0 +1,158 @@
+---
+id: "sec-01"
+numero: 1
+titulo: "El Proceso Unificado de Desarrollo (PUD)"
+slug: "01-pud"
+resumen: "El marco de proceso que ordena la Unidad 1: workflows, fases, vistas y las tres ideas que lo guían (iterativo, conducido por casos de uso y centrado en la arquitectura)."
+keywords: ["PUD", "proceso unificado", "UP", "workflow", "disciplina", "fase", "inicio", "elaboración", "construcción", "transición", "iterativo", "incremental", "casos de uso", "arquitectura", "actividad", "trabajador", "artefacto", "vistas"]
+relacionadas: ["02-uml", "04-workflow-analisis", "05-modelo-analisis"]
+---
+
+### 1.1. Qué es el Proceso Unificado
+
+<Definicion termino="Proceso Unificado de Desarrollo (PUD)">
+El <strong>PUD</strong> es un proceso de desarrollo de software definido como un entorno genérico (un <em>framework</em> de proceso) que puede especializarse para una gran variedad de sistemas, áreas de aplicación y organizaciones.
+</Definicion>
+
+Como entorno de proceso, el PUD permite elegir entre distintos ciclos de vida, selecciona qué artefactos producir, y define las actividades y los trabajadores involucrados. Su objetivo, igual que el de UML, es dar soporte y encapsular las mejores prácticas de la ingeniería de software.
+
+<Callout tipo="atencion">
+No confundir <strong>UML</strong> con el <strong>PUD</strong>. UML es un <strong>lenguaje</strong>: aporta la notación y la semántica para dibujar modelos, pero no dice qué modelos crear ni cuándo. El PUD es la <strong>metodología</strong>: indica los trabajadores, las actividades y los artefactos necesarios para modelar el sistema. El PUD usa UML como su sintaxis visual subyacente.
+</Callout>
+
+### 1.2. Conceptos base del proceso
+
+El PUD describe quién hace qué, cómo y cuándo a partir de tres conceptos elementales.
+
+<TablaComparativa
+  caption="Conceptos elementales del PUD"
+  columnas={["Concepto", "Definición", "Ejemplo"]}
+  filas={[
+    ["Trabajador", "Un <strong>rol</strong> desempeñado por un individuo o un equipo dentro del proceso.", "Analista de sistemas, diseñador, ingeniero de pruebas."],
+    ["Actividad", "Una <strong>unidad de trabajo</strong> que un trabajador realiza.", "Analizar un caso de uso, diseñar una clase."],
+    ["Artefacto", "Una <strong>pieza de información</strong> producida, modificada o usada por el proceso.", "Modelo de casos de uso, modelo de análisis, código."]
+  ]}
+/>
+
+### 1.3. Las tres ideas que guían al PUD
+
+El proceso se caracteriza por tres rasgos que se sostienen entre sí.
+
+<TablaComparativa
+  caption="Aspectos característicos del PUD"
+  columnas={["Característica", "Qué significa"]}
+  filas={[
+    ["Iterativo e incremental", "El sistema no se construye de una sola vez: se avanza en ciclos cortos (iteraciones), cada uno agrega una porción de funcionalidad (incremento) hasta completar el producto."],
+    ["Conducido por casos de uso", "Los casos de uso capturan el valor para el usuario y son el hilo conductor: guían el análisis, el diseño, la implementación y la prueba, y ayudan a delinear la arquitectura."],
+    ["Centrado en la arquitectura", "Las decisiones arquitectónicas se toman temprano y se estabilizan pronto; la arquitectura organiza el desarrollo y se describe mediante varias vistas."]
+  ]}
+/>
+
+<Callout tipo="tip">
+Si en un parcial te piden "los aspectos característicos del Proceso Unificado", la respuesta son estos tres: <strong>iterativo e incremental</strong>, <strong>conducido por casos de uso</strong> y <strong>centrado en la arquitectura</strong>.
+</Callout>
+
+### 1.4. Iteración e incremento
+
+<Definicion termino="iteración">
+Una <strong>iteración</strong> es una secuencia de actividades con un plan establecido y un criterio de evaluación, que da como resultado un <em>release</em> ejecutable.
+</Definicion>
+
+Cada iteración recorre los workflows (analiza, diseña, implementa y prueba un conjunto de casos de uso) y entrega un incremento funcional. Los casos de uso son los que conducen ese proceso: deciden qué se aborda en cada iteración.
+
+<MermaidDiagram caption="Una iteración produce un incremento ejecutable" code={`flowchart LR
+  CU[Casos de uso\nseleccionados] --> IT[Iteración:\nplan + criterio de evaluación]
+  IT --> WF[Recorre los workflows\nrequerimientos→análisis→diseño→implementación→prueba]
+  WF --> REL[Release ejecutable\n= incremento]
+  REL -. siguiente iteración .-> CU`} />
+
+### 1.5. Los workflows del proceso
+
+El PUD organiza el trabajo en <strong>workflows</strong> (también llamados disciplinas). Cada workflow se asocia con uno o más modelos, y los diagramas UML construyen las vistas de esos modelos.
+
+<TablaComparativa
+  caption="Workflows del PUD y su propósito"
+  columnas={["Workflow", "Propósito"]}
+  filas={[
+    ["Requerimientos", "Desarrollar un modelo del sistema a construir usando casos de uso. Los requisitos funcionales se estructuran de forma natural en casos de uso; la mayoría de los no funcionales se tratan en el contexto de un caso de uso."],
+    ["Análisis", "Lograr una especificación más precisa de los requisitos, ya en lenguaje del desarrollador. Estructura los requisitos y puede verse como un primer corte del modelo de diseño."],
+    ["Diseño", "Comprender en profundidad los requisitos no funcionales y las restricciones tecnológicas, capturar interfaces entre subsistemas y crear la entrada para la implementación. Transforma el modelo lógico en uno físico."],
+    ["Implementación", "Construir el sistema en términos de componentes ejecutables a partir del diseño."],
+    ["Prueba", "Verificar que el producto implementado cumpla con los requisitos capturados."]
+  ]}
+/>
+
+<Callout tipo="info">
+En esta materia el foco está en el <strong>dominio del problema</strong> (negocio y requerimientos) y en el arranque del <strong>dominio de la solución</strong>: sobre todo el <strong>workflow de análisis</strong>. Por eso el resto del resumen profundiza ese workflow; el PUD es el marco que lo contiene.
+</Callout>
+
+### 1.6. Las cuatro fases
+
+Mientras los workflows dicen <em>qué tipo de trabajo</em> se hace, las <strong>fases</strong> marcan <em>en qué momento del proyecto</em> se está. Todo proyecto recorre las cuatro en orden, y dentro de cada fase puede haber varias iteraciones.
+
+<TablaComparativa
+  caption="Fases del PUD"
+  columnas={["Fase", "Foco"]}
+  filas={[
+    ["Inicio (Comienzo)", "Define el alcance del proyecto y desarrolla el caso de negocio. Se identifican la mayoría de los casos de uso para delimitar el sistema."],
+    ["Elaboración", "Planifica el proyecto, especifica los aspectos críticos y delinea la arquitectura. Se captura la mayoría de los requisitos y se construye una base arquitectónica sólida."],
+    ["Construcción", "Construye el producto: lleva el software desde una base arquitectónica ejecutable hasta su disponibilidad para los usuarios."],
+    ["Transición", "Transfiere el producto a la comunidad de usuarios (despliegue, capacitación, ajustes). Casi no hay captura de requisitos, salvo cambios."]
+  ]}
+/>
+
+### 1.7. Las fases usan todos los workflows (con distinto énfasis)
+
+Fases y workflows son dos dimensiones independientes. En cada fase se hace algo de cada workflow, pero el <strong>peso</strong> de cada uno cambia: la captura de requisitos pesa al comienzo, la construcción pesa en el medio, las pruebas hacia el final.
+
+<MermaidDiagram caption="Énfasis de cada workflow a lo largo de las fases" code={`flowchart TB
+  subgraph F[Fases en el tiempo]
+    direction LR
+    I[Inicio] --> E[Elaboración] --> C[Construcción] --> T[Transición]
+  end
+  REQ[Requerimientos: fuerte al inicio] --> F
+  ANA[Análisis: fuerte en elaboración] --> F
+  DIS[Diseño: fuerte en elaboración y construcción] --> F
+  IMP[Implementación: fuerte en construcción] --> F
+  PRU[Prueba: crece hacia transición] --> F`} />
+
+- En **Inicio** la captura de requisitos identifica la mayoría de los casos de uso y contribuye a planificar los incrementos.
+- En **Elaboración** y **Construcción** el trabajo aporta una estructura robusta y estable y una comprensión más profunda de los requisitos.
+- En **Transición** casi no se capturan requisitos nuevos, salvo que se necesiten cambios.
+
+### 1.8. La arquitectura y sus vistas
+
+El PUD está centrado en la arquitectura, y esa arquitectura se describe con varias <strong>vistas</strong>: cada una es una proyección del sistema pensada para un interés distinto. Los <strong>casos de uso</strong> son el hilo que unifica todas las vistas.
+
+<TablaComparativa
+  caption="Vistas de la arquitectura"
+  columnas={["Vista", "Compuesta por", "Define"]}
+  filas={[
+    ["Diseño", "Clases, interfaces y colaboraciones.", "El vocabulario y la funcionalidad del sistema."],
+    ["Proceso", "Clases activas.", "Performance y escalabilidad."],
+    ["Implementación", "Componentes.", "El montaje del sistema y la administración de la configuración."],
+    ["Despliegue", "Nodos.", "La topología, la distribución, la entrega y la instalación."]
+  ]}
+/>
+
+<Callout tipo="info">
+No todo sistema requiere todas las vistas: con un único procesador se omite la vista de despliegue, con procesos simples se omite la de proceso, y en programas muy pequeños se omite la de implementación.
+</Callout>
+
+### 1.9. Cómo encaja el resto del resumen
+
+El PUD es el mapa general; las secciones que siguen recorren ese mapa, sobre todo el tramo de análisis de la Unidad 1.
+
+<MermaidDiagram caption="Del marco del PUD a los temas del resumen" code={`flowchart LR
+  PUD[PUD: marco de proceso] --> UML[UML: lenguaje de modelado]
+  PUD --> WF[Workflow de análisis]
+  UML --> WF
+  WF --> MA[Modelo de análisis\ny sus artefactos]
+  MA --> BCE[Clases de análisis BCE]
+  MA --> RCU[Realizaciones de casos de uso]
+  BCE --> DIAG[Máquina de estados,\nsecuencia y comunicación]
+  RCU --> DIAG`} />
+
+<EjemploReal titulo="El peaje, ubicado en el PUD" dominio="Caso cátedra">
+El sistema de peaje arranca como un conjunto de <strong>casos de uso</strong> (registrar tránsito, cobrar con telepase). En la fase de <strong>elaboración</strong> esos casos de uso conducen el <strong>workflow de análisis</strong>: se abre la caja negra y aparecen las clases que colaboran (la pantalla del puesto, el gestor del cobro, la cuenta del telepase). Ese mismo hilo —el caso de uso— se sigue hasta el diseño, la implementación y la prueba, manteniendo la trazabilidad de punta a punta.
+</EjemploReal>

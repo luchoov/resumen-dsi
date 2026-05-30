@@ -1,6 +1,6 @@
 ---
 id: "sec-07"
-numero: 6
+numero: 7
 titulo: "Realizaciones de casos de uso de análisis"
 slug: "07-realizaciones-casos-uso"
 resumen: "Una realización explica cómo clases de análisis colaboran para llevar a cabo un caso de uso."
@@ -8,13 +8,13 @@ keywords: ["realización", "caso de uso", "vista estática", "vista dinámica", 
 relacionadas: ["05-modelo-analisis", "11-secuencia-comunicacion"]
 ---
 
-### 6.1. Definición
+### 7.1. Definición
 
 <Definicion termino="realización de caso de uso de análisis">
 Una <strong>realización de caso de uso de análisis</strong> es una colaboración dentro del modelo de análisis que describe cómo se lleva a cabo un caso de uso en términos de clases de análisis y objetos que interactúan.
 </Definicion>
 
-### 6.2. Partes de una realización de caso de uso
+### 7.2. Partes de una realización de caso de uso
 
 - <strong>Vista estática:</strong> muestra clases de análisis participantes y relaciones.
 - <strong>Vista dinámica:</strong> muestra cómo interactúan objetos para realizar un escenario.
@@ -28,7 +28,7 @@ Una <strong>realización de caso de uso de análisis</strong> es una colaboraci�
   R --> FS[Flujo de sucesos\nde análisis]
   R --> RE[Requisitos especiales]`} />
 
-### 6.3. Vista estática
+### 7.3. Vista estática
 
 La vista estática se modela con diagrama de clases. Muestra qué clases participan, sus estereotipos y relaciones.
 
@@ -57,7 +57,7 @@ La vista estática se modela con diagrama de clases. Muestra qué clases partici
   Pedido *-- DetallePedido
   DetallePedido --> Producto`} />
 
-### 6.4. Vista dinámica
+### 7.4. Vista dinámica
 
 La vista dinámica se modela con diagrama de secuencia o comunicación.
 
@@ -105,7 +105,7 @@ Si el caso de uso tiene flujos o subflujos diferenciados, conviene crear un diag
   ]}
 />
 
-### 6.5. Flujo de sucesos de análisis
+### 7.5. Flujo de sucesos de análisis
 
 El flujo explica el escenario con lenguaje de objetos: la frontera recibe el evento, el control coordina, las entidades aportan información, comportamiento y cambios de estado.
 
@@ -118,7 +118,7 @@ El caso de uso dice apenas: "el empleado registra un pedido del cliente". La <st
 <br /><br />Esa narración es el <strong>flujo de sucesos de análisis</strong>; la lista de clases que participan es la <strong>vista estática</strong> y la secuencia de mensajes, la <strong>vista dinámica</strong>.
 </EjemploReal>
 
-### 6.6. Requisitos especiales
+### 7.6. Requisitos especiales
 
 Los <strong>requisitos especiales</strong> son requisitos no funcionales o restricciones que aparecen durante el análisis y se conservan para diseño: persistencia, concurrencia, seguridad, distribución, tolerancia a fallos, tiempos de respuesta o transacciones.
 

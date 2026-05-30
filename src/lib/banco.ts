@@ -7,6 +7,38 @@
 export type QA = { c: string; s: string; q: string; a: string };
 
 export const preguntas: QA[] = [
+  // ── PUD · sección 01-pud ───────────────────────────────────────────────
+  {
+    c: "PUD",
+    s: "01-pud",
+    q: "¿Qué diferencia hay entre UML y el Proceso Unificado (PUD)?",
+    a: "<strong>UML</strong> es un lenguaje: aporta la notación y la semántica para dibujar modelos, pero no dice qué modelos crear ni cuándo. El <strong>PUD</strong> es la metodología: indica los trabajadores, las actividades y los artefactos para desarrollar el sistema. El PUD usa UML como su sintaxis visual."
+  },
+  {
+    c: "PUD",
+    s: "01-pud",
+    q: "¿Cuáles son los tres aspectos característicos del Proceso Unificado?",
+    a: "Es <strong>iterativo e incremental</strong> (se avanza en ciclos cortos, cada uno agrega funcionalidad), <strong>conducido por casos de uso</strong> (los CU son el hilo que guía análisis, diseño, implementación y prueba) y <strong>centrado en la arquitectura</strong> (las decisiones arquitectónicas se estabilizan temprano)."
+  },
+  {
+    c: "PUD",
+    s: "01-pud",
+    q: "¿Qué diferencia hay entre un workflow y una fase del PUD?",
+    a: "Un <strong>workflow</strong> (o disciplina) dice <em>qué tipo</em> de trabajo se hace: requerimientos, análisis, diseño, implementación, prueba. Una <strong>fase</strong> dice <em>en qué momento</em> del proyecto se está: inicio, elaboración, construcción, transición. En cada fase se hace algo de cada workflow, pero cambia el énfasis."
+  },
+  {
+    c: "PUD",
+    s: "01-pud",
+    q: "¿Cuáles son las cuatro fases del PUD y qué objetivo tiene cada una?",
+    a: "<strong>Inicio</strong>: define el alcance y el caso de negocio, identifica la mayoría de los CU. <strong>Elaboración</strong>: planifica, especifica lo crítico y delinea la arquitectura. <strong>Construcción</strong>: construye el producto hasta dejarlo disponible. <strong>Transición</strong>: transfiere el producto a los usuarios."
+  },
+  {
+    c: "PUD",
+    s: "01-pud",
+    q: "¿Qué es una iteración en el PUD?",
+    a: "Una secuencia de actividades con un plan establecido y un criterio de evaluación, que produce un <strong>release ejecutable</strong> (un incremento). Cada iteración recorre los workflows sobre un conjunto de casos de uso."
+  },
+
   // ── UML · sección 02-uml ───────────────────────────────────────────────
   {
     c: "UML",

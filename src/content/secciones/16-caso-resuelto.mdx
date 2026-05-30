@@ -1,6 +1,6 @@
 ---
 id: "sec-16"
-numero: 15
+numero: 16
 titulo: "Caso resuelto: de un caso de uso a los diagramas"
 slug: "16-caso-resuelto"
 resumen: "Un caso completo de punta a punta: a partir de un caso de uso dado se construyen la máquina de estados, el diagrama de secuencia y el modelo de dominio."
@@ -8,7 +8,7 @@ keywords: ["caso resuelto", "registrar laboreos", "administración de campos", "
 relacionadas: ["15-guia-practica", "10-maquina-estados", "11-secuencia-comunicacion"]
 ---
 
-### 15.1. El punto de partida (lo que te dan)
+### 16.1. El punto de partida (lo que te dan)
 
 En el parcial el enunciado y la <strong>especificación del caso de uso ya vienen dados</strong>. Tu trabajo es construir, a partir de ellos, los tres diagramas: <strong>máquina de estados</strong>, <strong>secuencia</strong> y <strong>modelo de dominio / clases de análisis</strong>. Esta sección recorre un caso completo para que veas cómo se arma cada uno.
 
@@ -27,10 +27,10 @@ Usamos el caso de cátedra <strong>Administración de Campos</strong> (Agro S.R.
 </EjemploClase>
 
 <Callout tipo="info" titulo="Lo que te dan vs. lo que construís">
-El enunciado, el glosario, las reglas de negocio y la especificación del CU de arriba <strong>te los entregan</strong>. Lo que sigue (15.3 a 15.6) es lo que tenés que <strong>producir vos</strong> a partir de eso.
+El enunciado, el glosario, las reglas de negocio y la especificación del CU de arriba <strong>te los entregan</strong>. Lo que sigue (16.3 a 16.6) es lo que tenés que <strong>producir vos</strong> a partir de eso.
 </Callout>
 
-### 15.2. Paso 1 — Leer y marcar
+### 16.2. Paso 1 — Leer y marcar
 
 Antes de dibujar, convertí el texto en decisiones. Subrayá <strong>sustantivos</strong> (candidatos a clases), <strong>verbos</strong> (candidatos a eventos/métodos) y buscá la <strong>clase con ciclo de vida</strong>.
 
@@ -48,7 +48,7 @@ Antes de dibujar, convertí el texto en decisiones. Subrayá <strong>sustantivos
 
 La frase clave es que el proyecto **cambia de estado según los laboreos**: eso obliga a hacerle una máquina de estados a `ProyectoDeCultivo`. Arrancamos por ahí.
 
-### 15.3. Paso 2 — Máquina de estados de `ProyectoDeCultivo`
+### 16.3. Paso 2 — Máquina de estados de `ProyectoDeCultivo`
 
 El proyecto nace *EnPreparación* (al registrarlo) y avanza a medida que se registran laboreos. Fijate que el <strong>evento de casi todas las transiciones es el mismo caso de uso</strong> ("Registrar Laboreos en Lotes"); lo que cambia el destino es la <strong>guarda</strong>.
 
@@ -70,7 +70,7 @@ El proyecto nace *EnPreparación* (al registrarlo) y avanza a medida que se regi
 La sintaxis de cátedra para cada transición es <code>Nº NombreCU [guarda] /metodo()</code> (sin punto tras el número, como en "10 Registrar Pedido /new()"). La <strong>transición a sí mismo</strong> (`EnPreparacion → EnPreparacion`) representa registrar un laboreo que <em>no</em> es siembra: el proyecto sigue en el mismo estado. Y una <strong>misma transición con guardas distintas</strong> (`[siembra = SI]` vs `[siembra = NO]`) muestra que el mismo evento puede llevar a estados diferentes.
 </Callout>
 
-### 15.4. Paso 3 — Diagrama de secuencia (realización del CU)
+### 16.4. Paso 3 — Diagrama de secuencia (realización del CU)
 
 Ahora modelamos el <strong>escenario del curso normal</strong>. Estructura BCE: el actor habla con la <strong>pantalla</strong> (boundary), que delega en el <strong>gestor</strong> (control), que coordina a las <strong>entidades</strong>. Va condensado a lo esencial; el flujo completo tiene más loops de carga.
 
@@ -110,10 +110,10 @@ Ahora modelamos el <strong>escenario del curso normal</strong>. Estructura BCE: 
   P->>G: finCU()`} />
 
 <Callout tipo="tip">
-Convenciones que ya viste en la sección 10 y que reaparecen acá: <strong>objetos-rol</strong> (`vigente:ProyectoDeCultivo`), <strong>self-message</strong> del gestor (`validarFechas()`), <strong>loop</strong> para recorrer colecciones, creación con `new()`, y cierre con <code>finCU()</code>. La pantalla solo recibe/muestra; el gestor coordina; las entidades resuelven lo suyo.
+Convenciones que ya viste en la sección 11 y que reaparecen acá: <strong>objetos-rol</strong> (`vigente:ProyectoDeCultivo`), <strong>self-message</strong> del gestor (`validarFechas()`), <strong>loop</strong> para recorrer colecciones, creación con `new()`, y cierre con <code>finCU()</code>. La pantalla solo recibe/muestra; el gestor coordina; las entidades resuelven lo suyo.
 </Callout>
 
-### 15.5. Paso 4 — Modelo de dominio / clases de análisis
+### 16.5. Paso 4 — Modelo de dominio / clases de análisis
 
 Cada <strong>objeto</strong> que apareció en la secuencia se vuelve <strong>clase</strong>; cada <strong>mensaje entrante</strong>, un <strong>método</strong>; cada <strong>enlace</strong> usado para mandar mensajes, una <strong>asociación con navegabilidad</strong>. Las multiplicidades salen del dominio.
 
@@ -186,7 +186,7 @@ Cada <strong>objeto</strong> que apareció en la secuencia se vuelve <strong>cla
 `ProyectoDeCultivo` lleva `sembrar()`, `cosechar()` y `laborear()` <strong>porque son los métodos de transición de su máquina de estados</strong> (15.3) y además aparecen como mensajes en la secuencia (15.4). `Campo` sabe `buscarLotesProyCultivo()` porque conoce sus lotes (Experto en Información). El `GestorLaboreos` coordina pero no calcula: delega en las entidades.
 </EjemploReal>
 
-### 15.6. Cómo se conectan los tres
+### 16.6. Cómo se conectan los tres
 
 La clave para no equivocarte: los tres diagramas cuentan <strong>la misma historia</strong> y se corrigen juntos. Un método de transición tiene que poder rastrearse en los tres.
 

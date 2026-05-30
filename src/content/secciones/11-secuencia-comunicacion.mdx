@@ -1,6 +1,6 @@
 ---
 id: "sec-11"
-numero: 10
+numero: 11
 titulo: "Diagramas de secuencia y comunicación"
 slug: "11-secuencia-comunicacion"
 resumen: "Los diagramas de secuencia y comunicación modelan interacciones; uno enfatiza tiempo y el otro estructura de enlaces."
@@ -8,11 +8,11 @@ keywords: ["secuencia", "comunicación", "interacción", "mensaje", "línea de v
 relacionadas: ["07-realizaciones-casos-uso", "10-maquina-estados"]
 ---
 
-### 10.1. Diagramas de interacción
+### 11.1. Diagramas de interacción
 
 Los diagramas de secuencia y comunicación son diagramas de interacción: ambos modelan objetos que colaboran mediante mensajes para realizar un comportamiento.
 
-### 10.2. Diagrama de secuencia
+### 11.2. Diagrama de secuencia
 
 El <strong>diagrama de secuencia</strong> enfatiza el orden temporal de los mensajes. Es útil para validar escenarios, describir lógica de caso de uso, analizar responsabilidades y detectar clases complejas.
 
@@ -48,7 +48,7 @@ Elementos importantes:
   ]}
 />
 
-#### 10.2.1. Notación de flechas y reutilización con `ref`
+#### 11.2.1. Notación de flechas y reutilización con `ref`
 
 Los resúmenes precisan cómo se dibuja cada tipo de mensaje y la línea de vida.
 
@@ -66,7 +66,7 @@ Los resúmenes precisan cómo se dibuja cada tipo de mensaje y la línea de vida
   ]}
 />
 
-#### 10.2.2. Control de flujo en el estilo de la cátedra
+#### 11.2.2. Control de flujo en el estilo de la cátedra
 
 UML permite varios fragmentos combinados, pero en las realizaciones de análisis de la cátedra no se modelan frames `alt`, `opt` ni `par`. El único frame que aparece como recurso habitual es <strong>loop</strong>; las alternativas se resuelven con un diagrama por flujo o con guardas en la máquina de estados.
 
@@ -101,7 +101,7 @@ El retiro se lee así: con `loop` el cajero permite reintentar la clave mientras
 Convención de cátedra: no dibujes frames de alternativa u opción en el parcial. Para alternativas, hacé <strong>un diagrama por flujo</strong> y dejá la condición como guarda o como validación. Para iteraciones simples sobre colecciones, usá <code>*metodo()</code>; cuando conviene encerrar varios mensajes repetidos, usá <code>loop</code>.
 </Callout>
 
-### 10.3. Diagrama de comunicación
+### 11.3. Diagrama de comunicación
 
 El <strong>diagrama de comunicación</strong> enfatiza la organización estructural de los objetos y enlaces. También muestra mensajes, pero el orden se expresa con numeración.
 
@@ -128,7 +128,7 @@ Sus elementos distintivos son:
   ]}
 />
 
-#### 10.3.1. Numeración, iteración y bifurcación
+#### 11.3.1. Numeración, iteración y bifurcación
 
 El orden en comunicación se expresa con la <strong>numeración decimal de Dewey</strong>: `1` es el primer mensaje, `1.1` el primero anidado dentro de `1`, `1.2` el siguiente, y así a cualquier profundidad. Eso reemplaza al "de arriba hacia abajo" de la secuencia.
 
@@ -139,7 +139,7 @@ El orden en comunicación se expresa con la <strong>numeración decimal de Dewey
 Secuencia y comunicación son <strong>semánticamente equivalentes</strong>: derivan del mismo modelo y se puede pasar de una a otra sin perder información. Elegí secuencia si te interesa el orden temporal; comunicación si te interesa ver qué objetos están enlazados.
 </Callout>
 
-#### 10.3.2. Convención de la cátedra
+#### 11.3.2. Convención de la cátedra
 
 En las soluciones de los prácticos (FIA F1, Líneas Aéreas) se repiten estos hábitos:
 
@@ -153,7 +153,7 @@ En las soluciones de los prácticos (FIA F1, Líneas Aéreas) se repiten estos h
 Según los resúmenes, el objeto de <strong>control</strong> suele <em>crearse cuando empieza</em> el caso de uso y <em>destruirse cuando termina</em> (encapsula esa conversación). Las <strong>entidades</strong>, en cambio, viven más allá y participan en varias realizaciones; una <strong>boundary</strong> puede ser compartida si aparece en varias pantallas.
 </Callout>
 
-### 10.4. Diferencia entre secuencia y comunicación
+### 11.4. Diferencia entre secuencia y comunicación
 
 <TablaComparativa
   caption="Comparación entre diagramas de secuencia y comunicación"
@@ -167,7 +167,7 @@ Según los resúmenes, el objeto de <strong>control</strong> suele <em>crearse c
   ]}
 />
 
-### 10.5. Secuencia típica en análisis
+### 11.5. Secuencia típica en análisis
 
 <MermaidDiagram caption="Flujo canónico de un caso de uso en análisis" code={`sequenceDiagram
   actor A as Actor
@@ -210,7 +210,7 @@ El flujo canónico Actor→Boundary→Control→Entity en un peaje:
 Casi todos los casos de uso pueden empezar con este patrón canónico. Las variaciones aparecen cuando hay múltiples entidades o controles colaborando.
 </Callout>
 
-### 10.6. Visibilidad y enlaces
+### 11.6. Visibilidad y enlaces
 
 Para que un objeto le envíe un mensaje a otro, debe poder verlo de alguna manera. En análisis no se baja al detalle de punteros, repositorios o inyección de dependencias, pero sí debe existir una justificación conceptual.
 
@@ -229,7 +229,7 @@ Para que un objeto le envíe un mensaje a otro, debe poder verlo de alguna maner
 En el parcial, si dibujás un mensaje entre dos objetos, después la vista de clases debería poder explicar ese enlace con asociación, dependencia o una colaboración razonable.
 </Callout>
 
-### 10.7. Errores comunes al modelar interacciones
+### 11.7. Errores comunes al modelar interacciones
 
 <Callout tipo="error" titulo="Errores típicos">
 - Hacer que el actor le hable directo a entidades internas.

@@ -1,6 +1,6 @@
 ---
 id: "sec-15"
-numero: 14
+numero: 15
 titulo: "Guía práctica para resolver parciales"
 slug: "15-guia-practica"
 resumen: "Método de resolución basado en ejercicios de cátedra: máquina de estados, secuencia y clases de análisis."
@@ -8,7 +8,7 @@ keywords: ["práctica", "parcial", "máquina de estados", "secuencia", "clases d
 relacionadas: ["10-maquina-estados", "11-secuencia-comunicacion", "06-clases-analisis", "07-realizaciones-casos-uso"]
 ---
 
-### 14.1. Para qué sirve esta guía práctica
+### 15.1. Para qué sirve esta guía práctica
 
 Esta sección no intenta explicar UML desde cero. La idea es sistematizar la forma en que la cátedra resuelve ejercicios: leer el enunciado, detectar la clase con ciclo de vida, armar una máquina de estados con casos de uso y métodos, modelar un escenario con `Pantalla -> Gestor -> Entidades`, y cerrar con una vista de clases de análisis que soporte lo anterior.
 
@@ -22,7 +22,7 @@ Los tres diagramas se corrigen juntos:
 Los patrones provienen de los casos resueltos de la cátedra: FIA F1 - Orden de Traslado, Líneas Aéreas - Vuelo, Guía 2026 de Máquina de Estados, PPA Peaje, Publicidad Multipunto, Administración de Campos, Crustáceo Cascarudo y Pizzería, además de los casos de requerimientos. Se priorizan ejemplos con soluciones oficiales o diagramas ya resueltos.
 </Callout>
 
-### 14.2. Método general para encarar un ejercicio
+### 15.2. Método general para encarar un ejercicio
 
 La forma más segura de resolver es no empezar dibujando. Primero hay que convertir el enunciado en decisiones de análisis.
 
@@ -54,7 +54,7 @@ La forma más segura de resolver es no empezar dibujando. Primero hay que conver
 En los parciales, la consigna suele decir explícitamente qué construir: "máquina de estados", "realización de caso de uso de análisis", "vista dinámica", "vista de clases de análisis", "atributos, métodos, navegabilidad y multiplicidad". Esas palabras son el contrato de corrección.
 </Callout>
 
-### 14.3. Máquina de estados: cuándo corresponde
+### 15.3. Máquina de estados: cuándo corresponde
 
 Corresponde hacer máquina de estados cuando una clase tiene comportamiento dependiente de su situación actual. No alcanza con que tenga un atributo `estado`: el estado debe modificar qué eventos son válidos, qué reglas se aplican o qué caminos quedan prohibidos.
 
@@ -71,7 +71,7 @@ Indicadores fuertes del enunciado:
 
 En FIA F1, la `OrdenTraslado` cambia desde `Creada` o `Aprobada` hasta `Exitosa`, `Incompleta`, `Cancelada` o `Rechazada`. En Líneas Aéreas, `Vuelo` tiene estados operativos como programado, demorado, embarque, ejecución, aterrizaje, finalización o cancelación. En PPA Peaje, `Cuenta` usa un estado compuesto `EnUso` y una estructura de historial.
 
-#### 14.3.1. Cómo identificar estados
+#### 15.3.1. Cómo identificar estados
 
 Buscá estados en reglas de negocio, postcondiciones, flujos alternativos y frases que describen una situación estable. Un estado suele nombrarse como sustantivo/adjetivo de situación, no como acción.
 
@@ -96,7 +96,7 @@ Procedimiento práctico:
 4. Separá estados de objetos distintos: una OT puede estar `EnTraslado`; un contenedor puede estar `AsignadoAOrden`, `Ocioso` o `Dañado`.
 5. Si la consigna pide una clase concreta, no mezcles ciclos de vida de otras clases salvo como soporte.
 
-#### 14.3.2. Cómo identificar transiciones
+#### 15.3.2. Cómo identificar transiciones
 
 La cátedra suele exigir que la transición tenga caso de uso, método y condición de control cuando aplique.
 
@@ -136,7 +136,7 @@ Ejemplo de una condición que parte el flujo en dos:
   Exitosa --> [*]
   Incompleta --> [*]`} />
 
-#### 14.3.3. Cómo obtener métodos
+#### 15.3.3. Cómo obtener métodos
 
 El método de transición debe pertenecer a la clase que cambia de estado. No representa toda la pantalla ni todo el caso de uso: representa la responsabilidad de la entidad para pasar de una situación a otra.
 
@@ -160,7 +160,7 @@ Métodos típicos detectados en soluciones:
 Si en la máquina aparece `/ cancelar()`, en la dinámica de cancelar debería verse un mensaje hacia la entidad que cambia, por ejemplo `GestorCancelacionVuelo -> Vuelo: cancelar()`. Si no aparece, los diagramas quedan desconectados.
 </Callout>
 
-#### 14.3.4. Condiciones de control
+#### 15.3.4. Condiciones de control
 
 Usá guarda cuando el enunciado dice que una transición depende de una regla. También cuando un mismo caso de uso puede llevar a más de un estado.
 
@@ -171,13 +171,13 @@ Usá guarda cuando el enunciado dice que una transición depende de una regla. T
 
 No hace falta poner condiciones inventadas para todo. Si una transición es directa y la regla no se bifurca, la condición puede omitirse.
 
-#### 14.3.5. Estados finales y estados de negocio
+#### 15.3.5. Estados finales y estados de negocio
 
 `Cancelada`, `Rechazada`, `Exitosa`, `Finalizado` o `EnDesuso` pueden ser estados del negocio. El pseudoelemento final UML (`[*]`) indica que termina el ciclo de vida modelado. No son lo mismo.
 
 En FIA F1, `Rechazada`, `Cancelada`, `Incompleta` y `Exitosa` son estados nombrados; luego pueden ir al final UML. En Publicidad Multipunto, `EnDesuso` se aclara como estado final de negocio del `PuntoDeEmision`.
 
-#### 14.3.6. Estados compuestos
+#### 15.3.6. Estados compuestos
 
 Usá estado compuesto cuando una fase tiene subetapas internas que conviene encapsular. Aparece en ejemplos como `EnUso` para `Cuenta` en PPA Peaje y `EnReproduccion` para `PuntoDeEmision` en Publicidad Multipunto. En Líneas Aéreas, el vuelo puede agrupar etapas de ejecución como despegue, aire, zona y aterrizaje.
 
@@ -199,7 +199,7 @@ Usá estado compuesto cuando una fase tiene subetapas internas que conviene enca
   Cancelado --> [*]
   Finalizado --> [*]`} />
 
-#### 14.3.7. Vista de clases que soporta una máquina
+#### 15.3.7. Vista de clases que soporta una máquina
 
 La Guía 2026 de Máquina de Estados repite una consigna: además de la máquina, construir la vista de análisis con las clases necesarias para darle soporte. La solución no siempre muestra todo el dominio; a veces aclara que solo incluye atributos y métodos usados por la máquina.
 
@@ -245,7 +245,7 @@ Si el enunciado dice que no hay historial, puede alcanzar una relación directa 
   ]}
 />
 
-### 14.4. Diagrama de secuencia y comunicación
+### 15.4. Diagrama de secuencia y comunicación
 
 El diagrama de secuencia muestra cómo colaboran objetos para ejecutar un escenario específico de un caso de uso. En muchas soluciones de cátedra también aparece el diagrama de comunicación; cambia la forma visual, pero el contenido es el mismo: objetos, enlaces y mensajes numerados.
 
@@ -255,7 +255,7 @@ No modeles todos los casos de uso juntos. Elegí el flujo pedido: curso normal, 
 En esta sección "patrón" significa forma recurrente de resolver realizaciones de análisis en los ejercicios de la cátedra. No son patrones GoF de diseño; sirven para reconocer el enunciado y reproducir una secuencia parecida a las soluciones oficiales.
 </Callout>
 
-#### 14.4.1. Participantes típicos
+#### 15.4.1. Participantes típicos
 
 La estructura más repetida es:
 
@@ -277,7 +277,7 @@ Participantes habituales:
 Un error típico es hacer que la pantalla hable con todas las entidades. En las soluciones, la pantalla suele pedir/tomar/mostrar; el gestor coordina; las entidades responden por información propia.
 </Callout>
 
-#### 14.4.2. Boundary: `Pantalla...`
+#### 15.4.2. Boundary: `Pantalla...`
 
 La boundary representa la frontera sistema-actor. En los diagramas resueltos aparecen nombres como `PantallaRegistrarOrdenTraslado`, `PantallaConsultarDisponibilidad`, `PantallaCancelacionVuelo`, `PantallaEstadosDeVuelo`.
 
@@ -291,7 +291,7 @@ Métodos típicos:
 - `pedirConfirmacion()`
 - `tomarConfirmacion()`
 
-#### 14.4.3. Control: `Gestor...`
+#### 15.4.3. Control: `Gestor...`
 
 El gestor encapsula la coordinación del caso de uso. En la cátedra suele haber un gestor por caso de uso o por responsabilidad principal: `GestorRegistrarOrdenTraslado`, `GestorDeConsultaDisponibilidad`, `GestorCancelacionVuelo`, `GestorDA`.
 
@@ -308,7 +308,7 @@ Métodos típicos:
 - `notificar()`
 - `finCU()` o `finCasoDeUso()`
 
-#### 14.4.4. Entity: clases del dominio
+#### 15.4.4. Entity: clases del dominio
 
 La entidad no es solo una tabla: conoce datos y puede tener comportamiento experto. En las soluciones se ve al gestor pidiendo información a entidades, pero también delegando operaciones de dominio:
 
@@ -337,7 +337,7 @@ La entidad no es solo una tabla: conoce datos y puede tener comportamiento exper
     +asignarAOT()
   }`} />
 
-#### 14.4.5. Patrón de flujo inicial
+#### 15.4.5. Patrón de flujo inicial
 
 En FIA F1 - CU Generar Orden de Traslado, Líneas Aéreas - Consultar Disponibilidad y PPA Peaje - Consultar Tarifa se repite este inicio:
 
@@ -369,7 +369,7 @@ En FIA F1 - CU Generar Orden de Traslado, Líneas Aéreas - Consultar Disponibil
   A->>Pantalla: tomarSeleccion()
   Pantalla->>Gestor: seleccionTomada()`} />
 
-#### 14.4.6. Patrón de búsqueda y selección
+#### 15.4.6. Patrón de búsqueda y selección
 
 Este patrón aparece con países/provincias/ciudades en Líneas Aéreas y con circuitos, fábrica, elementos y contenedores en FIA F1.
 
@@ -400,7 +400,7 @@ La marca `*` en varios diagramas indica repetición sobre una colección. En Mer
     Gestor->>TipoElemento: getNombre()
   end`} />
 
-#### 14.4.7. Patrón de validación
+#### 15.4.7. Patrón de validación
 
 En las soluciones, las validaciones de flujo suelen quedar en el gestor, pero las validaciones que dependen del estado o de datos propios se delegan a la entidad experta.
 
@@ -420,7 +420,7 @@ En las soluciones, las validaciones de flujo suelen quedar en el gestor, pero la
 
 Esto se ve en Líneas Aéreas - CU Cancelar Vuelo: antes de ofrecer vuelos cancelables, el gestor busca vuelos y el vuelo/cambio/estado colaboran para saber si permite cancelación.
 
-#### 14.4.8. Patrón de cambio de estado con historial
+#### 15.4.8. Patrón de cambio de estado con historial
 
 Cuando una entidad cambia de estado y se pide historial, el patrón es:
 
@@ -473,7 +473,7 @@ Ejemplo basado en PPA Peaje - Cuenta:
   Cuenta->>Nuevo: new(Estado, Motivo)
   Cuenta->>Cuenta: agregarHistorial(Nuevo)`} />
 
-#### 14.4.9. Patrón de creación con cabecera y partes
+#### 15.4.9. Patrón de creación con cabecera y partes
 
 Este patrón aparece cuando un caso de uso registra un objeto principal y, junto con él, varios objetos dependientes o componentes. En los tips de construcción de artefactos del Modelo de Análisis aparece como creación de objetos de más de una clase con estructura Todo-Parte: `Festival` y al menos un `DiaFestival`. También aparece en ejercicios con `Prestamo + Cuota`, `PlanPago + DetallePlanPago` u `Orden + DetalleOrden`.
 
@@ -572,7 +572,7 @@ Patrón estilo cátedra, basado en `Festival` + `DiaFestival`: el gestor coordin
 - Ignorar la regla de Creador: si `Festival` agrega/contiene `DiaFestival`, es razonable delegarle la creación o asociación de sus partes.
 </Callout>
 
-#### 14.4.10. Patrón de proceso masivo con validaciones, filtros y actualización histórica
+#### 15.4.10. Patrón de proceso masivo con validaciones, filtros y actualización histórica
 
 PPA Peaje - CU Registrar cobros por débito automático muestra un proceso batch, no solo un cambio de estado con historial. La secuencia valida el contexto general, filtra cuentas por tarjeta y habilitación, calcula cobros pendientes, busca estado y motivo, y recién después recorre las cuentas impagas para cerrar el historial actual y crear un nuevo `HistorialEstadoCuenta`.
 
@@ -671,7 +671,7 @@ end
 - Confundir el proceso automático o externo con una pantalla humana: en Peaje el disparador es `ATC` por `InterfazDA`.
 </Callout>
 
-#### 14.4.11. Patrón de buscar objetos factibles según estado actual
+#### 15.4.11. Patrón de buscar objetos factibles según estado actual
 
 En Líneas Aéreas - CU Cancelar Vuelo, la cátedra no muestra simplemente "buscar vuelos". El gestor busca vuelos factibles y delega la condición al objeto principal; `Vuelo` obtiene su cambio actual y consulta el `Estado` asociado para saber si permite la operación.
 
@@ -705,7 +705,7 @@ Diferencias que suelen corregirse:
 - Cambiar de estado sin cerrar el historial actual ni crear el nuevo cambio.
 </Callout>
 
-#### 14.4.12. Patrón de consulta con filtros
+#### 15.4.12. Patrón de consulta con filtros
 
 Líneas Aéreas - CU Consultar Disponibilidad es el caso típico:
 
@@ -719,7 +719,7 @@ Líneas Aéreas - CU Consultar Disponibilidad es el caso típico:
 
 No es un CRUD: hay selección incremental, validación, cálculo y consulta sobre varias entidades relacionadas.
 
-#### 14.4.13. Patrón de notificación
+#### 15.4.13. Patrón de notificación
 
 Hay dos niveles:
 
@@ -759,7 +759,7 @@ En Publicidad Multipunto, cuando se actualiza una tanda publicitaria vigente, se
   ]}
 />
 
-### 14.5. Diagrama de clases del modelo de análisis
+### 15.5. Diagrama de clases del modelo de análisis
 
 La vista de clases de análisis es la estructura que soporta la realización. Debe incluir las clases necesarias para el escenario y para la máquina de estados cuando la consigna las conecta.
 
@@ -772,7 +772,7 @@ En soluciones de cátedra suele pedirse:
 - navegabilidad;
 - clases que aparecen en la comunicación o secuencia.
 
-#### 14.5.1. Derivar clases desde la secuencia
+#### 15.5.1. Derivar clases desde la secuencia
 
 Regla principal:
 
@@ -811,7 +811,7 @@ Implica:
     +permiteCancelacion()
   }`} />
 
-#### 14.5.2. Estereotipos y nombres
+#### 15.5.2. Estereotipos y nombres
 
 <MermaidDiagram caption="Estereotipos BCE en clases de análisis" code={`classDiagram
   class PantallaCancelarVuelo {
@@ -828,7 +828,7 @@ Implica:
 
 En FIA F1 y Líneas Aéreas, los nombres no son genéricos: conservan el caso de uso o concepto. Eso ayuda a trazar desde la dinámica hacia la clase.
 
-#### 14.5.3. Atributos
+#### 15.5.3. Atributos
 
 Los atributos salen de:
 
@@ -865,13 +865,13 @@ Ejemplos:
     - fechaUltimaSalidaPosible
   }`} />
 
-#### 14.5.4. Métodos
+#### 15.5.4. Métodos
 
 Incluí métodos que aparecen como mensajes entrantes, métodos de transición de estados y validaciones del dominio. No llenes la clase de getters/setters si no se usaron, salvo que el estilo del diagrama original los muestre para obtener datos.
 
 En las soluciones se ven muchos `getNombre()`, `getFecha()`, `getHoraPartidaProgramada()` porque la dinámica los usa para mostrar datos. Pero lo importante no es inflar la clase, sino que la clase tenga los métodos que justifican los mensajes.
 
-#### 14.5.5. Relaciones, multiplicidad y navegabilidad
+#### 15.5.5. Relaciones, multiplicidad y navegabilidad
 
 La multiplicidad se razona desde el dominio y desde los mensajes:
 
@@ -887,7 +887,7 @@ La multiplicidad se razona desde el dominio y desde los mensajes:
 
 La navegabilidad se justifica por quién necesita conocer a quién para enviar mensajes. Si `GestorDeConsultaDisponibilidad` consulta `Vuelo`, `Pais`, `Provincia`, `Ciudad`, `TipoClase` y `TipoVuelo`, esas dependencias aparecen en la vista de clases. Si `OrdenTraslado` crea `DetalleOT`, hay relación estructural entre ambas.
 
-#### 14.5.6. Patrón `Estado` y `CambioEstado`
+#### 15.5.6. Patrón `Estado` y `CambioEstado`
 
 Este patrón aparece en FIA F1, Líneas Aéreas, Peaje y otros ejercicios de ciclo de vida.
 
@@ -953,9 +953,9 @@ Este patrón aparece en FIA F1, Líneas Aéreas, Peaje y otros ejercicios de cic
   ]}
 />
 
-### 14.6. Cómo se conectan los tres diagramas
+### 15.6. Cómo se conectan los tres diagramas
 
-#### 14.6.1. Máquina de estados hacia secuencia
+#### 15.6.1. Máquina de estados hacia secuencia
 
 Los métodos de transición de la máquina tienen que aparecer en la secuencia cuando el caso de uso cambia el estado.
 
@@ -976,7 +976,7 @@ Si la transición tiene condición, la secuencia debería mostrar la validación
   Vuelo->>Actual: esCancelable()
   Actual->>Estado: permiteCancelacion()`} />
 
-#### 14.6.2. Secuencia hacia clases
+#### 15.6.2. Secuencia hacia clases
 
 Los objetos de la secuencia se vuelven clases de análisis. Los mensajes entrantes se vuelven métodos. Los enlaces usados para enviar mensajes justifican relaciones o dependencias.
 
@@ -991,13 +991,13 @@ Los objetos de la secuencia se vuelven clases de análisis. Los mensajes entrant
 
 Eso justifica que `GestorRegistrarOrdenTraslado`, `Escuderia`, `Contenedor` y `Estado` estén en clases, con esos métodos disponibles.
 
-#### 14.6.3. Clases hacia máquina
+#### 15.6.3. Clases hacia máquina
 
 La clase que tiene estados debe contener métodos coherentes con la máquina. En FIA F1, `OrdenTraslado` incluye métodos como `aprobar()`, `rechazar()`, `cancelar()`, `comenzarPreparacion()`, `comenzarTraslado()`, `registrarLlegadaDestino()` y `revisarContenido()`.
 
-### 14.7. Catálogo de patrones de parcial
+### 15.7. Catálogo de patrones de parcial
 
-#### 14.7.1. Patrón 1: selección simple
+#### 15.7.1. Patrón 1: selección simple
 
 Actor selecciona opción, pantalla se habilita, gestor busca datos, pantalla muestra, actor selecciona y el gestor continúa. Sirve para consultas simples y pasos iniciales de casos más grandes.
 
@@ -1014,13 +1014,13 @@ Actor selecciona opción, pantalla se habilita, gestor busca datos, pantalla mue
   A->>Pantalla: seleccion()
   Pantalla->>Gestor: tomarSeleccion()`} />
 
-#### 14.7.2. Patrón 2: consulta con filtros
+#### 15.7.2. Patrón 2: consulta con filtros
 
 Ejemplo: Líneas Aéreas - CU Consultar Disponibilidad de Vuelos.
 
 Recolecta criterios, valida datos, busca entidades relacionadas, calcula disponibilidad y muestra resultados. Suele tener muchos mensajes `get...()` y loops para colecciones.
 
-#### 14.7.3. Patrón 3: cancelación
+#### 15.7.3. Patrón 3: cancelación
 
 Ejemplos: Líneas Aéreas - CU Cancelar Vuelo; FIA F1 - Registrar cancelación de OT.
 
@@ -1034,7 +1034,7 @@ Ejemplos: Líneas Aéreas - CU Cancelar Vuelo; FIA F1 - Registrar cancelación d
   G --> H[Notificar interesados]
   H --> I["finCU()"]`} />
 
-#### 14.7.4. Patrón 4: cambio de estado con historial
+#### 15.7.4. Patrón 4: cambio de estado con historial
 
 Ejemplos: Vuelo, Cuenta, Orden de Traslado cuando se pide historia.
 
@@ -1049,13 +1049,13 @@ Ejemplos: Vuelo, Cuenta, Orden de Traslado cuando se pide historia.
   Entidad->>Nuevo: new(fechaHora, estadoDestino)
   Entidad->>Entidad: agregarCambioEstado()`} />
 
-#### 14.7.5. Patrón 5: creación con cabecera y partes
+#### 15.7.5. Patrón 5: creación con cabecera y partes
 
 Ejemplo principal: Festival de Folklore - CU Registrar Festival.
 
 Recolectar datos de cabecera, recolectar datos repetidos de partes, validar existencia y consistencia, pedir confirmación, crear el Todo y crear/asociar sus partes en loop. Si la estructura muestra composición/agregación, el Todo puede crear o incorporar las partes: `Festival -> DiaFestival`.
 
-#### 14.7.6. Patrón 6: revisión con resultado alternativo
+#### 15.7.6. Patrón 6: revisión con resultado alternativo
 
 Un mismo caso de uso puede terminar en estados distintos. Ejemplo FIA F1:
 
@@ -1065,13 +1065,13 @@ Un mismo caso de uso puede terminar en estados distintos. Ejemplo FIA F1:
 
 La condición no es decoración: explica por qué el mismo evento no siempre llega al mismo estado.
 
-#### 14.7.7. Patrón 7: procesamiento automático o periódico
+#### 15.7.7. Patrón 7: procesamiento automático o periódico
 
 Ejemplos: FIA F1 - procesar OT no analizadas; Publicidad Multipunto - verificar conexión/actualización; Peaje - procesamiento de lote.
 
 La diferencia con un flujo manual es que el actor puede ser tiempo, sistema externo o proceso. Igual se modela con caso de uso, transición y método. En Peaje, además, no alcanza con dibujar un cambio de estado: hay validaciones generales, filtros sobre colecciones, armado de subconjuntos procesables y actualización histórica.
 
-#### 14.7.8. Patrón 8: notificación a interesados
+#### 15.7.8. Patrón 8: notificación a interesados
 
 Ejemplos: Líneas Aéreas y Publicidad Multipunto. En análisis puede aparecer como llamadas directas a pantallas/interfaz; en diseño puede rediseñarse con Observer.
 
@@ -1084,13 +1084,13 @@ Ejemplos: Líneas Aéreas y Publicidad Multipunto. En análisis puede aparecer c
     Gestor->>PantallaInteresada: actualizar()
   end`} />
 
-#### 14.7.9. Patrón 9: búsqueda de objetos factibles
+#### 15.7.9. Patrón 9: búsqueda de objetos factibles
 
 Ejemplo: Líneas Aéreas - CU Cancelar Vuelo.
 
 El gestor no decide solo si el objeto puede participar del caso de uso. Recorre candidatos y pregunta a la entidad principal; la entidad obtiene su estado actual mediante `CambioEstado...` y recién ahí consulta a `Estado` si la operación está permitida.
 
-### 14.8. Errores típicos de parcial
+### 15.8. Errores típicos de parcial
 
 <Callout tipo="error" titulo="Errores a evitar">
 - Confundir acciones con estados.
@@ -1108,9 +1108,9 @@ El gestor no decide solo si el objeto puede participar del caso de uso. Recorre 
 - Meter detalles de base de datos, framework, controlador técnico o despliegue en análisis.
 </Callout>
 
-### 14.9. Plantillas reutilizables
+### 15.9. Plantillas reutilizables
 
-#### 14.9.1. Plantilla de máquina de estados
+#### 15.9.1. Plantilla de máquina de estados
 
 <MermaidDiagram caption="Plantilla de máquina de estados" code={`stateDiagram-v2
   [*] --> EstadoInicial
@@ -1118,7 +1118,7 @@ El gestor no decide solo si el objeto puede participar del caso de uso. Recorre 
   EstadoIntermedio --> EstadoFinalNegocio: Caso de Uso [condicion] / metodo()
   EstadoFinalNegocio --> [*]`} />
 
-#### 14.9.2. Plantilla de secuencia con BCE
+#### 15.9.2. Plantilla de secuencia con BCE
 
 <MermaidDiagram caption="Plantilla de secuencia con boundary-control-entity" code={`sequenceDiagram
   actor A as Actor
@@ -1135,7 +1135,7 @@ El gestor no decide solo si el objeto puede participar del caso de uso. Recorre 
   Pantalla->>Gestor: tomarConfirmacion()
   Gestor->>Entidad: metodoDeNegocio()`} />
 
-#### 14.9.3. Plantilla de clases de análisis
+#### 15.9.3. Plantilla de clases de análisis
 
 <MermaidDiagram caption="Plantilla de clases de análisis" code={`classDiagram
   class PantallaCasoUso {
@@ -1161,7 +1161,7 @@ El gestor no decide solo si el objeto puede participar del caso de uso. Recorre 
   PantallaCasoUso ..> GestorCasoUso
   GestorCasoUso --> EntidadPrincipal`} />
 
-### 14.10. Checklist final de autocorrección
+### 15.10. Checklist final de autocorrección
 
 <ChecklistRepaso
   id="practica-final"

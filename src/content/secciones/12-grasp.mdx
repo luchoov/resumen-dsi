@@ -1,6 +1,6 @@
 ---
 id: "sec-12"
-numero: 11
+numero: 12
 titulo: "Patrones GRASP para análisis"
 slug: "12-grasp"
 resumen: "GRASP ayuda a asignar responsabilidades en análisis y a justificar diagramas de secuencia y clases en parciales."
@@ -8,7 +8,7 @@ keywords: ["GRASP", "responsabilidad", "experto", "creador", "controlador", "baj
 relacionadas: ["06-clases-analisis", "11-secuencia-comunicacion", "13-relaciones-clave", "17-parcial-teorico"]
 ---
 
-### 11.1. Qué son los patrones GRASP
+### 12.1. Qué son los patrones GRASP
 
 <Definicion termino="GRASP">
 <strong>GRASP</strong> significa Patrones Generales de Asignación de Responsabilidades en Software. En análisis se usan como criterios para decidir qué objeto conceptual debe conocer, hacer, crear o coordinar algo.
@@ -41,7 +41,7 @@ En un diagrama de secuencia, GRASP se justifica mirando <strong>quién recibe ca
 
 Los tres primeros (**Experto, Creador, Controlador**) <strong>asignan</strong> responsabilidades; <strong>Bajo Acoplamiento</strong> y <strong>Alta Cohesión</strong> no asignan, son <strong>criterios de calidad</strong> con los que se evalúa cualquier asignación. <em>Nota:</em> el Experto también puede asignar un <em>hacer</em> (hace el cálculo porque tiene la información); se lo ubica bajo «conocer» por el lema "lo hace quien conoce".
 
-### 11.2. Responsabilidades de hacer y conocer
+### 12.2. Responsabilidades de hacer y conocer
 
 La fuente de cátedra clasifica las responsabilidades en dos grupos: <strong>hacer</strong> y <strong>conocer</strong>. Esa clasificación es la base para entender GRASP.
 
@@ -60,7 +60,7 @@ La fuente de cátedra clasifica las responsabilidades en dos grupos: <strong>hac
 
 En análisis, una responsabilidad todavía es <strong>conceptual</strong>. Puede aparecer nombrada como un mensaje o una operación, pero no obliga a definir firma completa, tipo de retorno, excepciones, framework, base de datos ni algoritmo final. Por ejemplo, decir que `Funcion` responde `hayLugar()` alcanza para análisis: el detalle exacto de implementación queda para diseño.
 
-### 11.3. Cómo leer GRASP en diagramas
+### 12.3. Cómo leer GRASP en diagramas
 
 Para contestar parciales conviene mirar tres cosas:
 
@@ -80,7 +80,7 @@ Para contestar parciales conviene mirar tres cosas:
   ]}
 />
 
-### 11.4. Patrón Experto en Información
+### 12.4. Patrón Experto en Información
 
 <PatronGRASP
   nombre="Experto en Información"
@@ -97,15 +97,15 @@ Para contestar parciales conviene mirar tres cosas:
     Note right of P: Paciente conoce fechaNacimiento`} />
 </PatronGRASP>
 
-#### 11.4.1. Pregunta que responde
+#### 12.4.1. Pregunta que responde
 
 ¿Quién debe hacer o conocer algo cuando esa responsabilidad depende de cierta información?
 
-#### 11.4.2. Definición corta
+#### 12.4.2. Definición corta
 
 Se asigna la responsabilidad a la clase que posee la información necesaria para cumplirla. Sirve especialmente para cálculos, validaciones, derivaciones o respuestas sobre información propia.
 
-#### 11.4.3. Cómo detectarlo en un diagrama de secuencia o clases
+#### 12.4.3. Cómo detectarlo en un diagrama de secuencia o clases
 
 - En secuencia, un objeto recibe un mensaje que puede resolver con sus atributos o asociaciones.
 - En clases, la clase receptora tiene los datos, la colección o las relaciones necesarias.
@@ -116,7 +116,7 @@ Se asigna la responsabilidad a la clase que posee la información necesaria para
 Un mensaje a sí mismo suele indicar que el objeto hace algo propio, pero el patrón se justifica por la información que posee. Si el gestor hace un self-call para calcular con datos de <code>Paciente</code>, no es buen Experto: el experto sería <code>Paciente</code>.
 </Callout>
 
-#### 11.4.4. Ejemplo correcto
+#### 12.4.4. Ejemplo correcto
 
 - `Paciente.calcularEdad()` porque `Paciente` conoce `fechaNacimiento`.
 - `Consulta.calcularMontoTotal()` porque `Consulta` conoce sus `DetalleConsulta`.
@@ -127,32 +127,32 @@ Un mensaje a sí mismo suele indicar que el objeto hace algo propio, pero el pat
 Si el gestor necesita saber cuánto cuesta una consulta, el mensaje defendible es <code>GestorConsulta -> Consulta : calcularMontoTotal()</code>. La consulta conoce sus detalles y puede pedir a cada detalle su subtotal. El gestor coordina, pero no suma datos internos de la consulta.
 </EjemploReal>
 
-#### 11.4.5. Contraejemplo o mala aplicación
+#### 12.4.5. Contraejemplo o mala aplicación
 
 `GestorConsulta` pide `getFechaNacimiento()` a `Paciente` y calcula la edad él mismo.
 
 No se aplica Experto porque la responsabilidad de calcular edad depende de información propia de `Paciente`. El gestor queda con conocimiento innecesario sobre cómo se calcula la edad y sobre qué dato interno se usa.
 
-#### 11.4.6. Cómo justificarlo en un parcial
+#### 12.4.6. Cómo justificarlo en un parcial
 
 <blockquote class="respuesta-modelo">
 Se aplica Experto en Información porque la responsabilidad se asigna a la clase que posee la información necesaria para cumplirla. De esta forma, el comportamiento queda ubicado junto a los datos que utiliza, evitando que otros objetos deban conocer detalles internos.
 </blockquote>
 
-#### 11.4.7. Cómo responder cuando NO se aplica
+#### 12.4.7. Cómo responder cuando NO se aplica
 
 <blockquote class="respuesta-modelo">
 No se aplica Experto en Información porque la responsabilidad queda en una clase que no posee la información necesaria y debe pedir datos internos a otra. La corrección sería delegar el cálculo, validación o derivación al objeto que conoce esos datos.
 </blockquote>
 
-#### 11.4.8. Relación con otros patrones
+#### 12.4.8. Relación con otros patrones
 
 - Con <strong>Bajo Acoplamiento</strong>: si le pido al experto que resuelva, reduzco getters y dependencias.
 - Con <strong>Alta Cohesión</strong>: la entidad mantiene responsabilidades propias de su información.
 - Con <strong>Controlador</strong>: el gestor coordina, pero delega en expertos.
 - Con <strong>Creador</strong>: pueden coincidir en una clase, pero no responden la misma pregunta.
 
-### 11.5. Patrón Creador
+### 12.5. Patrón Creador
 
 <PatronGRASP
   nombre="Creador"
@@ -171,22 +171,22 @@ No se aplica Experto en Información porque la responsabilidad queda en una clas
     Note right of T: El todo contiene/agrega sus partes`} />
 </PatronGRASP>
 
-#### 11.5.1. Pregunta que responde
+#### 12.5.1. Pregunta que responde
 
 ¿Quién debe crear una instancia nueva?
 
-#### 11.5.2. Definición corta
+#### 12.5.2. Definición corta
 
 Una clase `A` debería crear `B` si `A` contiene, agrega, registra, usa estrechamente o tiene los datos de inicialización de `B`. En forma simple: <strong>el todo crea sus partes</strong>.
 
-#### 11.5.3. Cómo detectarlo en un diagrama de secuencia o clases
+#### 12.5.3. Cómo detectarlo en un diagrama de secuencia o clases
 
 - En secuencia, aparece un mensaje `<<create>>` desde un objeto hacia otro.
 - En clases, el emisor de la creación suele tener asociación, agregación conceptual, composición conceptual o registro sobre el objeto creado.
 - Si se crea una estructura todo-parte, suele verse el patrón de cátedra: `Gestor -> nuevoTodo:Todo : <<create>>` y luego `nuevoTodo -> nuevaParte:Parte : <<create>>`.
 - El gestor puede crear el objeto principal del caso de uso si recibió los datos necesarios, pero conviene que el objeto principal cree sus partes.
 
-#### 11.5.4. Ejemplo correcto
+#### 12.5.4. Ejemplo correcto
 
 - `Consulta -> DetalleConsulta : <<create>>` porque `Consulta` contiene/agrega detalles.
 - `Factura -> DetalleFactura : <<create>>` porque `Factura` contiene detalles.
@@ -197,24 +197,24 @@ Una clase `A` debería crear `B` si `A` contiene, agrega, registra, usa estrecha
 Si una factura tiene varios detalles, el gestor no debería crear cada <code>DetalleFactura</code> por separado y luego armar la estructura desde afuera. Una solución más defendible es que el gestor cree o recupere la <code>Factura</code> y le pida <code>agregarDetalle(...)</code>; dentro de esa responsabilidad, <code>Factura</code> crea el <code>DetalleFactura</code>.
 </EjemploReal>
 
-#### 11.5.5. Contraejemplo o mala aplicación
+#### 12.5.5. Contraejemplo o mala aplicación
 
 - `Paciente -> DetalleConsulta : <<create>>`: no es buen creador porque `Paciente` no contiene naturalmente los detalles de consulta.
 - `Producto -> DetalleFactura : <<create>>`: `Producto` puede ser usado por el detalle, pero no lo contiene. Quien debería crear el detalle es `Factura`.
 
-#### 11.5.6. Cómo justificarlo en un parcial
+#### 12.5.6. Cómo justificarlo en un parcial
 
 <blockquote class="respuesta-modelo">
 Se aplica Creador porque la responsabilidad de instanciar la clase queda asignada a quien la contiene, agrega, registra, usa fuertemente o posee los datos necesarios para inicializarla. En particular, el todo crea sus partes, por eso la creación queda cerca de la relación que la justifica.
 </blockquote>
 
-#### 11.5.7. Cómo responder cuando NO se aplica
+#### 12.5.7. Cómo responder cuando NO se aplica
 
 <blockquote class="respuesta-modelo">
 No se aplica Creador porque el objeto que instancia no contiene, agrega, registra ni usa fuertemente al objeto creado. La corrección sería mover la creación al objeto que actúa como todo, registro o dueño natural de la relación.
 </blockquote>
 
-#### 11.5.8. Relación con otros patrones
+#### 12.5.8. Relación con otros patrones
 
 <Callout tipo="atencion" titulo="Creador no es una especialización formal de Experto">
 Creador y Experto son patrones de asignación de responsabilidades, pero responden preguntas distintas. Experto responde quién debe calcular, validar o conocer algo. Creador responde quién debe crear una instancia. Se relacionan porque muchas veces el creador tiene información útil para inicializar el objeto, pero no son el mismo patrón.
@@ -224,7 +224,7 @@ Creador y Experto son patrones de asignación de responsabilidades, pero respond
 - Con <strong>Alta Cohesión</strong>: el objeto que contiene partes conserva la responsabilidad de administrarlas.
 - Con <strong>Controlador</strong>: el gestor puede crear el objeto principal del caso de uso, pero debería delegar la creación de partes al todo.
 
-### 11.6. Patrón Controlador
+### 12.6. Patrón Controlador
 
 <PatronGRASP
   nombre="Controlador"
@@ -246,53 +246,53 @@ Creador y Experto son patrones de asignación de responsabilidades, pero respond
     G->>F: venderEntrada(datos)`} />
 </PatronGRASP>
 
-#### 11.6.1. Pregunta que responde
+#### 12.6.1. Pregunta que responde
 
 ¿Quién debe recibir y manejar el evento del sistema que llega desde la interfaz?
 
-#### 11.6.2. Definición corta
+#### 12.6.2. Definición corta
 
 El controlador recibe la solicitud proveniente de la boundary y coordina el caso de uso. La interacción típica es `Actor -> Boundary -> Controlador/Gestor -> Entidades`.
 
-#### 11.6.3. Cómo detectarlo en un diagrama de secuencia o clases
+#### 12.6.3. Cómo detectarlo en un diagrama de secuencia o clases
 
 - El actor no habla directamente con entidades.
 - La boundary recibe datos, selecciones o confirmaciones y reenvía el evento al gestor.
 - El gestor manda mensajes a entidades para validar, consultar, crear o modificar.
 - El controlador <strong>no significa hacer todo</strong>. Si calcula todo, se satura y rompe Alta Cohesión y Experto.
 
-#### 11.6.4. Ejemplo correcto
+#### 12.6.4. Ejemplo correcto
 
 - `PantallaRegistrarConsulta -> GestorRegistrarConsulta : registrarConsulta(datos)`.
 - `PantallaVentaEntrada -> GestorVentaEntrada : registrarVenta(...)`.
 - `PantallaReporteMonopatines -> GestorUtilizacionMonopatines : generarReporte(...)`.
 
-#### 11.6.5. Contraejemplo o mala aplicación
+#### 12.6.5. Contraejemplo o mala aplicación
 
 `PantallaRegistrarConsulta` habla directamente con `Paciente`, `Consulta`, `Prestacion` y `DetalleConsulta`.
 
 No se aplica Controlador porque la boundary está coordinando el caso de uso y queda acoplada a entidades. La pantalla debería recibir/interactuar con el actor y delegar el evento a un gestor.
 
-#### 11.6.6. Cómo justificarlo en un parcial
+#### 12.6.6. Cómo justificarlo en un parcial
 
 <blockquote class="respuesta-modelo">
 Se aplica Controlador porque el gestor recibe la solicitud proveniente de la interfaz y coordina las operaciones necesarias para realizar el caso de uso, delegando en las entidades las responsabilidades que les corresponden.
 </blockquote>
 
-#### 11.6.7. Cómo responder cuando NO se aplica
+#### 12.6.7. Cómo responder cuando NO se aplica
 
 <blockquote class="respuesta-modelo">
 No se aplica Controlador porque la interfaz o el actor se comunica directamente con varias entidades y coordina el flujo del caso de uso. La corrección sería introducir un gestor/controlador de caso de uso que reciba el evento del sistema y delegue en las entidades.
 </blockquote>
 
-#### 11.6.8. Relación con otros patrones
+#### 12.6.8. Relación con otros patrones
 
 - Con <strong>Experto</strong>: el controlador no calcula con datos ajenos; delega en el experto.
 - Con <strong>Creador</strong>: puede crear el objeto principal si tiene datos de inicialización, pero no debería crear todas las partes si hay un todo que las contiene.
 - Con <strong>Bajo Acoplamiento</strong>: evita que la boundary conozca todo el dominio.
 - Con <strong>Alta Cohesión</strong>: su responsabilidad fuerte es coordinar el caso de uso.
 
-#### 11.6.9. Controlador saturado
+#### 12.6.9. Controlador saturado
 
 Un controlador se satura cuando recibe todos los eventos del sistema o cuando absorbe cálculos, validaciones y creaciones que deberían estar en entidades.
 
@@ -307,7 +307,7 @@ Un controlador se satura cuando recibe todos los eventos del sistema o cuando ab
   ]}
 />
 
-### 11.7. Patrón Bajo Acoplamiento
+### 12.7. Patrón Bajo Acoplamiento
 
 <PatronGRASP
   nombre="Bajo Acoplamiento"
@@ -325,22 +325,22 @@ Un controlador se satura cuando recibe todos los eventos del sistema o cuando ab
     Note right of F: Funcion conoce sala y entradas`} />
 </PatronGRASP>
 
-#### 11.7.1. Pregunta que responde
+#### 12.7.1. Pregunta que responde
 
 ¿Cómo asignar responsabilidades para que las clases dependan lo menos posible unas de otras?
 
-#### 11.7.2. Definición corta
+#### 12.7.2. Definición corta
 
 Una clase está acoplada a otra cuando la conoce, la usa, le manda mensajes, la tiene como atributo o depende de sus detalles internos. Bajo Acoplamiento busca que cada clase conozca solamente lo necesario para cumplir su responsabilidad.
 
-#### 11.7.3. Cómo detectarlo en un diagrama de secuencia o clases
+#### 12.7.3. Cómo detectarlo en un diagrama de secuencia o clases
 
 - Si una clase pide muchos getters para calcular afuera, suele haber alto acoplamiento.
 - Si una clase delega la operación al objeto experto, suele bajar el acoplamiento.
 - En clases, una pantalla o gestor con dependencias hacia muchas entidades es una señal de riesgo.
 - En secuencia, muchas flechas desde el gestor hacia objetos internos de una entidad suelen indicar que el gestor sabe demasiado.
 
-#### 11.7.4. Ejemplo correcto
+#### 12.7.4. Ejemplo correcto
 
 Mal: `GestorVentaEntrada` pide `Sala.getCapacidad()`, recorre `Entrada`, llama `Entrada.estaAnulada()` y calcula disponibilidad él mismo.
 
@@ -350,30 +350,30 @@ Mal: `GestorViajes` pide `Viaje.getInicio()`, `Viaje.getFin()`, `Viaje.getPausas
 
 Bien: `GestorViajes -> Viaje : calcularDuracionSinPausas()`.
 
-#### 11.7.5. Contraejemplo o mala aplicación
+#### 12.7.5. Contraejemplo o mala aplicación
 
 Un gestor que conoce `Sala`, `Entrada`, `EstadoEntrada`, `Promocion`, `Butaca` y además recorre sus colecciones para calcular disponibilidad queda altamente acoplado. Si cambia cómo se calcula la disponibilidad, cambia el gestor aunque la responsabilidad real pertenezca a `Funcion`.
 
-#### 11.7.6. Cómo justificarlo en un parcial
+#### 12.7.6. Cómo justificarlo en un parcial
 
 <blockquote class="respuesta-modelo">
 Se aplica Bajo Acoplamiento porque el objeto controlador no accede directamente a todas las entidades ni conoce sus detalles internos, sino que delega la responsabilidad en el objeto que corresponde. De esta forma, si cambia la forma en que se calcula o valida esa información, el impacto queda localizado en la clase experta.
 </blockquote>
 
-#### 11.7.7. Cómo responder cuando NO se aplica
+#### 12.7.7. Cómo responder cuando NO se aplica
 
 <blockquote class="respuesta-modelo">
 No se aplica Bajo Acoplamiento porque una clase concentra dependencias hacia muchas otras clases y conoce detalles que no necesita conocer. Esto hace que cualquier cambio en esas clases pueda afectar a la clase acoplada.
 </blockquote>
 
-#### 11.7.8. Relación con otros patrones
+#### 12.7.8. Relación con otros patrones
 
 - Con <strong>Experto</strong>: delegar en quien conoce evita pedir datos internos.
 - Con <strong>Controlador</strong>: el gestor coordina sin conocer detalles profundos de las entidades.
 - Con <strong>Creador</strong>: el creador correcto ya está conectado con lo creado, por eso evita dependencias artificiales.
 - Con <strong>Alta Cohesión</strong>: cuando una clase conoce demasiadas cosas, suele terminar haciendo tareas mezcladas.
 
-### 11.8. Patrón Alta Cohesión
+### 12.8. Patrón Alta Cohesión
 
 <PatronGRASP
   nombre="Alta Cohesión"
@@ -405,11 +405,11 @@ No se aplica Bajo Acoplamiento porque una clase concentra dependencias hacia muc
     GestorRegistrarConsulta --> Notificador`} />
 </PatronGRASP>
 
-#### 11.8.1. Pregunta que responde
+#### 12.8.1. Pregunta que responde
 
 ¿Cómo mantener las responsabilidades de una clase enfocadas, relacionadas y comprensibles?
 
-#### 11.8.2. Definición corta
+#### 12.8.2. Definición corta
 
 La Alta Cohesión busca que una clase tenga responsabilidades fuertemente relacionadas con su rol dentro del sistema y también fuertemente relacionadas entre sí. No alcanza con que todas las responsabilidades puedan asociarse de manera general a la clase; deben pertenecer a un mismo propósito o área específica. Cuando una clase reúne responsabilidades de áreas distintas, aunque todas puedan justificarse dentro de un rol amplio, la cohesión tiende a ser moderada o baja.
 
@@ -423,14 +423,14 @@ La Alta Cohesión busca que una clase tenga responsabilidades fuertemente relaci
   ]}
 />
 
-#### 11.8.3. Cómo detectarlo en un diagrama de secuencia o clases
+#### 12.8.3. Cómo detectarlo en un diagrama de secuencia o clases
 
 - En clases, las operaciones de una clase deberían sonar al mismo propósito.
 - En secuencia, el gestor debería coordinar, no absorber cálculos o validaciones de entidades.
 - Una entidad debería resolver operaciones vinculadas a sus datos y asociaciones.
 - Si el nombre de la clase es demasiado amplio y cualquier método "entra", revisar cohesión.
 
-#### 11.8.4. Ejemplo correcto
+#### 12.8.4. Ejemplo correcto
 
 Alta cohesión en entidad:
 
@@ -448,7 +448,7 @@ Controlador con alta cohesión:
 
 Todo está relacionado con coordinar el caso de uso Registrar Consulta.
 
-#### 11.8.5. Contraejemplo o mala aplicación
+#### 12.8.5. Contraejemplo o mala aplicación
 
 Baja cohesión en entidad:
 
@@ -468,26 +468,26 @@ Controlador con baja cohesión:
 
 El gestor deja de coordinar y absorbe responsabilidades que pertenecen a entidades u otros objetos.
 
-#### 11.8.6. Cómo justificarlo en un parcial
+#### 12.8.6. Cómo justificarlo en un parcial
 
 <blockquote class="respuesta-modelo">
 Se aplica Alta Cohesión porque las responsabilidades se encuentran asignadas a clases que tienen un propósito claro y relacionado con dichas responsabilidades. El gestor se limita a coordinar el caso de uso, mientras que las entidades realizan las operaciones vinculadas a la información que conocen.
 </blockquote>
 
-#### 11.8.7. Cómo responder cuando NO se aplica
+#### 12.8.7. Cómo responder cuando NO se aplica
 
 <blockquote class="respuesta-modelo">
 No se aplica Alta Cohesión porque el objeto controlador concentra responsabilidades que pertenecen a otras clases de entidad. En lugar de limitarse a coordinar el caso de uso, realiza cálculos, validaciones o creaciones que deberían ser delegadas a los objetos expertos.
 </blockquote>
 
-#### 11.8.8. Relación con otros patrones
+#### 12.8.8. Relación con otros patrones
 
 - Con <strong>Controlador</strong>: un buen controlador mantiene cohesión si coordina un caso de uso acotado.
 - Con <strong>Experto</strong>: las entidades son más cohesivas cuando conservan responsabilidades sobre su información.
 - Con <strong>Bajo Acoplamiento</strong>: al no mezclar tareas, una clase necesita menos dependencias.
 - Con <strong>Creador</strong>: crear las partes propias mantiene el manejo de la estructura en el objeto que la representa.
 
-### 11.9. Cómo se relacionan los cinco patrones
+### 12.9. Cómo se relacionan los cinco patrones
 
 Los cinco patrones se leen juntos en una misma secuencia:
 
@@ -518,7 +518,7 @@ Lectura para parcial:
 - También aplica <strong>Alta Cohesión</strong>: `Funcion` conserva la responsabilidad de disponibilidad, que pertenece a su rol.
 - `Funcion -> Entrada : <<create>>` aplica <strong>Creador</strong>: `Funcion` crea `Entrada` porque registra sus entradas.
 
-### 11.10. Matriz de detección rápida en diagramas
+### 12.10. Matriz de detección rápida en diagramas
 
 <TablaComparativa
   caption="Señales típicas para identificar GRASP"
@@ -535,39 +535,39 @@ Lectura para parcial:
   ]}
 />
 
-### 11.11. Respuestas modelo para parcial
+### 12.11. Respuestas modelo para parcial
 
-#### 11.11.1. Cómo justificar Experto
+#### 12.11.1. Cómo justificar Experto
 
 <blockquote class="respuesta-modelo">
 Se aplica Experto en Información porque la responsabilidad se asigna a la clase que posee la información necesaria para cumplirla. De esta forma, el comportamiento queda ubicado junto a los datos que utiliza, evitando que otros objetos deban conocer detalles internos.
 </blockquote>
 
-#### 11.11.2. Cómo justificar Creador
+#### 12.11.2. Cómo justificar Creador
 
 <blockquote class="respuesta-modelo">
 Se aplica Creador porque la clase que instancia al objeto lo contiene, agrega, registra, usa fuertemente o posee los datos necesarios para inicializarlo. En este caso, el todo crea sus partes, por lo que la creación queda en el objeto que mantiene la relación.
 </blockquote>
 
-#### 11.11.3. Cómo justificar Controlador
+#### 12.11.3. Cómo justificar Controlador
 
 <blockquote class="respuesta-modelo">
 Se aplica Controlador porque el gestor recibe la solicitud proveniente de la interfaz y coordina las operaciones necesarias para realizar el caso de uso, delegando en las entidades las responsabilidades que les corresponden.
 </blockquote>
 
-#### 11.11.4. Cómo justificar Bajo Acoplamiento
+#### 12.11.4. Cómo justificar Bajo Acoplamiento
 
 <blockquote class="respuesta-modelo">
 Se aplica Bajo Acoplamiento porque el objeto controlador no accede directamente a todas las entidades ni conoce sus detalles internos, sino que delega la responsabilidad en el objeto que corresponde. De esta forma, si cambia la forma en que se calcula o valida esa información, el impacto queda localizado en la clase experta.
 </blockquote>
 
-#### 11.11.5. Cómo justificar Alta Cohesión
+#### 12.11.5. Cómo justificar Alta Cohesión
 
 <blockquote class="respuesta-modelo">
 Se aplica Alta Cohesión porque las responsabilidades se encuentran asignadas a clases que tienen un propósito claro y relacionado con dichas responsabilidades. El gestor se limita a coordinar el caso de uso, mientras que las entidades realizan las operaciones vinculadas a la información que conocen.
 </blockquote>
 
-#### 11.11.6. Cómo responder cuando NO se aplica cada uno
+#### 12.11.6. Cómo responder cuando NO se aplica cada uno
 
 <TablaComparativa
   caption="Respuestas modelo para marcar ausencia de patrón"
@@ -581,7 +581,7 @@ Se aplica Alta Cohesión porque las responsabilidades se encuentran asignadas a 
   ]}
 />
 
-### 11.12. Cómo detectar GRASP en un diagrama de secuencia
+### 12.12. Cómo detectar GRASP en un diagrama de secuencia
 
 El **verbo del método ayuda, pero no alcanza**. Para identificar el patrón hay que mirar tres cosas: **quién envía** el mensaje, **quién lo recibe** y **qué información necesita** ese método para resolverse. El mismo nombre (`calcularX()`) puede ser Experto bien aplicado o un síntoma de mal diseño según dónde esté la información.
 
@@ -622,7 +622,7 @@ El **verbo del método ayuda, pero no alcanza**. Para identificar el patrón hay
   ]}
 />
 
-### 11.13. GRASP versus patrones de diseño
+### 12.13. GRASP versus patrones de diseño
 
 En esta unidad solo se usan los <strong>cinco GRASP de análisis</strong>: Experto en Información, Creador, Controlador, Bajo Acoplamiento y Alta Cohesión. No hace falta agregar los nueve GRASP ni aplicar patrones de diseño como Strategy, Observer o State.
 
