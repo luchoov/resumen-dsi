@@ -96,7 +96,7 @@ export function setupDiagramPanZoom(
   const apply = () => {
     if (renderer.svg) {
       renderer.svg.style.width = `${renderer.width * state.scale}px`;
-      renderer.svg.style.height = "auto";
+      renderer.svg.style.height = `${renderer.height * state.scale}px`;
       surface.style.transform = `translate(${state.x}px, ${state.y}px)`;
     } else {
       surface.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.scale})`;
@@ -258,20 +258,20 @@ function getInitialState(
 }
 
 function createZoomRenderer(surface: HTMLElement): ZoomRenderer {
+  surface.style.transformOrigin = "0 0";
   const svg = surface.querySelector<SVGSVGElement>("svg");
-  const target = svg ?? surface;
-  const rect = target.getBoundingClientRect();
+  if (!svg) {
+    const rect = surface.getBoundingClientRect();
+    return { width: Math.max(1, rect.width), height: Math.max(1, rect.height) };
+  }
+  const rect = svg.getBoundingClientRect();
   const width = Math.max(1, rect.width);
   const height = Math.max(1, rect.height);
-
-  if (svg) {
-    svg.style.width = `${width}px`;
-    svg.style.height = "auto";
-    svg.style.maxWidth = "none";
-    return { svg, width, height };
-  }
-
-  return { width, height };
+  svg.style.minWidth = "0";
+  svg.style.maxWidth = "none";
+  svg.style.width = `${width}px`;
+  svg.style.height = `${height}px`;
+  return { svg, width, height };
 }
 
 function pointFromEvent(viewport: HTMLElement, event: MouseEvent | PointerEvent | WheelEvent): Point {
