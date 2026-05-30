@@ -7,6 +7,7 @@ import TocDerecha from "@/components/layout/TocDerecha.astro";
 import Breadcrumb from "@/components/layout/Breadcrumb.astro";
 import PrevNext from "@/components/layout/PrevNext.astro";
 import type { Seccion } from "@/lib/secciones";
+import { preguntasDeSeccion, bancoSeccionUrl } from "@/lib/banco";
 
 interface Props {
   seccion: Seccion;
@@ -18,6 +19,8 @@ interface Props {
 }
 
 const { seccion, secciones, encabezados, previa, siguiente, indiceBusqueda } = Astro.props;
+const cantPreguntas = preguntasDeSeccion(seccion.data.slug).length;
+const bancoUrl = bancoSeccionUrl(seccion.data.slug);
 ---
 
 <BaseLayout titulo={`${seccion.data.numero}. ${seccion.data.titulo} · Resumen DSI`} descripcion={seccion.data.resumen}>
@@ -33,6 +36,23 @@ const { seccion, secciones, encabezados, previa, siguiente, indiceBusqueda } = A
           <p class="mt-5 max-w-3xl text-[length:var(--text-fluid-lg)] text-[hsl(var(--muted-foreground))]">{seccion.data.resumen}</p>
         </header>
         <slot />
+        {cantPreguntas > 0 && (
+          <a
+            href={bancoUrl}
+            class="not-prose mt-12 flex items-center gap-4 rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 transition-colors hover:border-[hsl(var(--primary)/0.5)] hover:bg-[hsl(var(--muted))]"
+          >
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--primary)/0.12)] text-[hsl(var(--primary))]">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><path d="M12 17h.01" /><circle cx="12" cy="12" r="10" /></svg>
+            </span>
+            <span class="min-w-0 flex-1">
+              <span class="block font-semibold text-[hsl(var(--foreground))]">Autoevaluate</span>
+              <span class="mt-0.5 block text-sm text-[hsl(var(--muted-foreground))]">
+                {cantPreguntas} {cantPreguntas === 1 ? "pregunta" : "preguntas"} para chequear que entendiste esta sección.
+              </span>
+            </span>
+            <svg class="h-5 w-5 shrink-0 text-[hsl(var(--muted-foreground))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+          </a>
+        )}
       </article>
       <PrevNext previa={previa} siguiente={siguiente} />
     </main>
